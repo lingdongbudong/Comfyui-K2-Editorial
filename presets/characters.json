@@ -1,0 +1,107 @@
+{
+ "_meta": {
+  "note": "只手写 miku / furina。其余角色由 anima_bridge 从 Comfyui-Anima-Wardrobe-V6 实时读取，不落盘。",
+  "schema": "identity / hair / costume / palette / guard / ink_*",
+  "count": 18
+ },
+ "characters": {
+  "miku": {
+   "name": "Hatsune Miku",
+   "feature_clause": "featuring Hatsune Miku as the only physical character",
+   "short": "Miku",
+   "identity": "Preserve her unmistakable canonical identity: luminous aqua eyes, straight aqua bangs, extremely long aqua twin tails, black-and-magenta square hair ornaments, youthful anime facial structure, slim proportions, and a clearly recognizable Hatsune Miku silhouette. Keep her face, eyes, hands, hair ornaments and long twin-tail identity immediately readable even inside this dense structure.",
+   "hair_desc": "extremely long aqua twin tails",
+   "design_language": "her recognizable virtual-singer design language",
+   "accent": "aqua",
+   "palette": [
+    [
+     "pure white, pearl white and pale silver",
+     62
+    ],
+    [
+     "cobalt and deep ultramarine",
+     14
+    ],
+    [
+     "aqua and icy cyan",
+     10
+    ],
+    [
+     "graphite black and matte carbon",
+     6
+    ],
+    [
+     "mirror silver and glass contrast",
+     5
+    ],
+    [
+     "champagne gold",
+     2
+    ],
+    [
+     "vivid coral red",
+     1
+    ]
+   ],
+   "ink": "cobalt",
+   "block": "cobalt",
+   "stain": "aqua",
+   "metal": "champagne-gold",
+   "minor": "coral",
+   "guard": "no duplicate Miku, no generic blue-haired girl, no missing twin-tail silhouette",
+   "zh": "初音未来",
+   "work": "Vocaloid",
+   "thumb": "miku",
+   "curated": true
+  },
+  "furina": {
+   "name": "Furina from Genshin Impact",
+   "feature_clause": "featuring Furina from Genshin Impact as the only physical character",
+   "short": "Furina",
+   "identity": "Preserve Furina’s unmistakable canonical identity: pale skin, refined youthful face, short-to-medium white hair with distinctive pale-blue tips and longer flowing rear sections, elegant blue heterochromatic eyes, her signature dark navy top hat with blue-and-white ornamentation, and her recognizable Fontaine-inspired navy, white, black, and gold ceremonial outfit. Keep her face, eyes, hat, hands, hair silhouette, and aristocratic Furina identity immediately readable through the highly elaborate composition.",
+   "hair_desc": "asymmetric white hair with pale-blue tips and longer flowing rear sections",
+   "design_language": "her Fontaine ceremonial navy, white, black and gold design language",
+   "accent": "pale aqua",
+   "palette": [
+    [
+     "pearl white, pure white, pale silver and translucent frost",
+     58
+    ],
+    [
+     "deep French navy and midnight blue",
+     16
+    ],
+    [
+     "royal cobalt and Fontaine blue",
+     11
+    ],
+    [
+     "pale aqua, cyan and turquoise",
+     8
+    ],
+    [
+     "black lacquer and graphite",
+     4
+    ],
+    [
+     "mirrored silver and champagne gold",
+     2
+    ],
+    [
+     "very dark violet-blue registration accents",
+     1
+    ]
+   ],
+   "ink": "French-navy",
+   "block": "royal-blue",
+   "stain": "aqua",
+   "metal": "champagne-gold",
+   "minor": "pale-gold",
+   "guard": "no Miku, no aqua twin tails, no missing top hat, no generic blue-haired girl, no unrelated princess",
+   "zh": "芙宁娜",
+   "work": "Genshin Impact",
+   "thumb": "furina",
+   "curated": true
+  }
+ }
+}

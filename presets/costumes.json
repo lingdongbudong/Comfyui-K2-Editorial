@@ -1,0 +1,61 @@
+{
+ "_meta": {
+  "note": "通用版型库：每条 100–140 词，一律不含母题名词、不含角色专属道具（礼帽等），才能任意角色 × 任意母题复用。材质由装配器从母题正文抽取（{M1}{M2}），保证服装与巨构同材质体系。",
+  "placeholders": "{short} 角色短名 / {design} 角色设计语系 / {M1}{M2} 母题材质 / {accent} 角色主色 / {block} 主色块色 / {minor} 稀有强调色",
+  "schema": "templates = 全局版型（任意角色可用）；character_default = 各角色推荐顺序（只影响随机倾向）"
+ },
+ "templates": [
+  {
+   "id": "ceremonial_formal",
+   "zh": "仪式礼服",
+   "desc": "对称、硬挺、带短摆；最稳的一套，适合庄重母题。",
+   "tpl": "Dress {short} in an original ceremonial costume derived from {design}. Use a fitted {M1} bodice with {accent} luminous seams, a short asymmetric skirt built from stacked {M2} plates whose thick glazed edges catch a hard highlight, a {block} enamel waist girdle with tiny gold bolts, detached translucent {accent} sleeves with silver filigree cuffs, dark thigh-high elements with fine gold seams, pale shoulder ornaments, and exactly three tiny {minor} fasteners. Keep the costume light, editorial and precise rather than bulky armor, and let one narrow printed sash trail behind her and overlap the shadow of the main structure."
+  },
+  {
+   "id": "technical_bodysuit",
+   "zh": "机能贴身",
+   "desc": "完全贴身、无裙摆、接缝走线；适合强调动作与骨架的母题。",
+   "tpl": "Dress {short} in a close-fitting technical bodysuit derived from {design}. The suit reads as instrument-grade apparel: a seamless {M1} torso panel with {accent} circuit seams running along the ribs, a {block} enamel chest bracket that fastens at the sternum, segmented {M2} hip plates that stop exactly at the upper thigh, low-profile shoulder sockets, thin silver tendon lines down the arms, and a narrow waist belt carrying three tiny {minor} calibration tabs. Add one loose translucent over-layer that opens down the front and lifts slightly at the hem. Keep the silhouette clean and unbroken so the body reads as one continuous instrument, never as sportswear or armor."
+  },
+  {
+   "id": "layered_drape",
+   "zh": "层叠披纱",
+   "desc": "三层半透薄纱 + 一处硬质收束；适合轻盈、透明材质主导的母题。",
+   "tpl": "Dress {short} in a layered drape costume derived from {design}. Build it from three translucent {M1} veils of different opacity over a fitted {accent} inner sheath: the first veil falls from one shoulder, the second is caught at the waist by a {block} enamel clasp, and the third trails behind her and dissolves into a printed edge. Add a hard {M2} collar and a single rigid forearm cuff so the soft layers have something structural to hang from, plus exactly two tiny {minor} pins. Keep every edge crisp and every fold readable — the costume should look cut and engineered, not gathered or draped casually."
+  },
+  {
+   "id": "panel_armor",
+   "zh": "轻板片护甲",
+   "desc": "五到六块悬浮硬板 + 可见铰链；适合强调机械结构的母题。",
+   "tpl": "Dress {short} in a light plate costume derived from {design}. Use five or six large flat {M1} panels joined by visible {block} enamel hinges: one breastplate, two floating side plates that do not touch the body, a short segmented skirt of three {M2} blades, and one raised collar piece. Underneath, a fitted {accent} bodysuit with fine luminous seams keeps the body continuous. Add a narrow silver spine rail, exactly three tiny {minor} fasteners, and a single printed plate bearing an abstract diagram. Keep the plates thin and separated by clear gaps so the costume reads as precision hardware rather than fantasy armor."
+  },
+  {
+   "id": "court_formal",
+   "zh": "宫廷礼服",
+   "desc": "高领 + 燕尾 + 前襟扣饰；适合有观众席、序厅那类庄重母题。",
+   "tpl": "Dress {short} in an original court costume derived from {design}. Use a fitted {M1} bodice with a high structured collar, an asymmetric pale panel draped across the chest, layered coat tails in {block} that fall below the knee, {M2} clasps and small pearl frogs down the front, a narrow waist sash carrying three tiny {minor} jewels, and slim thigh-high footwear with fine gold seams. Let one long ribbon trail from the collar and cross the shadow behind her. Keep the tailoring sharp and the layers countable, never ruffled into a generic princess dress, and leave the head and shoulders uncluttered so the silhouette stays readable."
+  },
+  {
+   "id": "theatrical_cape",
+   "zh": "歌剧披风",
+   "desc": "一片宽披风 + 硬质肩轭；适合有舞台、幕布、大装置的母题。",
+   "tpl": "Dress {short} in a theatrical cape costume derived from {design}. Build a single wide {M1} cape that opens from a rigid {block} enamel shoulder yoke and falls in one clean architectural curve behind her, worn over a fitted {accent} bodice and a narrow {M2} belt. Add a high collar of stacked plates, one asymmetrical lapel pinned with a large {minor} brooch, and a glove on the leading hand only. Keep the cape edges razor-sharp with thin silver piping, and let its inner lining carry a faint printed diagram. The whole costume should read as stage apparel engineered like a prop, not as a flowing fantasy cloak."
+  },
+  {
+   "id": "tailored_suit",
+   "zh": "利落西装式",
+   "desc": "短款收腰外套 + 直筒长裤；最适合克制、编辑感强的母题。",
+   "tpl": "Dress {short} in a sharp tailored suit derived from {design}. Use a fitted {block} short jacket with cutaway front and structured shoulders in {M1}, a high-necked {accent} inner shell, a narrow {M2} waistband instead of a belt, long slim trousers that break once over pointed footwear, and a single narrow scarf hanging from the collar. Add exactly three tiny {minor} studs along the lapel and one thin silver chain from the jacket hem to the hip. Keep the tailoring narrow and graphic so the silhouette stays a clean vertical column, and let the head remain the only soft mass in the outfit."
+  },
+  {
+   "id": "fluid_drape",
+   "zh": "流体褶裥",
+   "desc": "连续刀褶从腰到摆逐渐变宽；适合强调曲线与垂坠的母题。",
+   "tpl": "Dress {short} in a fluid pleated costume derived from {design}. Build the body from one continuous run of knife pleats in {M1} that shift from dense at the waist to wide and translucent at the hem, held by a rigid {block} enamel corset band and a {M2} collar frame. Add detached pleated sleeves that stop at the elbow, three tiny {minor} pins along the shoulder line, and a narrow train that travels under one arm and out of frame. Keep the pleats geometrically regular so they read as folded sheet material rather than soft fabric, and keep the neck and shoulders clear so the pleat rhythm reads without interruption."
+  }
+ ],
+ "character_default": {
+  "miku": ["ceremonial_formal", "technical_bodysuit", "layered_drape", "panel_armor"],
+  "furina": ["court_formal", "theatrical_cape", "tailored_suit", "fluid_drape"]
+ }
+}

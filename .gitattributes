@@ -1,0 +1,14 @@
+# 统一换行符：本地源码是混合的（部分 CRLF 部分 LF），入库一律 LF，
+# 这样 diff 干净、跨平台 clone 一致。git add 时看到
+# "warning: CRLF will be replaced by LF" 是正常且期望的。
+* text=auto eol=lf
+
+# 二进制资源，不做换行/文本转换
+*.webp binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.zip binary
+
+# 让 GitHub 语言统计不要把 js/ 与 json 误判成整仓主语言
+js/*.js linguist-language=JavaScript

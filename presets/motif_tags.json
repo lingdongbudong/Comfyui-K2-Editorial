@@ -1,0 +1,345 @@
+{
+ "k2x_night_market": [
+  "exterior",
+  "night",
+  "magic"
+ ],
+ "_note": "手工标签覆盖：只作用于列出的 id，其余仍由正文关键词自动判定。2026-11-12 核查：兵器 20 条 + 法阵 13 条的正文没有明确时间/街景陈述（唯一命中的 street / market 出现在负向段 no ... 里），属无时间暗调，勿照标签矩阵硬补 day / night。",
+ "k2x_bow_drawn": [
+  "exterior",
+  "weapon"
+ ],
+ "k2x_service_lane": [
+  "exterior",
+  "architecture"
+ ],
+ "k2x_kerb": [
+  "exterior",
+  "street",
+  "day"
+ ],
+ "k2x_skywalk": [
+  "exterior",
+  "night",
+  "street",
+  "architecture"
+ ],
+ "k2x_hanabi_pov": [
+  "exterior",
+  "night",
+  "street",
+  "season"
+ ],
+ "k2x_hanabi_bank": [
+  "exterior",
+  "night",
+  "nature",
+  "season"
+ ],
+ "k2x_hanabi_steps": [
+  "exterior",
+  "night",
+  "architecture",
+  "season"
+ ],
+ "k2x_hanabi_apple": [
+  "exterior",
+  "night",
+  "street",
+  "season"
+ ],
+ "k2x_hanabi_goldfish": [
+  "exterior",
+  "night",
+  "street",
+  "season"
+ ],
+ "k2x_hanabi_mask": [
+  "exterior",
+  "night",
+  "street",
+  "season"
+ ],
+ "k2x_hanabi_fan": [
+  "exterior",
+  "night",
+  "street",
+  "season"
+ ],
+ "k2x_hanabi_boat": [
+  "exterior",
+  "night",
+  "nature",
+  "season"
+ ],
+ "k2x_hanabi_yatai": [
+  "exterior",
+  "night",
+  "street",
+  "architecture",
+  "season"
+ ],
+ "k2x_hanabi_after": [
+  "exterior",
+  "night",
+  "nature",
+  "season"
+ ],
+ "k2x_coast_tide_pool": [
+  "exterior",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2x_coast_pool_edge": [
+  "exterior",
+  "day",
+  "architecture",
+  "season"
+ ],
+ "k2x_coast_dune": [
+  "exterior",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2x_coast_shower": [
+  "exterior",
+  "day",
+  "architecture",
+  "season"
+ ],
+ "k2x_coast_pier": [
+  "exterior",
+  "day",
+  "architecture",
+  "season"
+ ],
+ "k2x_coast_balcony": [
+  "exterior",
+  "day",
+  "architecture",
+  "season"
+ ],
+ "k2x_coast_surf": [
+  "exterior",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2x_coast_lookout": [
+  "exterior",
+  "day",
+  "architecture",
+  "season"
+ ],
+ "k2x_home_stove": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_home_linen": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_home_bath": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_home_laundry_line": [
+  "exterior",
+  "day",
+  "architecture"
+ ],
+ "k2x_home_entry": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_home_dinner": [
+  "interior",
+  "night",
+  "architecture"
+ ],
+ "k2x_home_closet": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_home_plants": [
+  "interior",
+  "day",
+  "nature"
+ ],
+ "k2x_school_class": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_school_gym": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_school_lockers": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_school_stairs": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_school_lab": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_school_music": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_school_pool": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_school_court": [
+  "exterior",
+  "day",
+  "architecture",
+  "season"
+ ],
+ "k2x_indus_tower": [
+  "exterior",
+  "day",
+  "architecture"
+ ],
+ "k2x_indus_dock": [
+  "exterior",
+  "day",
+  "architecture"
+ ],
+ "k2x_indus_reservoir": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_indus_blast": [
+  "exterior",
+  "day",
+  "architecture"
+ ],
+ "k2x_indus_nave": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_indus_belltower": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_indus_pump": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_indus_cloister": [
+  "exterior",
+  "day",
+  "architecture"
+ ],
+ "k2x_clsc_railgun": [
+  "exterior",
+  "night",
+  "street"
+ ],
+ "k2x_clsc_parasol": [
+  "exterior",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2x_street_wiped": [
+  "exterior",
+  "street",
+  "day",
+  "architecture",
+  "weapon"
+ ],
+ "k2x_street_lane_blade": [
+  "exterior",
+  "street",
+  "day",
+  "architecture",
+  "weapon"
+ ],
+ "k2x_street_circle": [
+  "exterior",
+  "night",
+  "street",
+  "architecture",
+  "magic"
+ ],
+ "k2x_clsc_2b": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_clsc_frieren": [
+  "exterior",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2x_clsc_makima": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_clsc_artoria": [
+  "exterior",
+  "day",
+  "nature"
+ ],
+ "k2x_clsc_ganyu": [
+  "exterior",
+  "night",
+  "architecture"
+ ],
+ "k2x_clsc_zelda": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_clsc_homura": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_clsc_asuka": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_clsc_tifa": [
+  "interior",
+  "day",
+  "architecture"
+ ],
+ "k2x_clsc_chunli": [
+  "exterior",
+  "street",
+  "day"
+ ],
+ "k2x_clsc_throne": [
+  "interior",
+  "day",
+  "architecture"
+ ]
+}

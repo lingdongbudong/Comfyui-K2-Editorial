@@ -1,0 +1,364 @@
+{
+  "1105": {
+    "inputs": {
+      "aspect_ratio": "16:9",
+      "width": 1920,
+      "height": 1088,
+      "batch_size": 1,
+      "strength_float": 1,
+      "strength_int": 1
+    },
+    "class_type": "XB_ImageParamsMaster",
+    "_meta": {
+      "title": "XB-BOX - 🖼️ 图片参数大全"
+    }
+  },
+  "1133": {
+    "inputs": {
+      "text": [
+        "1135",
+        0
+      ],
+      "clip": [
+        "1304",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "正向编码（无额外质量词）"
+    }
+  },
+  "1135": {
+    "inputs": {
+      "string_a": [
+        "1143",
+        0
+      ],
+      "string_b": [
+        "1290",
+        0
+      ],
+      "delimiter": ", "
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "LoRA 触发词 + 画风与主体提示词"
+    }
+  },
+  "1137": {
+    "inputs": {
+      "width": [
+        "1105",
+        0
+      ],
+      "height": [
+        "1105",
+        1
+      ],
+      "batch_size": [
+        "1105",
+        2
+      ]
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "空Latent图像"
+    }
+  },
+  "1138": {
+    "inputs": {
+      "seed": [
+        "1141",
+        0
+      ],
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "1304",
+        0
+      ],
+      "positive": [
+        "1133",
+        0
+      ],
+      "negative": [
+        "1295",
+        0
+      ],
+      "latent_image": [
+        "1137",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "Krea 官方：euler / simple / 8步 / CFG 1"
+    }
+  },
+  "1141": {
+    "inputs": {
+      "value": -213180183165995
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "随机种子"
+    }
+  },
+  "1143": {
+    "inputs": {
+      "group_mode": true,
+      "default_active": true,
+      "allow_strength_adjustment": false,
+      "toggle_trigger_words": {
+        "__value__": [
+          {
+            "text": "baka",
+            "active": true,
+            "strength": null,
+            "items": [
+              {
+                "text": "baka",
+                "active": true,
+                "strength": null
+              }
+            ]
+          },
+          {
+            "text": "wlop style",
+            "active": true,
+            "strength": null,
+            "items": [
+              {
+                "text": "wlop style",
+                "active": true,
+                "strength": null
+              }
+            ]
+          }
+        ]
+      },
+      "orinalMessage": "baka,, wlop style",
+      "trigger_words": [
+        "1304",
+        2
+      ]
+    },
+    "class_type": "TriggerWord Toggle (LoraManager)",
+    "_meta": {
+      "title": "LoRA 触发词开关"
+    }
+  },
+  "1153": {
+    "inputs": {
+      "tile": 320,
+      "overlap": 32,
+      "cleanup": "卸载全量模型",
+      "samples": [
+        "1138",
+        0
+      ],
+      "vae": [
+        "1142:1132",
+        0
+      ]
+    },
+    "class_type": "XB_ROCmVAEDecode",
+    "_meta": {
+      "title": "XB-BOX - VAE解码（原版优化）（旧）"
+    }
+  },
+  "1154": {
+    "inputs": {
+      "filename_prefix": "图片/Krea2/2026-11-09/Krea2-文生图",
+      "images": [
+        "1153",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "保存图像"
+    }
+  },
+  "1290": {
+    "inputs": {
+      "string_a": "",
+      "string_b": [
+        "1305",
+        0
+      ],
+      "delimiter": ", "
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "自动拼接：官方质量词（本流）+ 全局正文"
+    }
+  },
+  "1295": {
+    "inputs": {
+      "conditioning": [
+        "1133",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "负向置零（发布页未指定负向质量词）"
+    }
+  },
+  "1304": {
+    "inputs": {
+      "__lm_autocomplete_meta_text": {
+        "version": 1,
+        "textWidgetName": "text"
+      },
+      "text": "<lora:wlop_c1-st4000:0.40:0.40> <lora:light_c1-st2000:0.50:1.00> <lora:Krea2Rella_c1-st8000:0.40:1.00> <lora:KREA_MIDJ_1:0.50:1.00> <lora:z3zz4-k2-4_c1-st5000:0.55:0.55> <lora:si_(wooupp)_000001000:0.60:0.60>",
+      "loras": {
+        "__value__": [
+          {
+            "name": "wlop_c1-st4000",
+            "strength": 0.4,
+            "active": true,
+            "expanded": true,
+            "clipStrength": 0.4,
+            "selected": true,
+            "locked": false
+          },
+          {
+            "name": "light_c1-st2000",
+            "strength": 0.5,
+            "active": true,
+            "expanded": true,
+            "clipStrength": 1,
+            "selected": false,
+            "locked": false
+          },
+          {
+            "name": "Krea2Rella_c1-st8000",
+            "strength": 0.4,
+            "active": true,
+            "expanded": true,
+            "clipStrength": 1,
+            "selected": false,
+            "locked": false
+          },
+          {
+            "name": "KREA_MIDJ_1",
+            "strength": 0.5,
+            "active": true,
+            "expanded": true,
+            "clipStrength": 1,
+            "selected": false,
+            "locked": false
+          },
+          {
+            "name": "z3zz4-k2-4_c1-st5000",
+            "strength": 0.55,
+            "active": true,
+            "expanded": true,
+            "clipStrength": 0.55,
+            "selected": false,
+            "locked": false
+          },
+          {
+            "name": "si_(wooupp)_000001000",
+            "strength": "0.60",
+            "active": true,
+            "expanded": true,
+            "clipStrength": "0.60",
+            "selected": false,
+            "locked": false
+          }
+        ]
+      },
+      "model": [
+        "1142:1130",
+        0
+      ],
+      "clip": [
+        "1142:1131",
+        0
+      ]
+    },
+    "class_type": "Lora Loader (LoraManager)",
+    "_meta": {
+      "title": "LoRA 应用"
+    }
+  },
+  "1305": {
+    "inputs": {
+      "随机种子": 1195535501,
+      "每次重随机": true,
+      "角色": "raiden_shogun",
+      "母题": "ComfyUI_temp_majdv_00001_",
+      "画幅": "16:9",
+      "服装": "自动（跟随母题）",
+      "单品": "",
+      "覆盖提示词": ""
+    },
+    "class_type": "K2EditorialBuilder",
+    "_meta": {
+      "title": "★ K2 长文出题 · 白垩光"
+    }
+  },
+  "1142:1128": {
+    "inputs": {
+      "unet_name": "Krea-2\\krea2_turbo_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "官方 Krea2 Turbo FP8"
+    }
+  },
+  "1142:1131": {
+    "inputs": {
+      "clip_name": "Krea-2\\qwen3vl_4b_fp8_scaled.safetensors",
+      "type": "krea2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Krea2 CLIP（Qwen3-VL 4B BF16）"
+    }
+  },
+  "1142:1132": {
+    "inputs": {
+      "vae_name": "Qwen\\qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Krea2 VAE"
+    }
+  },
+  "1142:1129": {
+    "inputs": {
+      "preset": "comfy kitchen attention",
+      "model": [
+        "1142:1128",
+        0
+      ]
+    },
+    "class_type": "XB_SageAttentionAccelerator",
+    "_meta": {
+      "title": "XB-BOX - 🚀 加速模式选择"
+    }
+  },
+  "1142:1130": {
+    "inputs": {
+      "blocks_to_swap": 0,
+      "unet_model": [
+        "1142:1129",
+        0
+      ]
+    },
+    "class_type": "XB_UNetBlockSwap",
+    "_meta": {
+      "title": "XB-BOX - ✂️ 模型分块交换（UNet）"
+    }
+  }
+}

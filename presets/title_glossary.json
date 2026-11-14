@@ -1,0 +1,30 @@
+{
+  "_note": "短提示词/海报里画内英文的词汇直译表（只用于面板显示，绝不进提示词正文）。逐词查表，任何一个词认不出就不给直译，避免误导。完整短语的精准直译见 title_translations.json 的 titles。",
+  "stop": ["THE", "OF", "IN", "IS", "ON", "YOUR", "TO", "A", "AN", "AND", "AT", "FOR", "WITH", "WITHOUT", "BY", "NO", "NO.", "MIKU", "MHZ"],
+  "gloss": {
+    "AFTER": "后", "AFTERIMAGE": "残像", "AFTERLIGHT": "余晖", "AIR": "空中", "ANGEL": "天使",
+    "BEFORE": "前", "BLOOM": "绽放", "BLUE": "蓝", "BREAK": "打破", "BROADCAST": "广播",
+    "CHASE": "追逐", "CINDER": "灰烬", "CINDERLIGHT": "烬光", "CONSTELLATION": "星座",
+    "CRYOFORM": "冷凝体", "CUT": "切断", "DANCE": "之舞", "DAWN": "黎明", "DEPARTURE": "离站",
+    "DESCENT": "下沉", "DROWNED": "沉没的", "DUSK": "暮色", "ECHO": "回声", "ECLIPSE": "月蚀",
+    "ELECTRIC": "电光", "EMBER": "余烬", "ENCORE": "返场", "EXPOSURE": "曝光",
+    "FIELD": "场记", "FINAL": "终", "FOLD": "折页", "FOLDED": "折起的", "FORM": "形态",
+    "FRAME": "画框", "FREQUENCY": "频率", "GARDEN": "庭园", "GLASS": "玻璃",
+    "GLASSHOUSE": "玻璃温室", "GOLDEN": "金色", "HOUSE": "屋", "INTERRUPTION": "中断",
+    "INVERTED": "倒转的", "LAST": "最后", "LIFT": "升举", "LIGHT": "光", "LIGHTS": "灯",
+    "LIQUID": "液态", "MAGNETIC": "磁", "MADE": "由…构成", "MEGASTRUCTURE": "巨构",
+    "MEMORY": "记忆", "MIND": "心", "MINUTE": "片刻", "MORNING": "晨", "MOVE": "移动",
+    "NIGHT": "夜", "NOTE": "音符", "OBSERVATORY": "观象台", "OPEN": "开放", "OPPONENT": "对手",
+    "ORBITAL": "轨道", "PAPER": "纸", "PERIOD": "句点", "PHASE": "相位", "PHONON": "声子",
+    "POOL": "池", "PRECIPITATION": "降水", "PRESENCE": "在场", "QUIET": "静",
+    "RAIN": "雨", "RECORD": "记录", "REFRACTION": "折射", "REMEMBERS": "记得",
+    "RIDE": "乘行", "SCRIPT": "字迹", "SEED": "种", "SHADOW": "影", "SIGNAL": "信号",
+    "SILENT": "无声", "SPLIT": "分裂", "STAR": "星", "STARS": "群星", "STATION": "站",
+    "STATIC": "静电", "STELLARIUM": "星象仪", "STOP": "停靠", "STUDY": "习作",
+    "TELESCOPE": "望远镜", "TEST": "测试", "TEXTILE": "织物", "THEATRE": "剧场",
+    "THREAD": "线", "THREADS": "线缕", "TIDE": "潮汐", "TIME": "时刻", "TOMORROW": "明日",
+    "TRACK": "轨", "TRAIN": "列车", "UNOBSERVED": "未被观测的", "UNSENT": "未寄出",
+    "UP": "向上", "UPPER": "高空", "VOICE": "声", "WATERLINE": "水线", "WAY": "路",
+    "WIND": "风", "WINTER": "冬", "MOTION": "运动"
+  }
+}
