@@ -366,6 +366,11 @@ GARMENT_NOUNS = (
     "camisole", "tunic", "cloak", "gown", "corset", "outfit", "clothes", "clothing",
     "attire", "costume", "vest", "necktie", "gloves", "scarf", "bodice", "collar",
     "sleeve", "hem", "cuff", "ensemble", "loungewear", "knitwear",
+    # 和风/民族/其它布料名词：实测母题里写 "in a yukata" / "a navy qipao" 都不在表里 → 漏改
+    "yukata", "cheongsam", "hanfu", "sarong", "poncho", "tuxedo", "trench", "sundress",
+    "hakama", "bloomers", "frock", "jumper", "pullover", "waistcoat", "suspenders",
+    # ⚠ "top" 之前一直不在表里 —— 实测整条母题写 "white top / dark skirt" 却完全没被识别
+    "top", "parka", "sweatshirt", "blazer", "qipao", "tracksuit", "sweatpants",
 )
 GARMENT_RE = re.compile(
     r"\b(?:" + "|".join(re.escape(n) for n in GARMENT_NOUNS) + r")(?:e?s)?\b", re.I)
@@ -580,6 +585,19 @@ def zone_map(tags: list[str] | None) -> dict[str, list[str]]:
     return {z: out[z] for z in _ZONE_ORDER if z in out}
 
 
+def frame_zones(text: str) -> set[str]:
+    """取景决定「这条母题要写哪些部位」。
+
+    特写（close-up / upper chest）→ 只上装；全身（full body / 站在地上 / 脚）→ 全写；
+    其余默认只写核心部位（上装 + 下装）：宁可多写一套下装，也不要把裙子丢掉。
+    """
+    if _FRAME_UPPER.search(text) and not _FRAME_FULL.search(text):
+        return {"upper"}
+    if _FRAME_FULL.search(text):
+        return {"upper", "lower", "leg", "foot"}
+    return {"upper", "lower"}
+
+
 def motif_zones(motif_text: str, log: list[str] | None = None) -> set[str]:
     """母题正文里「她自己穿的衣服」涉及哪些部位。
 
@@ -600,20 +618,16 @@ def motif_zones(motif_text: str, log: list[str] | None = None) -> set[str]:
         for zone, kws in _ZONE_KW.items():
             if any(k in low for k in kws):
                 zones.add(zone)
+    frame = frame_zones(text)
     if zones:
-        if not ({"upper", "lower", "dress"} & zones):
-            # 母题只提到配饰或鞋（"戴耳机的海报"）→ 衣服还是得写，补上核心部位
-            zones |= {"upper", "lower"}
-        return zones
-    # 母题没写服装 → 看取景
-    if _FRAME_UPPER.search(text) and not _FRAME_FULL.search(text):
-        log.append("服装: 母题未写服装 + 上半身取景 → 只写 upper")
-        return {"upper"}
-    if _FRAME_FULL.search(text):
-        log.append("服装: 母题未写服装 + 全身取景 → 写 upper/lower/leg/foot")
-        return {"upper", "lower", "leg", "foot"}
-    log.append("服装: 母题未写服装 → 默认 upper+lower")
-    return {"upper", "lower"}
+        # 特写取景 → 只写上半身（母题提到配饰才带配饰）；
+        # 其余情况以取景的「核心部位」为准，母题描述只补腿/鞋/配饰这类外围部位。
+        # ⚠ 旧写法只看「母题提到哪些部位」：影院门外只写了 "coat collar pulled up"，
+        #   于是整条裙子被判定为「不需要」而丢掉。
+        if frame == {"upper"}:
+            return {"upper"} | (zones & {"acc"})
+        return zones | frame
+    return frame
 
 
 def select_outfit(tags: list[str] | None, zones: set[str],
@@ -852,8 +866,11 @@ def _excise_clauses(s: str, require_her: bool = False,
     while i < len(parts):
         cl = parts[i]
         sep = parts[i + 1] if i + 1 < len(parts) else ""
+        # 裸名词短语（"coat collar pulled up" / "white top and dark skirt"）没有主语，
+        # 不该被 require_her 挡住；只有**成句**（带限定动词）的才要求提到她
+        full_clause = bool(_FINITE_RE.search(cl))
         hit = (cl.strip() and GARMENT_RE.search(cl) and not _PROP_CUE.search(cl)
-               and (not require_her or _HER_RE.search(cl))
+               and (not require_her or not full_clause or _HER_RE.search(cl))
                # need_is：只摘「her dress is heavy cotton」这类材质指派，
                # 放过「her boots and her striding legs」这种构图序列
                and (not need_is or re.search(r"\bis\b|\bare\b", cl)))
@@ -867,6 +884,154 @@ def _excise_clauses(s: str, require_her: bool = False,
     txt = re.sub(r"^\s*[,;]+\s*", "", txt)
     txt = re.sub(r"(\s*,\s*)+", ", ", txt)
     return txt.strip(" ;,"), dropped
+
+
+# 衣服常以「介词 + 冠词 + 名词」的形式塞在场景/姿势句里：
+#   "standing on the grassy slope of a river embankment at night in a yukata"
+#   "waiting outside a cinema after rain, coat collar pulled up"
+# 这类写法整句并不「都在讲衣服」，按整句/子句处理都会漏 → 单独做介词短语替换。
+# ⚠ 修饰词位不能吃进功能词：否则 "scuffed in a broad arc where boots have turned"
+#   会被当成「穿着一双靴子」，替换成 "in the selected outfit" 把句子搞烂。
+_INLINE_ADJ = (r"(?!(?:where|which|that|who|and|or|of|with|in|on|at|for|to|from|under|"
+               r"over|near|beside|above|below|is|are|was|were)\b)[a-z][a-z\-]+\s+")
+_INLINE_GARMENT_RE = re.compile(
+    r"(?P<pre>\s+(?:in|wearing|dressed in|clad in)\s+)"
+    r"(?:(?:a|an|the|her|his|their)\s+)?"
+    r"(?:" + _INLINE_ADJ + r"){0,3}(?:"
+    + "|".join(re.escape(n) for n in GARMENT_NOUNS) +
+    r")(?:e?s)?\b", re.I)
+# 这些是「空间定位」不是穿着（in front of her boots / near the coat hooks）
+_SPATIAL_CUE = re.compile(
+    r"\b(?:front of|behind|beside|near|next to|left of|right of|edge of|top of|bottom of|"
+    r"middle of|shadow of|light of|hooks?)\b", re.I)
+_DIRECTION_CUE = re.compile(r"^\s*(?:left|right|corner|half|third|quarter|edge|frame|"
+                            r"canvas|image)", re.I)
+
+
+_ZONE_WORD = {"upper": "her top", "lower": "her skirt", "foot": "her footwear",
+              "leg": "her legwear", "dress": "her outfit", "acc": "her accessory"}
+_OWNER_GARMENT_RE = re.compile(
+    r"\b(?:her|his)\s+(?:[a-z][a-z\-]+\s+){0,2}(?:"
+    + "|".join(re.escape(n) for n in GARMENT_NOUNS) + r")(?:e?s)?\b", re.I)
+
+
+# "the coat's collar" / "her dress's hem" —— 所有格形式，之前只处理 "her coat" 漏了带 's 的
+_POSS_GARMENT_RE = re.compile(
+    r"\b(?:the|her|his)\s+(?:[a-z][a-z\-]+\s+){0,2}(?:"
+    + "|".join(re.escape(n) for n in GARMENT_NOUNS) + r")(?:e?s)?['’]s\b", re.I)
+
+
+def neutralize_owner_garments(p: str) -> tuple[str, int]:
+    """「她的浴衣下摆」「她的木屐」这类所有格写法 → 按部位换成泛称。
+
+    它们藏在构图/光线段里（"then her wooden sandals and the hem of her yukata"），
+    整段是讲画面结构的，不能删；但衣服已经换了，把名词换成"她的上衣/鞋/裙"即可。
+    """
+    def rep(m):
+        z = zone_of_tag(m.group(0))
+        return _ZONE_WORD.get(z, "her outfit")
+    out, n = _POSS_GARMENT_RE.subn("the outfit's", p)      # 先处理 "the coat's"
+    out, k = _OWNER_GARMENT_RE.subn(rep, out)
+    return out, n + k
+
+
+_G_ALT = "|".join(re.escape(n) for n in GARMENT_NOUNS)
+# 袖口 / 下摆 / 领子这类「部件」不适合作整名替换（把 "white cuff" 换成整套衣服很荒唐）
+_PART_NOUN_RE = re.compile(r"\b(?:cuffs?|hem|hems|collars?|sleeves?|bodice|seams?|waistband|"
+                           r"lacing|buttons?|pockets?)\b", re.I)
+
+
+def canonical_phrases(text: str) -> list[str]:
+    """从母题里挑出「她这身衣服的标准叫法」（服装名词最密的那一段）。
+
+    有些母题整篇围着一套衣服写（"white top / dark skirt" 在 9 个段落里反复出现），
+    只改服装段不够 —— 于是把这些叫法提出来，全文统一替换成所选单品。
+    """
+    scored, primary = [], []
+    for p in paras(text):
+        if is_guard(p) or _STRUCT_PARA.match(p.strip()) or _PROP_CUE.search(p):
+            continue
+        n = len({m.group(0).lower() for m in GARMENT_RE.finditer(p)})
+        if n < 2:
+            continue
+        scored.append((n, p))
+        n_cl, n_gar = _clause_stats(p)
+        low = p.strip().lower()
+        # 服装段优先：以 Dress / Wearing 开头，或超过一半子句都在讲衣服
+        if low.startswith(("dress ", "wearing ", "she wears")) or (
+                n_gar / max(1, n_cl) >= 0.5):
+            primary.append(p)
+    if not scored:
+        return []
+    scored.sort(key=lambda x: -x[0])
+    picked = primary[:1] + [p for _n, p in scored[:2] if p not in primary[:1]]
+    best = " ".join(picked)
+    out = []
+    for m in re.finditer(rf"\b(?:[a-z][a-z\-]+\s+){{0,2}}(?:{_G_ALT})(?:e?s)?\b", best, re.I):
+        words = [w for w in m.group(0).strip(" ,.;").split()
+                 if w.lower() not in ("and", "of", "with", "the", "her", "his", "a", "an",
+                                      "canonical", "original", "signature", "recognizable")]
+        if len(words) < 2:
+            continue
+        ph = " ".join(words)
+        if (_PART_NOUN_RE.search(ph) or ph.lower() in {x.lower() for x in out}
+                or zone_of_tag(ph) == "style"):
+            continue
+        out.append(ph)
+    return out[:10]
+
+
+def retarget_phrases(text: str, tags: list[str], raw: str | None = None,
+                     log: list[str] | None = None) -> tuple[str, int]:
+    """母题里反复点名的原作服装 → 换成所选单品（按部位配对）。"""
+    log = log if log is not None else []
+    zm = zone_map(tags)
+    repl = {z: " and ".join(v[:2]) for z, v in zm.items() if v}
+    if not repl:
+        return text, 0
+    # 连衣裙类旧写法（qipao / yukata / dress）→ 所选上装+下装（服装库没有连衣裙时）
+    if not repl.get("dress"):
+        up, lo = repl.get("upper"), repl.get("lower")
+        if up and lo:
+            repl["dress"] = f"{up} and {lo}"
+        elif up or lo:
+            repl["dress"] = up or lo
+    n = 0
+    for ph in canonical_phrases(raw or text):
+        zone = zone_of_tag(ph)
+        rep = repl.get(zone) or repl.get("dress")
+        joined_new = " ".join(tags).lower()
+        if (not rep or rep.lower() == ph.lower() or rep.lower() in ph.lower()
+                or ph.lower() in joined_new):
+            continue
+        text, k = re.subn(rf"\b{re.escape(ph)}\b", rep, text, flags=re.I)
+        if k:
+            n += k
+            log.append(f"服装: 全文替换「{ph}」→「{rep}」×{k}")
+    return text, n
+
+
+def rewrite_inline_garments(s: str, log: list[str] | None = None) -> tuple[str, int]:
+    """把「in a yukata / wearing a sailor uniform」换成「in the selected outfit」。"""
+    log = log if log is not None else []
+    n = 0
+    out = s
+    pos = 0
+    while True:
+        m = _INLINE_GARMENT_RE.search(out, pos)
+        if not m:
+            break
+        span = m.group(0)
+        tail = out[m.end():m.end() + 12]
+        if (_SPATIAL_CUE.search(span) or _DIRECTION_CUE.match(tail)
+                or _PROP_CUE.search(span)):
+            pos = m.end()
+            continue
+        rep = m.group("pre") + "the selected outfit"
+        out = out[:m.start()] + rep + out[m.end():]
+        pos = m.start() + len(rep)
+        n += 1
+    return out, n
 
 
 # 自己插进去的模板句特征 —— 这些段落不许再被改写
@@ -904,7 +1069,8 @@ def _neutralize_guard(s: str, parts: bool = False) -> tuple[str, int]:
 def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = True,
                      log: list[str] | None = None,
                      already_placed: bool = False,
-                     bold: bool = True, mode: str = "full") -> tuple[str, int]:
+                     bold: bool = True, mode: str = "full",
+                     raw: str | None = None) -> tuple[str, int]:
     """把母题正文里**所有**在描述别的衣服的地方改写成所选单品。
 
     `already_placed` = 调用方已经在别处写过单品清单（scene 分支的服装段），
@@ -930,7 +1096,9 @@ def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = T
             continue
         # ① 动词法：保留原句主语与动词，只换宾语（already_placed 也照做，
         #    宁可把同一套单品列两遍，也不能让「She wears a black dress」留在原地）
-        p2, k1 = swap_garments(p, body_tags, only=only, log=[], limit=3)
+        p2, k0 = neutralize_owner_garments(p)
+        p2, k1 = swap_garments(p2, body_tags, only=only, log=[], limit=3)
+        k1 += k0
         total += k1
         placed = placed or k1 > 0
         changed = k1 > 0
@@ -946,6 +1114,13 @@ def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = T
                 # 里面混着头/眼/服装，摘子句会把句子拆烂，留给身份锚点句去压
                 keep.append(s)
                 continue
+            s, k_inline = rewrite_inline_garments(s)
+            if k_inline:
+                total += k_inline
+                changed = True
+                if not GARMENT_RE.search(s):
+                    keep.append(s)
+                    continue
             n_cl, n_gar = _clause_stats(s)
             tag_stream = _is_tag_stream(s)
             if "percent" in low:
@@ -1006,6 +1181,16 @@ def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = T
         if p3:
             out_ps.append(p3)
     out = join(out_ps)
+    # ⚠ 整篇替换必须放在最后：放在开头会被后面的句子处理当成「旧衣服」再摘掉
+    #   （实测：换好的 "white off-shoulder sweater" 又被 excise 掉，成品里一件衣服都没有）
+    out, n_retarget = retarget_phrases(out, body_tags, raw=raw, log=log)
+    total += n_retarget
+    # 兜底：只要动过，成品里就必须出现所选单品（防止中途被摘掉/段落被丢）
+    if total and body_tags[0].lower() not in out.lower():
+        ps2 = paras(out)
+        idx = next((i for i, x in enumerate(ps2) if "canonical identity" in x.lower()), -1)
+        ps2.insert(idx + 1 if idx >= 0 else min(1, len(ps2)), directive)
+        out = join(ps2)
     # 外套类体积大，靠在窗台/栏杆上会穿模 → 在服装句所在段补一句接触点收尾
     if placed and _BULKY_RE.search(body) and _CLIP_GUARD.strip() not in out:
         ps3 = paras(out)
@@ -1160,7 +1345,7 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
         text, n_swap = rewrite_clothing(
             text, outfit_tags, short=ch["short"], only=(costume == "auto"), log=log,
             already_placed=bool(garment_only or (costume_i >= 0 and costume != "keep")),
-            bold=False, mode=zone_mode)
+            bold=False, mode=zone_mode, raw=motif_text)
         if n_swap:
             log.append(f"服装: 就地替换母题自带服装 {n_swap} 处 → "
                        f"{', '.join(outfit_tags[:3])}…")
@@ -1253,7 +1438,7 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
     if outfit_tags and costume != "keep":
         text, n_swap = rewrite_clothing(join(ps), outfit_tags, short=ch["short"],
                                         only=(costume == "auto"), log=log,
-                                        mode=zone_mode)
+                                        mode=zone_mode, raw=motif_text)
         ps = paras(text)
         if n_swap:
             log.append(f"短提示: 就地替换母题自带服装 {n_swap} 处 → "
@@ -1380,7 +1565,7 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
     if outfit_tags and costume != "keep":
         text, n_swap = rewrite_clothing(text, outfit_tags, short=ch["short"],
                                         only=(costume == "auto"), log=log,
-                                        already_placed=True, mode=zone_mode)
+                                        already_placed=True, mode=zone_mode, raw=motif_text)
         if n_swap:
             log.append(f"海报: 就地替换母题自带服装 {n_swap} 处 → "
                        f"{', '.join(outfit_tags[:3])}…")

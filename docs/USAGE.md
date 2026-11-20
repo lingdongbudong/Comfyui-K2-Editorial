@@ -42,12 +42,12 @@ git clone https://github.com/lingdongbudong/Comfyui-K2-Editorial.git
 
 ```bash
 # ① 启动日志：重启 ComfyUI 后找这行
-#    [K2-Editorial] v1.15.0 已加载：['K2EditorialBuilder']
+#    [K2-Editorial] v1.15.3 已加载：['K2EditorialBuilder']
 
 # ② 节点已注册
 curl -s --noproxy '*' http://127.0.0.1:8188/object_info/K2EditorialBuilder | head -c 120
 
-# ③ 数据与装配链路都通（20 项，含 HTTP 冒烟）
+# ③ 数据与装配链路都通（21 项，含 HTTP 冒烟）
 python tests/run_all.py --http
 ```
 
@@ -166,7 +166,7 @@ cd <ComfyUI>/custom_nodes/Comfyui-K2-Editorial && git pull
 
 ### ② 服装页
 
-三组卡片：**自动 / 保持原样** → **8 套通用版型** → **角色官方预设** → **服装库（98 套 / 11 类）**。
+三组卡片：**自动 / 保持原样** → **8 套通用版型** → **角色官方预设** → **服装库（内置快照 98 套 / 10 类）**。
 服装库卡片按分类筛选，选中即写入 `单品`。
 
 ### ③ 场景页

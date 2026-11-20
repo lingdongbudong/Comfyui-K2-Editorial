@@ -533,6 +533,38 @@ def t_outfit_zones():
                           if not issues else "；".join(issues))
 
 
+@check("内联/所有格/全篇服装名：换装后不留旧衣服")
+def t_outfit_inline():
+    """衣服有三种「不按整句列举」的写法，旧代码一个都没处理：
+
+    · 内联介词短语：`standing … at night in a yukata`
+    · 所有格：`the hem of her yukata` / `her wooden sandals`
+    · 全篇反复点名：`white top / dark skirt` 在 9 个段落里出现
+    前两类会把构图整段带偏（浴衣 → 雪纺）；第三类只改服装段等于没改。
+    """
+    tags = B.outfit_tags("lib", "ol_knit_pleated")
+    if not tags:
+        return True, "跳过（服装库无 ol_knit_pleated）"
+    seeds, _ = A.load()
+    issues = []
+    probes = [("k2x_hanabi_bank", ("yukata", "kimono")),
+              ("k2x_clsc_tifa", ("white top", "dark skirt")),
+              ("k2s_cinema_wait_14", ("sailor",))]
+    for sid, words in probes:
+        if sid not in seeds:
+            continue
+        t, _ = A.assemble(sid, "miku", "keep", "auto", outfit_tags=tags)
+        for w in words:
+            if w in t.lower():
+                issues.append(f"{sid} 仍写着「{w}」")
+    # 反例：空间定位不能被当成穿着（"scuffed in a broad arc where boots have turned"）
+    if A.rewrite_inline_garments(
+            "The stone is scuffed in a broad arc where boots have turned")[1]:
+        issues.append("把空间短语误当穿着（broad arc where boots）")
+    return (not issues), ("内联/所有格/全篇三类写法都已处理，空间短语不误伤"
+                          if not issues else "；".join(issues))
+
+
 @check("版本号 pyproject 与包一致")
 def t_version():
     p = os.path.join(ROOT, "pyproject.toml")
