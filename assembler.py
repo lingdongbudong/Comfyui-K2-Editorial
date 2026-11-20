@@ -108,6 +108,16 @@ OUTFIT_ONLY_TPL = (
     "Read them as ordinary clothing worn naturally, with every seam, cuff, hem and fold "
     "visible, and keep the silhouette that of normal daywear rather than ceremonial costume."
 )
+# 母题只要上半身（特写）→ 只写上衣，不提下装与鞋，也不说 "nothing else"
+# （否则等于宣告她没有下半身衣服，模型很可能把取景往下拉去补裙子）
+OUTFIT_ONLY_UPPER_TPL = (
+    "Dress {short}'s upper body in only these garments: {tags}. Read every seam, cuff, "
+    "neckline and fold as ordinary clothing rather than costume."
+)
+OUTFIT_ONLY_LOWER_TPL = (
+    "Dress {short}'s lower body in only these garments: {tags}. Read every seam, hem and "
+    "fold as ordinary clothing rather than costume."
+)
 
 # 平面海报分支专用：海报是二维印刷品，不能套 3D 巨构那套「材质 / 结构 / 剪裁」措辞。
 # 这里把「所选版型 + 单品」写成一小段平面化服装说明，插在首段之后，不碰排版与大标题。
@@ -119,6 +129,14 @@ COSTUME_POSTER_TPL = (
 )
 OUTFIT_POSTER_TPL = (
     "Read these specific garments as flat printed costume marks: {tags}."
+)
+# 指定单品 + 版型 auto 时用这版：不写 {cut} 剪裁（否则会随机套一套西装/礼服，
+# 跟所选单品打架 —— 实测方形专辑选露肩针织+百褶裙，封面还是「利落西装式」）。
+COSTUME_POSTER_ONLY_TPL = (
+    "Dress {short}{scope} in only these garments, rendered as flat printed shapes rather than "
+    "a three-dimensional garment: {tags}. Draw them in {design}, built from crisp {M1} and "
+    "{M2} color planes with {accent} hairline seams and one small {block} registration "
+    "block, kept secondary to the display typography."
 )
 
 
@@ -333,10 +351,737 @@ def locate_sections(ps: list[str]) -> tuple[int, int, int, int]:
     return pick("hair"), pick("costume"), pick("palette"), gfx
 
 
+# ---------------------------------------------------------------- 服装句原地改写
+# 母题正文自带的服装描述（"She wears a … dress" / tag 流里的 "wearing …"）与用户
+# 显式选中的服装库单品会**互相打架**：模型偏向先出现、且贴着角色的那套，于是
+# 「选了露肩针织 + 百褶裙，出图还是母题自带的吊带连衣裙」。
+# 旧做法是把单品句追加到全文末尾 —— 在 400 词长文里等于同时给了两套衣服。
+# 所以指定单品时必须**原地**把服装枚举换成单品清单（保留原句主语与动词，
+# 语法不破、位置不变，服装仍然贴着角色）。
+GARMENT_NOUNS = (
+    "dress", "skirt", "blouse", "sweater", "cardigan", "shirt", "t-shirt", "tshirt",
+    "uniform", "coat", "jacket", "robe", "kimono", "hoodie", "jeans", "trousers",
+    "pants", "shorts", "socks", "stockings", "tights", "boots", "shoes", "loafers",
+    "sandals", "sneakers", "heels", "apron", "swimsuit", "bikini", "leotard",
+    "camisole", "tunic", "cloak", "gown", "corset", "outfit", "clothes", "clothing",
+    "attire", "costume", "vest", "necktie", "gloves", "scarf", "bodice", "collar",
+    "sleeve", "hem", "cuff", "ensemble", "loungewear", "knitwear",
+)
+GARMENT_RE = re.compile(
+    r"\b(?:" + "|".join(re.escape(n) for n in GARMENT_NOUNS) + r")(?:e?s)?\b", re.I)
+# 只认「穿」的动词，不认 "Dress Miku in …"（那是版型段，已经换过了）
+GAR_MARK_RE = re.compile(
+    r"\b(?:is\s+wearing|is\s+dressed\s+in|dressed\s+in|clad\s+in|wearing|wears)\b", re.I)
+_SEG_RE = re.compile(r"[,;]|\.(?=\s|$)")
+# 枚举段一旦以这些词头出现就不再是服装（"no SAM armor" / "keep the wear linear"）
+_SEG_STOP_RE = re.compile(
+    r"^(?:no|not|without|avoid|never|only|perfectly|keep|let|render|use|position|place|"
+    r"camera|composition)\b", re.I)
+# 枚举里换了话题（换成「她/画面/机位」当主语）就不再是同一串服装
+_SEG_TOPIC_RE = re.compile(
+    r"^(?:she|he|her|his|the (?:young )?(?:woman|girl|figure|character|body)|then|after|"
+    r"before|while|when|as she|position|place|let|build|hold|add|show|lift)\b", re.I)
+# 非服装段里出现这些动词 = 已经不在列衣服了
+_SEG_VERB_RE = re.compile(
+    r"\b(?:is|are|was|were|walks?|walking|stands?|standing|sits?|sitting|holds?|holding|"
+    r"looks?|looking|turns?|turning|leans?|leaning|sells?|hangs?|hanging|drags?|drapes?|"
+    r"falls?|falling|rests?|resting|waits?|waiting|listens?|speaks?)\b", re.I)
+# 这些 tag 是姿势/状态，不是服装 —— 塞进 "wears …" 会变成 "She wears crossed legs"
+# 既不是服装也不是姿势的 tag（动作 / 天气 / 场景），写进服装句会变成 "she wears holding umbrella"
+_DROP_TAG_RE = re.compile(
+    r"^(?:holding|carrying|sitting|standing|walking|leaning|looking|waiting|smiling|"
+    r"sleeping|lying|kneeling|reaching|pointing)\b|\b(?:sunny|rainy|snowy|cloudy) day\b",
+    re.I)
+# 头饰永远保留：戴在头上，不进画面下方，且是角色识别度的一部分（furina 的高帽）
+_HEADWEAR_RE = re.compile(r"\b(?:hat|cap|beret|headband|headpiece|hairband|halo|crown|"
+                          r"headdress|tiara|veil)\b", re.I)
+_POSE_TAGS = {"crossed legs", "sitting", "standing", "lying on back", "on back",
+              "on stomach", "legs up", "hands behind back", "arms behind back"}
+_DRESSISH = ("dress", "gown", "robe", "kimono", "one-piece", "overall")
+
+
+def _garment_span(text: str, m) -> int:
+    """从「穿」的动词之后，一直吃到最后一个像服装的枚举段，返回结束偏移。
+
+    ⚠ 不能「连续两段不是服装就停」：实测 "uniform: coat, collar, blouse,
+    ribbon bow, identification badge, skirt, tights, shoes" 里夹着 bow / badge
+    两段非服装，早停会把后半套（裙子、鞋）留在正文里。
+    改成「只要后面还有服装就继续，碰到句子/换主语/动词段才收」。
+    """
+    pos = end = m.end()
+    gap = 0
+    while pos < len(text):
+        sep = _SEG_RE.search(text, pos)
+        stop = sep.start() if sep else len(text)
+        seg = text[pos:stop].strip()
+        if seg:
+            is_garment = bool(GARMENT_RE.search(seg))
+            if is_garment:
+                # 段里有服装名词就consume —— "clean white sneakers" 不能被 clean 挡掉
+                if re.match(r"^(?:no|not|without|avoid|never)\b", seg, re.I):
+                    break
+                end, gap = stop, 0
+            else:
+                if _SEG_STOP_RE.match(seg) or _SEG_TOPIC_RE.match(seg):
+                    break
+                gap += 1
+                # 非服装段里带动词 = 已经换话题（"walking through the market …"）
+                if gap >= 4 or _SEG_VERB_RE.search(seg):
+                    break
+        if not sep or sep.group() == ".":
+            break
+        pos = sep.end()
+    return end
+
+
+def _drop_garment_clauses(s: str) -> tuple[str, int]:
+    """摘掉含服装名词的逗号项（"aqua eyes, very long hair, detached sleeves, youthful …"）。"""
+    chunks = s.split(", ")
+    keep, dropped = [], 0
+    for c in chunks:
+        if GARMENT_RE.search(c) and not _PROP_CUE.search(c) and "identity" not in c.lower():
+            dropped += 1
+        else:
+            keep.append(c)
+    if not dropped:
+        return s, 0
+    out = ", ".join(keep)
+    out = re.sub(r",\s*and\b", ", and", out)
+    out = re.sub(r"(,\s*)+", ", ", out)
+    out = re.sub(r"\s*,\s*\.", ".", out)
+    return out, dropped
+
+
+def costume_free_char(ch: dict, log: list[str] | None = None) -> dict:
+    """选了服装库单品时，把身份的「原作服装」剥掉，只留脸 / 发型 / 眼睛 / 轮廓。
+
+    不剥的后果实测：方形海报给 furina 选露肩针织，出图还是全套礼仪服 + 深蓝高帽
+    —— identity 里写着 "her recognizable … ceremonial outfit"，guard 里还钉着
+    "no missing top hat"，两句都比服装指令更硬。
+
+    手写角色可以在 characters.json 里直接给 `identity_plain` / `guard_plain`（更精确）；
+    没有就走通用剥离：删掉带服装名词的逗号项 + 护盾里带服装的条目。
+    """
+    log = log if log is not None else []
+    out = dict(ch)
+    if ch.get("identity_plain"):
+        out["identity"] = ch["identity_plain"]
+    else:
+        new, k = _drop_garment_clauses(ch.get("identity", ""))
+        if k:
+            out["identity"] = new
+            log.append(f"角色: 身份句里的原作服装已剥离 {k} 项")
+    if ch.get("guard_plain"):
+        out["guard"] = ch["guard_plain"]
+    else:
+        items = [x.strip() for x in (ch.get("guard") or "").split(",") if x.strip()]
+        kept = [x for x in items if not GARMENT_RE.search(x)]
+        if len(kept) != len(items):
+            out["guard"] = ", ".join(kept)
+            log.append(f"角色: 护盾里「no missing 服装」已去掉 {len(items) - len(kept)} 条")
+    return out
+
+
+def garment_tags(tags: list[str] | None) -> tuple[list[str], list[str]]:
+    """把单品 tags 拆成 (服装, 姿势)。
+
+    Anima 服装库是 tag 袋，里面混着 "crossed legs" 这类姿势/状态 tag。
+    写进 "She wears …" 会变成「她穿着盘腿」，所以这里先分流：姿势交回母题。
+    """
+    body, pose = [], []
+    for t in tags or []:
+        t = (t or "").strip()
+        if not t:
+            continue
+        low = t.lower()
+        if low in _POSE_TAGS:
+            pose.append(t)
+        elif _DROP_TAG_RE.search(low):
+            pose.append(t)          # "holding umbrella" / "sunny day" 之类，既不是衣服也不是姿势
+        else:
+            body.append(t)
+    return body, pose
+
+
+# ---------------------------------------------------------------- 按部位拆分
+# 服装库的 tag 是平铺的（"white off-shoulder sweater / black pleated skirt /
+# brown loafers"），整套写进提示词会出事：
+#   · 方形专辑是上半身特写 → 写了裙子+鞋，模型把取景往下拉，画出腿和鞋；
+#   · 展纸母题写的是连衣裙、没写鞋 → 补了乐福鞋后，构图变成坐窗台双腿垂下。
+# 所以按部位拆开，只写「母题本身描述到的部位」。
+#   上装 upper / 下装 lower / 连衣裙 dress（=上+下）/ 腿部 leg / 鞋子 foot / 配饰 acc
+_ZONE_ORDER = ("upper", "dress", "lower", "leg", "foot", "acc")
+_ZONE_KW = {
+    "dress": ("camisole dress", "slip dress", "apron dress", "sundress", "dress", "gown",
+              "kimono", "yukata", "robe", "qipao", "cheongsam", "hanfu", "one-piece",
+              "jumpsuit", "overalls", "bodysuit", "leotard", "babydoll", "lingerie",
+              "nightgown", "teddy"),
+    "foot": ("boots", "boot", "shoes", "shoe", "loafers", "sneakers", "sandals", "heels",
+             "pumps", "mary jane", "oxfords", "flats", "mules", "slippers", "geta",
+             "footwear", "barefoot", "tabi"),
+    "leg": ("thighhigh", "thigh-high", "kneehigh", "knee-high", "knee socks", "ankle socks",
+            "tights", "stockings", "socks", "pantyhose", "garter", "leg warmers", "legwear",
+            "thigh strap", "bare legs"),
+    "lower": ("skirt", "pants", "trousers", "jeans", "shorts", "leggings", "culottes",
+              "slacks", "bloomers", "hakama", "panties", "underwear"),
+    "upper": ("sweater", "cardigan", "blouse", "t-shirt", "shirt", "turtleneck", "hoodie",
+              "jacket", "coat", "camisole", "bodice", "jersey", "parka", "blazer",
+              "tunic", "polo", "apron", "corset", "cape", "cloak", "uniform", "suit",
+              "vest", "top", "tee", "bra", "wrap"),
+    "acc": ("necklace", "choker", "earring", "bracelet", "bag", "tote", "gloves", "scarf",
+            "belt", "hat", "cap", "beret", "headband", "hairband", "headphones",
+            "headset", "glasses", "suspenders", "ribbon", "piercing"),
+}
+# 取景：只看到上半身的母题，别再往下写
+_FRAME_UPPER = re.compile(
+    r"\b(?:close-up|close up|head and shoulders|upper chest|upper body|bust shot|"
+    r"waist[- ]up|chest[- ]up|cropped at the (?:waist|hip)|from the chest|portrait crop|"
+    r"face and shoulders|half[- ]length portrait)\b", re.I)
+_FRAME_FULL = re.compile(
+    r"\b(?:full[- ]body|head to toe|whole body|entire figure|full[- ]length|"
+    r"from head to (?:toe|foot)|standing on|her feet|both feet|sitting on|legs (?:dangl|hang))\b",
+    re.I)
+
+
+def zone_of_tag(tag: str) -> str:
+    """单条 tag → 部位；认不出返回 "style"（材质/风格词，跟着前一件衣服走）。
+
+    ⚠ acc 必须排在 upper 前面：否则 "top hat" 会被 upper 的 "top" 抢走。
+    """
+    low = (tag or "").lower()
+    for zone in ("dress", "foot", "leg", "lower", "acc", "upper"):
+        if any(k in low for k in _ZONE_KW[zone]):
+            return zone
+    return "style"
+
+
+def zone_map(tags: list[str] | None) -> dict[str, list[str]]:
+    """tags → {部位: [tag…]}，顺序按 _ZONE_ORDER；认不出的挂到前一件同部位的后面。"""
+    out: dict[str, list[str]] = {}
+    last = last_core = first_core = ""
+    for t in tags or []:
+        t = (t or "").strip()
+        if not t:
+            continue
+        z = zone_of_tag(t)
+        if z == "style":
+            # "knitwear" / "long sleeves" 这类修饰词描述的是主体那件衣服，挂到**第一件**
+            # 核心服装（上装优先）上；挂「最近一件」会跑到裙子上、挂鞋上更离谱
+            z = first_core or last_core or last
+            if not z:
+                continue
+        else:
+            last = z
+            if z in ("upper", "lower", "dress"):
+                last_core = z
+                if not first_core:
+                    first_core = z
+        out.setdefault(z, []).append(t)
+    return {z: out[z] for z in _ZONE_ORDER if z in out}
+
+
+def motif_zones(motif_text: str, log: list[str] | None = None) -> set[str]:
+    """母题正文里「她自己穿的衣服」涉及哪些部位。
+
+    只看同时满足「有服装名词」且「像在描述她」的句子（带 wears / her / 两个以上服装名词），
+    避免把室内描述里的 "coat hooks"、道具 "scarf" 算进来。
+    母题完全没写服装时，退回取景线索（特写 → 只上装）。
+    """
+    log = log if log is not None else []
+    text = motif_text or ""
+    zones: set[str] = set()
+    for s in _SENT_SPLIT.split(text):
+        if not GARMENT_RE.search(s) or _PROP_CUE.search(s):
+            continue
+        low = s.lower()
+        if not (GAR_MARK_RE.search(s) or re.search(r"\b(?:her|his|she)\b", low)
+                or len({m.group(0).lower() for m in GARMENT_RE.finditer(s)}) >= 2):
+            continue
+        for zone, kws in _ZONE_KW.items():
+            if any(k in low for k in kws):
+                zones.add(zone)
+    if zones:
+        if not ({"upper", "lower", "dress"} & zones):
+            # 母题只提到配饰或鞋（"戴耳机的海报"）→ 衣服还是得写，补上核心部位
+            zones |= {"upper", "lower"}
+        return zones
+    # 母题没写服装 → 看取景
+    if _FRAME_UPPER.search(text) and not _FRAME_FULL.search(text):
+        log.append("服装: 母题未写服装 + 上半身取景 → 只写 upper")
+        return {"upper"}
+    if _FRAME_FULL.search(text):
+        log.append("服装: 母题未写服装 + 全身取景 → 写 upper/lower/leg/foot")
+        return {"upper", "lower", "leg", "foot"}
+    log.append("服装: 母题未写服装 → 默认 upper+lower")
+    return {"upper", "lower"}
+
+
+def select_outfit(tags: list[str] | None, zones: set[str],
+                  log: list[str] | None = None) -> tuple[list[str], str]:
+    """按母题需要的部位挑单品 → (要写的 tags, 模式 upper / lower / full)。
+
+    规则：
+      · 母题写连衣裙 → 优先用服装库的连衣裙；服装库只有上下装就拆成「上装 + 下装」；
+      · 母题只写上半身（特写）→ 只写 upper（连衣裙也算 upper）；
+      · 腿 / 鞋 / 配饰只在母题自己提到时才写；
+      · 母题需要的部位在服装库里是空的 → 该部位不写（用户确认的口径）。
+    """
+    log = log if log is not None else []
+    zm = zone_map(tags)
+    if not zm:
+        return [], "full"
+    want_dress = "dress" in zones
+    want_up = ("upper" in zones) or want_dress
+    want_lo = ("lower" in zones) or want_dress
+    if want_lo and not want_up:
+        want_up = True                 # 只写裙子 → 上身留空，补上装
+        log.append("服装: 母题只提到下装 → 顺带补上装，避免上身留空")
+
+    dress = list(zm.get("dress", []))
+    picked: list[str] = []
+    if dress and (want_up or want_lo):
+        picked += dress
+    else:
+        if want_up:
+            picked += zm.get("upper", [])
+        if want_lo:
+            picked += zm.get("lower", [])
+    if "leg" in zones:
+        picked += zm.get("leg", [])
+    if "foot" in zones:
+        picked += zm.get("foot", [])
+    if "acc" in zones:
+        picked += zm.get("acc", [])
+    else:
+        # 母题没提配饰，但头饰（高帽/贝雷帽）是角色识别度的一部分，且永远在画面内。
+        # 同一个帽子在 Anima 数据里常有 "top hat" + "blue hat" 两条 → 只留第一条
+        for t in zm.get("acc", []):
+            if _HEADWEAR_RE.search(t):
+                picked.append(t)
+                break
+
+    only_up = want_up and not (want_lo or "leg" in zones or "foot" in zones)
+    mode = "upper" if only_up else "full"
+    seen, out = set(), []
+    for t in picked:
+        if t not in seen:
+            seen.add(t)
+            out.append(t)
+    missing = [z for z in ("upper", "lower", "leg", "foot", "acc")
+               if z in zones and not zm.get(z) and not (z in ("upper", "lower") and dress)]
+    if missing:
+        log.append(f"服装: 服装库缺部位 {', '.join(missing)} → 该部位不写")
+    return out, mode
+
+
+def prepare_outfit(outfit_tags: list[str] | None, motif_text: str,
+                   log: list[str] | None = None) -> tuple[list[str] | None, str]:
+    """三个分支共用：姿势过滤 → 部位判定 → 只保留母题需要的部位。
+
+    服装库单品（lib）与角色官方服装预设（char）都走这条路，所以官方服装同样会按部位拆。
+    """
+    log = log if log is not None else []
+    g_tags, p_tags = garment_tags(outfit_tags)
+    if p_tags:
+        log.append(f"服装: 姿势类 tag 不进服装句 → {', '.join(p_tags)}")
+    if not g_tags:
+        return None, "full"
+    zones = motif_zones(motif_text, log)
+    picked, mode = select_outfit(g_tags, zones)
+    if not picked:
+        log.append("服装: 服装库与母题部位没有交集 → 不写服装句")
+        return None, "full"
+    dropped = [t for t in g_tags if t not in picked]
+    if dropped:
+        log.append(f"服装: 按部位只写 {len(picked)} 条（略过 {len(dropped)} 条："
+                   f"{', '.join(dropped[:4])}{'…' if len(dropped) > 4 else ''}）")
+    if mode == "upper":
+        log.append("服装: 母题只要上半身 → 不写裙/袜/鞋")
+    return picked, mode
+
+
+def swap_garments(text: str, tags: list[str], only: bool = True,
+                  log: list[str] | None = None, limit: int = 3) -> tuple[str, int]:
+    """把母题自带的服装枚举原地换成单品，返回 (新正文, 替换处数)。
+
+    "She wears a … dress." → "She wears only these garments: …."
+    只换动词后面那串服装，主语/动词沿用原文，所以段落语法与位置都不动。
+    """
+    log = log if log is not None else []
+    body_tags = [t for t in tags if t and t.strip().lower() not in _POSE_TAGS]
+    pose_tags = [t for t in tags if t and t.strip().lower() in _POSE_TAGS]
+    if not body_tags:
+        return text, 0
+    if pose_tags:
+        # 姿势类 tag 只属于 Anima 的 tag 流；进了 "wears …" 会变成「她穿着盘腿」，
+        # 而且会和母题自己的构图抢姿势。构图归母题，这里只取服装。
+        log.append(f"服装: 单品里的姿势类 tag 不进正文 → {', '.join(pose_tags)}")
+    body = ", ".join(body_tags[:14])
+    n = 0
+    out_ps = []
+    for p in paras(text):
+        if n >= limit:
+            out_ps.append(p)
+            continue
+        pos = 0
+        while n < limit:
+            m = GAR_MARK_RE.search(p, pos)
+            if not m:
+                break
+            end = _garment_span(p, m)
+            if end <= m.end():          # 后面不是服装（"instead of wearing them"）
+                pos = m.end()
+                continue
+            rep = f"{m.group()} {'only ' if only else ''}these garments: {body}"
+            p = p[:m.start()] + rep + p[end:]
+            pos = m.start() + len(rep)
+            n += 1
+        out_ps.append(p)
+    return join(out_ps), n
+
+
+def neutralize_dress(text: str, tags: list[str]) -> tuple[str, int]:
+    """所选单品里没有裙装 → 正文残留的 "the dress" 改称 "the outfit"，免得两套衣服并存。"""
+    if any(k in (t or "").lower() for t in tags for k in _DRESSISH):
+        return text, 0
+    pat = re.compile(r"\b(the|her|The|Her|this|that)\s+(?:[a-z][a-z\-]+\s+){0,2}dress\b")
+    out, n = pat.subn(lambda m: f"{m.group(1)} outfit", text)
+    return out, n
+
+
+# ---- 服装改写的四类写法 --------------------------------------------------
+# 实测：只有「带穿字动词」那一类被旧代码处理过，另外三类会让旧衣服照样画出来。
+#   ① "She wears a … dress."                    —— 动词法（保留主语+动词，原地换宾语）
+#   ② "A dark navy coat hangs open over it."    —— 衣服自己做主语
+#   ③ 整段都在讲服装（海报 "Let the clothing behave like clothing: …"）
+#   ④ tag 流里夹着的裸单品（"sailor school uniform, pleated skirt, …"）
+_GARMENT_ONLY_UPPER_TPL = OUTFIT_ONLY_UPPER_TPL
+_GARMENT_ONLY_LOWER_TPL = OUTFIT_ONLY_LOWER_TPL
+_GARMENT_ONLY_TPL = (
+    "Dress {short} in only these garments: {tags}. Keep every seam, cuff and hem visible "
+    "so the fabric catches the light and reads as ordinary clothing."
+)
+_GARMENT_SPECIFIC_TPL = (
+    "Dress {short} in these specific garments: {tags}. Keep every seam, cuff and hem visible."
+)
+_GARMENT_SPECIFIC_UPPER_TPL = (
+    "Dress {short}'s upper body in these specific garments: {tags}. Keep every seam, cuff and "
+    "neckline visible."
+)
+_GARMENT_SPECIFIC_LOWER_TPL = (
+    "Dress {short}'s lower body in these specific garments: {tags}. Keep every seam, hem and "
+    "fold visible."
+)
+
+
+# 外套类体积大，靠在窗台/栏杆上容易穿模（实测：官方蓝外套 + 高帽那一套压在石窗台上，
+# 袖子直接穿进石头里）。选中外套时补一句接触点收尾，让布料停在接触面。
+_BULKY_RE = re.compile(r"\b(?:jacket|coat|trench|cloak|cape|parka|blazer|robe|cardigan|"
+                       r"armor|overcoat)\b", re.I)
+_CLIP_GUARD = (" Keep the garment volume clear of every surface she leans on or rests "
+               "against, so sleeves, cuffs and hems stop at the contact instead of "
+               "passing through it.")
+
+
+def outfit_directive(short: str, body: str, mode: str = "full", only: bool = True) -> str:
+    """按部位选模板：full / upper / lower。"""
+    if mode == "upper":
+        out = (_GARMENT_ONLY_UPPER_TPL if only else _GARMENT_SPECIFIC_UPPER_TPL).format(
+            short=short, tags=body)
+    elif mode == "lower":
+        out = (_GARMENT_ONLY_LOWER_TPL if only else _GARMENT_SPECIFIC_LOWER_TPL).format(
+            short=short, tags=body)
+    else:
+        out = (_GARMENT_ONLY_TPL if only else _GARMENT_SPECIFIC_TPL).format(
+            short=short, tags=body)
+    if _BULKY_RE.search(body):
+        out += _CLIP_GUARD
+    return out
+_SENT_SPLIT = re.compile(r"(?<=[.!?])\s+")
+# 衣架 / 衣柜 / 货架 —— 服装是场景道具，不是穿在她身上的
+_PROP_CUE = re.compile(r"\b(?:rack|shelf|shelves|hanger|mannequin|wardrobe|dresser|laundry|"
+                       r"basket|pile|stack|display case|boutique|tailor shop|cd sleeve|"
+                       r"vinyl sleeve|album sleeve|record sleeve|jewel case|photobash)\b", re.I)
+# 多套装扮属于设计项（四格反射各穿一套），统一成一套反而毁构图
+# ⚠ 不能只写 "reflection of"：材料段里的 "no reflection of a body" 会被误判整段跳过
+_SCENE_CUE = re.compile(r"\b(?:reflections? of (?:her|him|the character|Hatsune|Miku)|"
+                        r"each in a different|facet (?:one|two|three|four))\b", re.I)
+_FINITE_RE = re.compile(r"\b(?:is|are|was|were|has|have|had|will|would|can|could|may|might|"
+                        r"must|should|does|do|did|stands|sits|hangs|lies|wears|keeps|reads|"
+                        r"runs|holds|rests|cuts|covers)\b", re.I)
+
+
+def _clause_stats(s: str) -> tuple[int, int]:
+    """→ (子句总数, 含服装名词的子句数)。"""
+    clauses = [c.strip() for c in re.split(r"[,;]", s) if c.strip()]
+    if not clauses:
+        return 0, 0
+    return len(clauses), sum(1 for c in clauses if GARMENT_RE.search(c))
+
+
+def _is_tag_stream(s: str) -> bool:
+    """纯 tag 流：>=6 个子句、平均子句 <=12 词、没有限定动词（散文不算）。"""
+    n, _g = _clause_stats(s)
+    if n < 6 or len(s.split()) / n > 12:
+        return False
+    return not _FINITE_RE.search(s)
+
+
+_HER_RE = re.compile(r"\b(?:her|hers|she|herself)\b", re.I)
+
+
+# 结构/材质/光线段的段首动词 —— 这些段落里的 scarf/cloak 往往是画面主体，不是她穿的
+_STRUCT_PARA = re.compile(
+    r"^(?:construct|build|print|let|add|assign|hold|separate|light|compose|render|use|"
+    r"show|make|give|drive|finish|treat|define|establish|layer|tone|grade|etch|inset|"
+    r"cast|carve|repeat|extend|run|carry|include|push|pull|raise|drop|leave|retain|"
+    r"maintain|reserve|limit|confine|reduce|increase|open|close|fill|set|frame|place|"
+    r"position|mask|erase|grade)\b", re.I)
+
+
+def _excise_clauses(s: str, require_her: bool = False,
+                    need_is: bool = False) -> tuple[str, int]:
+    """删掉含服装名词的子句。
+
+    `require_her` = 散文里只摘「她的衣服」那些子句（"her dress is heavy cotton"），
+    不动道具/巨构（"one deep red knitted length of scarf" —— 那是画面主体，不是她穿的）。
+    tag 流不需要这条：tag 里的单品默认就是穿在角色身上的。
+    """
+    parts = re.split(r"([,;])", s)
+    out, dropped, i = [], 0, 0
+    while i < len(parts):
+        cl = parts[i]
+        sep = parts[i + 1] if i + 1 < len(parts) else ""
+        hit = (cl.strip() and GARMENT_RE.search(cl) and not _PROP_CUE.search(cl)
+               and (not require_her or _HER_RE.search(cl))
+               # need_is：只摘「her dress is heavy cotton」这类材质指派，
+               # 放过「her boots and her striding legs」这种构图序列
+               and (not need_is or re.search(r"\bis\b|\bare\b", cl)))
+        if hit:
+            dropped += 1
+        else:
+            out.append(cl + sep)
+        i += 2
+    txt = "".join(out)
+    txt = re.sub(r"[,;]\s*(?=[,;.]|$)", "", txt)
+    txt = re.sub(r"^\s*[,;]+\s*", "", txt)
+    txt = re.sub(r"(\s*,\s*)+", ", ", txt)
+    return txt.strip(" ;,"), dropped
+
+
+# 自己插进去的模板句特征 —— 这些段落不许再被改写
+_OWN_TPL_CUE = ("these garments", "specific garments", "flat printed",
+                "keeping the outfit clean")
+
+
+def _append_directive(p: str, directive: str) -> str:
+    """把单品指令接到段落末尾，缺句号先补一个（删子句后常丢句号）。"""
+    p = p.rstrip()
+    if p and p[-1] not in ".!?":
+        p += "."
+    return (p + " " + directive).strip()
+
+
+def _neutralize_guard(s: str, parts: bool = False) -> tuple[str, int]:
+    """负面护盾句里的旧衣服改称 outfit（整句不能删——它还在挡重复人物/多手多脚）。
+
+    `parts=True` 连「袖口/下摆/领口」这类部位词一起改（色盘段 "twelve percent … one
+    pale cuff" 需要它）；普通护盾段不改部位词，否则 "the cuff and the corner" 会变怪句。
+    """
+    extra = "|collar|sleeves?|cuffs?|hem" if parts else ""
+    pat = re.compile(
+        r"\b(?:(?:her|the|a|an)\s+)?(?:[a-z][a-z\-]+\s+){0,2}"
+        r"(?:dress|skirt|blouse|sweater|cardigan|shirt|uniform|coat|jacket|robe|kimono|"
+        r"hoodie|jeans|trousers|shorts|camisole|gown|outfit|clothing|attire|costume|"
+        r"bodice|vest" + extra + r")\b", re.I)
+    out, n = pat.subn("outfit", s)
+    if n:
+        out = re.sub(r"\boutfit outfit\b", "outfit", out, flags=re.I)
+        out = re.sub(r"\s{2,}", " ", out)
+    return out, n
+
+
+def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = True,
+                     log: list[str] | None = None,
+                     already_placed: bool = False,
+                     bold: bool = True, mode: str = "full") -> tuple[str, int]:
+    """把母题正文里**所有**在描述别的衣服的地方改写成所选单品。
+
+    `already_placed` = 调用方已经在别处写过单品清单（scene 分支的服装段），
+    这时正文里其余的旧服装句直接删掉/摘掉，不再重复列一遍。
+    `bold=False`（长篇场景分支）：不做「整句替换」，也不摘不带 "her" 的子句 ——
+    巨构母题里 scarf / cloak / cape 常常是画面主体，误伤会把构图描述整段换掉。
+    返回 (新正文, 改动处数)。0 = 母题根本没写服装，由调用方插入指令句。
+    """
+    log = log if log is not None else []
+    body_tags, _pose = garment_tags(tags)
+    if not body_tags:
+        return text, 0
+    body = ", ".join(body_tags[:14])
+    directive = outfit_directive(short or "her", body, mode, only)
+    total = 0
+    placed = already_placed
+    out_ps = []
+    for p in paras(text):
+        # 自己刚插进去的服装段（海报/场景版型段）不能再被改写，否则会被拆成碎句
+        if (is_guard(p) or _SCENE_CUE.search(p)
+                or any(c in p for c in _OWN_TPL_CUE)):
+            out_ps.append(p)
+            continue
+        # ① 动词法：保留原句主语与动词，只换宾语（already_placed 也照做，
+        #    宁可把同一套单品列两遍，也不能让「She wears a black dress」留在原地）
+        p2, k1 = swap_garments(p, body_tags, only=only, log=[], limit=3)
+        total += k1
+        placed = placed or k1 > 0
+        changed = k1 > 0
+        struct = bool(_STRUCT_PARA.match(p.strip())) and not bold
+        keep = []
+        for s in [x for x in _SENT_SPLIT.split(p2) if x.strip()]:
+            if "these garments" in s or not GARMENT_RE.search(s):
+                keep.append(s)
+                continue
+            low = s.strip().lower()
+            if re.search(r"identity (?:must|should) (?:read|be)|\bher identity\b", low):
+                # 伪身份段（"She is Miku and her identity must read at a glance: …"）：
+                # 里面混着头/眼/服装，摘子句会把句子拆烂，留给身份锚点句去压
+                keep.append(s)
+                continue
+            n_cl, n_gar = _clause_stats(s)
+            tag_stream = _is_tag_stream(s)
+            if "percent" in low:
+                # 色盘段用「十二 percent 一件浅色衬衣」这种说法分配面积 —— 摘子句会破句，
+                # 只把衣服名换成 outfit
+                s2, kg = _neutralize_guard(s)
+                total += kg
+                keep.append(s2)
+                continue
+            if re.search(r"\bnever\b|\bdo not\b|\bdon't\b|\bnot\b|\bno\b", low):
+                # 负面护盾句：整句不能删（它还在挡重复人物/多手多脚）
+                if n_gar and n_gar / max(1, n_cl) >= 0.5:
+                    # 整句都在说「不要 xx 衣服」→ 改称 outfit 即可
+                    s2, kg = _neutralize_guard(s)
+                    total += kg
+                    keep.append(s2)
+                    continue
+                cut, k = _excise_clauses(s, require_her=not tag_stream, need_is=struct)
+                if k and len(cut.split()) >= 4:
+                    cut = cut.rstrip()
+                    if cut and cut[-1] not in ".!?":
+                        cut += "."
+                    keep.append(cut)
+                    total += 1
+                    changed = True
+                else:
+                    s2, kg = _neutralize_guard(s)
+                    total += kg
+                    keep.append(s2)
+                continue
+            if (bold and n_gar and n_gar / max(1, n_cl) >= 0.5
+                    and not _PROP_CUE.search(s)):
+                # ②③ 整句都在讲服装 → 换成本次所选单品（全文已有服装清单就整句删掉）
+                changed = True
+                total += 1
+                if not placed:
+                    keep.append(directive)
+                    placed = True
+            elif n_gar and (tag_stream or n_cl >= 3):
+                # ④ tag 流 / 长串里夹着的服装子句 → 只摘掉那几个子句
+                cut, k = _excise_clauses(s, require_her=not tag_stream, need_is=struct)
+                if k and len(cut.split()) >= 4:
+                    cut = cut.rstrip()
+                    if cut and cut[-1] not in ".!?":
+                        cut += "."
+                    keep.append(cut)
+                    total += 1
+                    changed = True
+                else:
+                    keep.append(s)
+            else:
+                keep.append(s)
+        p3 = re.sub(r"\s{2,}", " ", " ".join(keep)).strip()
+        if changed and not placed:
+            p3 = _append_directive(p3, directive)    # 改过但全文还没交代新衣服
+            placed = True
+            total += 1
+        if p3:
+            out_ps.append(p3)
+    out = join(out_ps)
+    # 外套类体积大，靠在窗台/栏杆上会穿模 → 在服装句所在段补一句接触点收尾
+    if placed and _BULKY_RE.search(body) and _CLIP_GUARD.strip() not in out:
+        ps3 = paras(out)
+        for i, p in enumerate(ps3):
+            if "these garments" not in p:
+                continue
+            # 紧跟在服装句后面（句末插入），比甩到段落末尾权重大
+            sents = [x for x in _SENT_SPLIT.split(p) if x.strip()]
+            for j, sent in enumerate(sents):
+                if "these garments" in sent:
+                    head = sent.rstrip()
+                    if head and head[-1] not in ".!?":
+                        head += "."
+                    sents.insert(j + 1, _CLIP_GUARD.strip())
+                    break
+            ps3[i] = " ".join(sents)
+            break
+        out = join(ps3)
+    if total and not placed:
+        # 只中和了护盾句、或改动没落在服装段里 → 紧跟身份锚点段补一句，别扔到全文末尾
+        ps2 = paras(out)
+        idx = next((i for i, x in enumerate(ps2) if "canonical identity" in x.lower()), 0)
+        ps2.insert(idx + 1, directive)
+        out = join(ps2)
+    return out, total
+
+
+# [^.] 天然匹配换行，所以段内硬换行不再是障碍；`. (?=\d)` 放过 "Vol.01" 这种缩写点
+_IDENT_RE = re.compile(r"Preserve (?:[^.]|\.(?=\d))*?\.")
+
+
+def replace_identity(text: str, ch: dict, tag: str, log: list[str],
+                     drop_keep: bool = False, fallback: str | None = None,
+                     keep_fallback: bool = False) -> tuple[str, bool]:
+    """把母题的「Preserve …」身份句换成角色身份句。
+
+    ⚠ 必须**逐段 + 允许段内换行**：母题原文有 38 条带硬换行，老写法 `Preserve [^\\n]*?\\.`
+    跨不过换行 → 整句替换静默失败 → 原文那套「aqua eyes + teal-and-black outfit」
+    原样留下（换角色等于没换，服装当然也换不掉）。段与段之间仍不跨，避免吞掉服装段。
+    """
+    if drop_keep:
+        new, k = re.subn(r"(?<=[.!;] )Keep (?:her|the)[^\n]*?"
+                         r"(?:readable|unobstructed|unoccluded)[^\n]*?\.", "", text, count=1)
+        log.append(f"{tag}: 旧保护句 {'已删' if k else '无'}")
+        text = new
+    ps = paras(text)
+    for i, p in enumerate(ps):
+        if "Preserve " not in p or ("Preserve " + ch["identity"]) in p:
+            continue
+        new, n = _IDENT_RE.subn(ch["identity"], p, count=1)
+        if n:
+            ps[i] = new
+            log.append(f"{tag}: 身份锚点 已换")
+            return join(ps), True
+    if fallback:
+        new, n = re.subn(fallback, ch["identity"], text, count=1)
+        if n:
+            log.append(f"{tag}: 身份锚点 已换(兜底)")
+            return new, True
+    if keep_fallback:
+        new, n = re.subn(r"Keep [^\n]*?(?:identity|silhouette)[^\n]*?\.", ch["identity"],
+                         text, count=1)
+        log.append(f"{tag}: 身份锚点 {'已换(兜底)' if n else '未命中'}")
+        return new, bool(n)
+    log.append(f"{tag}: 身份锚点 未命中")
+    return text, False
+
+
 def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
                   char_key: str = "", motif_text: str = "",
                   outfit_tags: list[str] | None = None,
                   graphics_phys: bool = False, lock_palette: bool = False) -> str:
+    # 单品 tags 先分流：姿势类（crossed legs 等）不进服装句，姿势仍由母题决定
+    # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
+    outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
+
     # 1) featuring 从句
     new, n = re.subn(r"featuring .{2,80}? as the only (?:physical )?character",
                      ch["feature_clause"], text, count=1)
@@ -344,20 +1089,13 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
     text = new
 
     # 2) 身份锚点句
-    # ⚠ 只在同一段内替换（[^\n]），绝不能用 re.S 跨段：新版母题写 "Preserve canonical identity:
+    # ⚠ 只在同一段内替换，绝不能用跨段正则：旧版母题写 "Preserve canonical identity:
     #   ... silhouette immediately readable ..."（silhouette 后面不是句号），跨段正则会一路吃到
     #   后面某个 "readable" 才收，把发型/服装段整块吞掉。
     # 先删掉原文自带的 "Keep … readable/unobstructed …" 保护句，再整句换成角色身份句
     # （身份句里已经带了一句 Keep，不先删会重复）。
-    new, k = re.subn(r"(?<=[.!;] )Keep (?:her|the) [^\n]*?"
-                     r"(?:readable|unobstructed|unoccluded)[^\n]*?\.", "", text, count=1)
-    log.append(f"角色: 旧保护句 {'已删' if k else '无'}")
-    new, n = re.subn(r"Preserve [^\n]*?\.", ch["identity"], new, count=1)
-    if not n:
-        new, n = re.subn(r"Keep [^\n]*?(?:identity|silhouette)[^\n]*?\.", ch["identity"],
-                         new, count=1)
-    log.append(f"角色: 身份锚点 {'已换' if n else '未命中'}")
-    text = new
+    text, _id_ok = replace_identity(text, ch, "角色", log, drop_keep=True,
+                                     keep_fallback=True)
 
     ps = paras(text)
     hair_i, costume_i, palette_i, graphics_i = locate_sections(ps)
@@ -369,9 +1107,10 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
     # 指定具名单品 + 版型 auto → 整段只写单品，不套幻想版型（见 OUTFIT_ONLY_TPL 注释）
     garment_only = bool(outfit_tags) and costume == "auto" and costume_i >= 0
     if garment_only:
-        ps[costume_i] = OUTFIT_ONLY_TPL.format(short=ch["short"],
-                                               tags=", ".join(outfit_tags))
-        log.append(f"服装: 指定单品 → 跳过版型，只用 {len(outfit_tags)} 条单品")
+        ps[costume_i] = outfit_directive(ch["short"], ", ".join(outfit_tags[:14]),
+                                         zone_mode, only=True)
+        log.append(f"服装: 指定单品 → 跳过版型，只用 {len(outfit_tags)} 条单品"
+                   + ("（仅上半身）" if zone_mode == "upper" else ""))
     elif costume_i >= 0:
         tpl, cid, czh = pick_costume(char_key, costume, log)
         if tpl is None:
@@ -392,8 +1131,11 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
             ps[costume_i] = ps[costume_i].rstrip() + " " + OUTFIT_TPL.format(
                 tags=", ".join(outfit_tags))
             log.append(f"服装: 叠加单品 {len(outfit_tags)} 条 → {', '.join(outfit_tags[:3])}…")
+        elif costume == "keep":
+            log.append("服装: 版型为「保持母题原样」，已忽略单品"
+                       "（要换装请把服装设为「自动」）")
         else:
-            log.append("服装: 版型为「保持原样」，单品无法叠加，已忽略")
+            log.append("服装: 母题没有独立服装段 → 就地改写自带的服装句")
 
     if palette_i >= 0 and not lock_palette:
         ps[palette_i] = palette_para(ch)
@@ -410,6 +1152,28 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
                else "角色: 图形段 未命中(跳过)")
 
     text = join(ps)
+
+    # 2.5) 指定单品时：把母题**别处**（机位段 / 短提示词）还写着的服装枚举原地换掉。
+    #      这是「选了服装库服装、出图还是母题自带那套」的根因——只换服装段不够，
+    #      机位段里那句 "She wears a black technical dress" 同样会赢。
+    if outfit_tags and costume != "keep":
+        text, n_swap = rewrite_clothing(
+            text, outfit_tags, short=ch["short"], only=(costume == "auto"), log=log,
+            already_placed=bool(garment_only or (costume_i >= 0 and costume != "keep")),
+            bold=False, mode=zone_mode)
+        if n_swap:
+            log.append(f"服装: 就地替换母题自带服装 {n_swap} 处 → "
+                       f"{', '.join(outfit_tags[:3])}…")
+        elif costume_i < 0:
+            ps = paras(text)
+            ps.insert(min(1, len(ps)), outfit_directive(
+                ch["short"], ", ".join(outfit_tags[:14]), zone_mode, only=True))
+            text = join(ps)
+            log.append(f"服装: 母题未写服装 → 紧跟概念段插入单品段"
+                       f"（{len(outfit_tags)} 条）")
+        text, n_dress = neutralize_dress(text, outfit_tags)
+        if n_dress:
+            log.append(f"服装: 残留「dress」改称 outfit {n_dress} 处")
 
     # 3) 全文角色名替换（正文里 Place Miku / Miku’s fingers 等散落引用）
     for src in ALL_CHARS.values():
@@ -472,33 +1236,56 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
                         char_key: str = "", motif_text: str = "",
                         outfit_tags: list[str] | None = None) -> str:
     """短提示词分支的轻量适配：不动构图，只换身份 + 追加一两句服装。"""
+    # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
+    outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
     ps = paras(text)
 
-    new, n = re.subn(r"Preserve [^\n]*?\.", ch["identity"], text, count=1)
-    if not n:
-        new, n = re.subn(r"(recognizable [^.\n]*?(?:silhouette|twin-tail silhouette)[^.\n]*\.)",
-                         ch["identity"], text, count=1)
-    log.append(f"短提示: 身份锚点 {'已换' if n else '原文无，改为插入'}")
-    ps = paras(new)
-    if not n:
+    text, _id_ok = replace_identity(
+        text, ch, "短提示", log,
+        fallback=r"(recognizable [^.\n]*?(?:silhouette|twin-tail silhouette)[^.\n]*\.)")
+    ps = paras(text)
+    if not _id_ok:
         ps.insert(1, ch["identity"])
+        log.append("短提示: 身份锚点 原文无，改为插入")
 
-    if outfit_tags and costume == "auto":
+    # 服装：指定单品时**先就地改写**母题自带的服装句（"She wears a … dress"），
+    # 再决定要不要补版型句；没有可改写的句子才退回到「紧跟身份段插入」。
+    if outfit_tags and costume != "keep":
+        text, n_swap = rewrite_clothing(join(ps), outfit_tags, short=ch["short"],
+                                        only=(costume == "auto"), log=log,
+                                        mode=zone_mode)
+        ps = paras(text)
+        if n_swap:
+            log.append(f"短提示: 就地替换母题自带服装 {n_swap} 处 → "
+                       f"{', '.join(outfit_tags[:3])}…")
+        else:
+            directive = outfit_directive(ch["short"], ", ".join(outfit_tags[:12]),
+                                         zone_mode, only=(costume == "auto"))
+            idx = next((i for i, p in enumerate(ps)
+                        if "canonical identity" in p.lower()), -1)
+            ps.insert(idx + 1 if idx >= 0 else 1, directive)
+            log.append(f"短提示: 母题未写服装 → 紧跟身份段插入 {len(outfit_tags)} 个单品")
+        text, n_dress = neutralize_dress(join(ps), outfit_tags)
+        ps = paras(text)
+        if n_dress:
+            log.append(f"短提示: 残留「dress」改称 outfit {n_dress} 处")
+
+    if outfit_tags and costume == "keep":
+        log.append("短提示: 版型为「保持母题原样」，已忽略单品"
+                   "（要换装请把服装设为「自动」）")
+    elif outfit_tags and costume == "auto":
         # 指定了具名单品 → 跳过版型，只写单品（否则「仪式礼服」会盖过「露肩针织」）
-        extra = OUTFIT_SHORT_ONLY_TPL.format(short=ch["short"],
-                                             tags=", ".join(outfit_tags[:12]))
         log.append(f"短提示: 指定单品 → 跳过版型，只写 {len(outfit_tags)} 个单品")
     else:
         tpl, cid, czh = pick_costume(char_key, costume, log)
-        cut = next((t["id"].replace("_", " ") for t in ALL_TPLS if t["id"] == cid), "") \
-            or cid.replace("_", " ") or "auto"
-        extra = COSTUME_SHORT_TPL.format(short=ch["short"], cut=cut,
-                                         accent=ch["accent"], block=ch["block"])
-        if outfit_tags:
-            extra += " " + OUTFIT_SHORT_TPL.format(tags=", ".join(outfit_tags[:12]))
-        log.append(f"短提示: 已追加服装句「{cut}」"
-                   + (f" + {len(outfit_tags)} 个单品" if outfit_tags else ""))
-    ps.append(extra)
+        if cid == "keep":
+            log.append("短提示: 服装保持母题原样，不追加版型句")
+        else:
+            cut = next((t["id"].replace("_", " ") for t in ALL_TPLS if t["id"] == cid), "") \
+                or cid.replace("_", " ") or "auto"
+            ps.append(COSTUME_SHORT_TPL.format(short=ch["short"], cut=cut,
+                                               accent=ch["accent"], block=ch["block"]))
+            log.append(f"短提示: 已追加版型句「{cut}」")
     text = join(ps)
 
     for src in ALL_CHARS.values():
@@ -539,30 +1326,41 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
     海报没有 3D 母题那 7 个锚点（只有 1/19 有 Dress 段），所以不能走 set_character：
     这里保留整张版式、大标题与印刷色盘，只做四件有边界的替换。
     """
+    # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
+    outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
     ps = paras(text)
 
     # 1) 身份锚点：16/19 有 Preserve 句；没有的就在首段后补一段
-    new, _k = re.subn(r"(?<=[.!;] )Keep (?:her|the) [^\n]*?"
-                      r"(?:readable|unobstructed|unoccluded)[^\n]*?\.", "", text, count=1)
-    new, n = re.subn(r"Preserve [^\n]*?\.", ch["identity"], new, count=1)
-    log.append(f"海报: 身份锚点 {'已换' if n else '原文无，改为插入'}")
-    ps = paras(new)
-    if not n:
+    text, _id_ok = replace_identity(text, ch, "海报", log, drop_keep=True)
+    ps = paras(text)
+    if not _id_ok:
         ps.insert(1, ch["identity"])
+        log.append("海报: 身份锚点 原文无，改为插入")
 
     # 2) 服装：所选版型 + 单品 → 一小段平面化说明，插在首段（概念）之后
-    tpl, cid, czh = pick_costume(char_key, costume, log)
+    #    指定单品 + 版型 auto → **不套随机剪裁**（否则封面会变成「利落西装式」那类，
+    #    与所选单品打架，等于又回到「选的服装没用上」）。这里连 random 都不吃。
     m1, m2 = garment_materials(motif_text or text)
-    # ⚠ 版型的 zh 是中文，绝不能进英文提示词；用 id 还原成英文短语
-    cut = next((t["id"].replace("_", " ") for t in ALL_TPLS if t["id"] == cid), "") \
-        or cid.replace("_", " ") or "auto"
-    cpara = COSTUME_POSTER_TPL.format(short=ch["short"], cut=cut,
-                                      design=ch["design_language"], M1=m1, M2=m2,
-                                      accent=ch["accent"], block=ch["block"])
-    if outfit_tags:
-        cpara += " " + OUTFIT_POSTER_TPL.format(tags=", ".join(outfit_tags[:14]))
+    if outfit_tags and costume == "auto":
+        cpara = COSTUME_POSTER_ONLY_TPL.format(
+            short=ch["short"], tags=", ".join(outfit_tags[:14]),
+            scope={"upper": "'s upper body", "lower": "'s lower body"}.get(zone_mode, ""),
+            design=ch["design_language"], M1=m1, M2=m2,
+            accent=ch["accent"], block=ch["block"])
+        log.append(f"海报: 指定单品 → 跳过版型，只写 {len(outfit_tags)} 个单品")
+    else:
+        tpl, cid, czh = pick_costume(char_key, costume, log)
+        # ⚠ 版型的 zh 是中文，绝不能进英文提示词；用 id 还原成英文短语
+        cut = next((t["id"].replace("_", " ") for t in ALL_TPLS if t["id"] == cid), "") \
+            or cid.replace("_", " ") or "auto"
+        cpara = COSTUME_POSTER_TPL.format(short=ch["short"], cut=cut,
+                                          design=ch["design_language"], M1=m1, M2=m2,
+                                          accent=ch["accent"], block=ch["block"])
+        if outfit_tags:
+            cpara += " " + OUTFIT_POSTER_TPL.format(tags=", ".join(outfit_tags[:14]))
+        log.append(f"海报: 已插入服装段「{cut}」"
+                   + (f" + {len(outfit_tags)} 个单品" if outfit_tags else ""))
     ps.insert(1, cpara)
-    log.append(f"海报: 已插入服装段「{cut}」" + (f" + {len(outfit_tags)} 个单品" if outfit_tags else ""))
 
     # 3) 角色色只作为小面积登记色，不改海报自己的印刷色盘
     pidx = next((i for i, p in enumerate(ps) if "percent" in p.lower()
@@ -576,6 +1374,19 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
         log.append("海报: 无色盘段，保留原印刷配色")
 
     text = join(ps)
+
+    # 3.5) 指定单品 → 版式里若还写着 "wearing …"（tag 流海报很常见）就地换掉
+    #      服装段（cpara）已经列过一次单品 → 别处旧服装句直接删，不再重复列
+    if outfit_tags and costume != "keep":
+        text, n_swap = rewrite_clothing(text, outfit_tags, short=ch["short"],
+                                        only=(costume == "auto"), log=log,
+                                        already_placed=True, mode=zone_mode)
+        if n_swap:
+            log.append(f"海报: 就地替换母题自带服装 {n_swap} 处 → "
+                       f"{', '.join(outfit_tags[:3])}…")
+        text, n_dress = neutralize_dress(text, outfit_tags)
+        if n_dress:
+            log.append(f"海报: 残留「dress」改称 outfit {n_dress} 处")
 
     # 4) 全文角色名替换（含个别海报用的 Marie Rose）
     for src in ALL_CHARS.values():
@@ -979,6 +1790,10 @@ def assemble(seed_id: str, char_key: str | None = None, aspect: str | None = Non
         ch = char_obj or chars.get(char_key)
         if ch is None:
             raise AssembleError(f"未知角色: {char_key}")
+        if outfit_tags:
+            # 选了单品 → 身份句 / 护盾里写死的原作服装要让位，否则模型永远画回原套装
+            # （furina：identity 有 "ceremonial outfit"、guard 有 "no missing top hat"）
+            ch = costume_free_char(ch, log)
         if branch == "poster":
             text = set_character_poster(text, ch, log, costume, char_key, seed["raw"],
                                         outfit_tags)

@@ -42,12 +42,12 @@ git clone https://github.com/lingdongbudong/Comfyui-K2-Editorial.git
 
 ```bash
 # ① 启动日志：重启 ComfyUI 后找这行
-#    [K2-Editorial] v1.13.0 已加载：['K2EditorialBuilder']
+#    [K2-Editorial] v1.15.0 已加载：['K2EditorialBuilder']
 
 # ② 节点已注册
 curl -s --noproxy '*' http://127.0.0.1:8188/object_info/K2EditorialBuilder | head -c 120
 
-# ③ 数据与装配链路都通（17 项，含 HTTP 冒烟）
+# ③ 数据与装配链路都通（20 项，含 HTTP 冒烟）
 python tests/run_all.py --http
 ```
 

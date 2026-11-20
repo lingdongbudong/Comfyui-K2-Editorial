@@ -87,7 +87,7 @@ Comfyui-K2-Editorial/
 │   └── motifs/              母题预览 553 张（14 MB）
 ├── workflows/               3 个参考工作流
 ├── tools/make_sfw_bundle.py 服装库 SFW 精简脚本
-├── tests/run_all.py         17 项回归测试
+├── tests/run_all.py         20 项回归测试
 └── docs/                    本文档
 ```
 
@@ -173,7 +173,7 @@ python tests/run_all.py --fast   # 抽样 40 条母题
 python tests/run_all.py --http   # 加打 8188 端点（服务需在跑）
 ```
 
-17 项，全绿才算通过。有几项是**专门防回归**的，改代码时别绕过去：
+20 项，全绿才算通过。有几项是**专门防回归**的，改代码时别绕过去：
 
 | # | 守什么 |
 | --- | --- |
@@ -211,7 +211,7 @@ python tests/run_all.py --http   # 加打 8188 端点（服务需在跑）
 
 ```bash
 git archive --format=zip --prefix=Comfyui-K2-Editorial/ \
-            -o ../Comfyui-K2-Editorial-v1.13.0.zip HEAD
+            -o ../Comfyui-K2-Editorial-v1.15.0.zip HEAD
 ```
 
 ⚠ 打完之后要**改目录名断言**：解压出来的第一层必须是 `Comfyui-K2-Editorial/`，

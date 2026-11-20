@@ -59,6 +59,8 @@
    "feature_clause": "featuring Furina from Genshin Impact as the only physical character",
    "short": "Furina",
    "identity": "Preserve Furina’s unmistakable canonical identity: pale skin, refined youthful face, short-to-medium white hair with distinctive pale-blue tips and longer flowing rear sections, elegant blue heterochromatic eyes, her signature dark navy top hat with blue-and-white ornamentation, and her recognizable Fontaine-inspired navy, white, black, and gold ceremonial outfit. Keep her face, eyes, hat, hands, hair silhouette, and aristocratic Furina identity immediately readable through the highly elaborate composition.",
+   "identity_plain": "Preserve Furina’s unmistakable canonical identity: pale skin, refined youthful face, short-to-medium white hair with distinctive pale-blue tips and longer flowing rear sections, elegant blue heterochromatic eyes, and a clearly recognizable Furina silhouette. Keep her face, eyes, hands, hair silhouette, and aristocratic Furina identity immediately readable through the highly elaborate composition.",
+   "guard_plain": "no Miku, no aqua twin tails, no duplicate Furina, no generic blue-haired girl, no unrelated princess",
    "hair_desc": "asymmetric white hair with pale-blue tips and longer flowing rear sections",
    "design_language": "her Fontaine ceremonial navy, white, black and gold design language",
    "accent": "pale aqua",

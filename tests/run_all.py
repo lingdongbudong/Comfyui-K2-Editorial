@@ -397,6 +397,142 @@ def t_js_aspect_badge():
                         else f"缺：{miss}")
 
 
+@check("服装库单品：就地覆盖母题自带服装")
+def t_outfit_swap():
+    """指定单品必须**替换**母题正文里那套衣服，而不是追加一句了事。
+
+    实测过的问题：选了「露肩针织 + 百褶裙」，出图还是母题自带的吊带连衣裙，
+    因为母题正文里 "She wears a … dress" 贴角色、位置更靠前，追加在末尾的
+    单品句根本压不住 —— 等于同时给了两套衣服。
+    """
+    tags = ["white off-shoulder sweater", "black pleated skirt", "brown loafers"]
+    seeds, _ = A.load()
+    probe = "k2s_abandoned_garden_2"          # 短提示词分支，母题自带 spaghetti-strap dress
+    issues = []
+
+    if probe not in seeds:
+        return True, "跳过（母题库已无该样本）"
+
+    t, _log = A.assemble(probe, "miku", "keep", "auto", outfit_tags=tags)
+    if "spaghetti-strap" in t:
+        issues.append("母题自带连衣裙仍在正文")
+    if tags[0] not in t:
+        issues.append("单品未进正文")
+    if "these garments" not in t:
+        issues.append("未生成服装指令句")
+
+    # 姿势类 tag（Anima 服装库里混着的 "crossed legs"）不能写成「她穿着盘腿」
+    t2, _ = A.assemble(probe, "miku", "keep", "auto", outfit_tags=tags + ["crossed legs"])
+    if "crossed legs" in t2:
+        issues.append("姿势 tag 进了正文")
+
+    # 不选单品 → 母题原服装句必须原样保留（零漂移）
+    t3, _ = A.assemble(probe, "miku", "keep", "auto")
+    if "spaghetti-strap" not in t3:
+        issues.append("未选单品却动了母题服装")
+
+    # 服装 = 保持母题原样 → 明确忽略单品，不偷换
+    t4, _ = A.assemble(probe, "miku", "keep", "keep", outfit_tags=tags)
+    if tags[0] in t4:
+        issues.append("keep 模式下仍强行换装")
+
+    # 三个分支都要覆盖（短提示 / 长篇场景 / 平面海报）
+    probes = [probe,
+              "k2x_blackbody",                                  # scene：服装句藏在机位段
+              next((i for i, s in seeds.items()
+                    if (s.get("branch") or "scene") == "poster"), "")]
+    for sid in [p for p in probes if p and p in seeds]:
+        tt, _ = A.assemble(sid, "miku", "keep", "auto", outfit_tags=tags)
+        if tags[0] not in tt:
+            issues.append(f"{sid} 单品未进正文")
+    return (not issues), ("短提示 / 场景 / 海报三分支均就地换装，姿势 tag 已过滤"
+                          if not issues else "；".join(issues))
+
+
+@check("选单品时：身份句的原作服装与海报随机版型都让位")
+def t_outfit_identity():
+    """角色身份句里写死的原作服装必须让位，否则选了单品也照样画回原套装。
+
+    实测：方形专辑母题给 furina 选「露肩针织 · 百褶裙」，出图还是全套 Fontaine
+    礼仪服 + 深蓝高帽 —— identity 写着 "ceremonial outfit"、guard 钉着
+    "no missing top hat"，两句都比服装指令硬；海报还额外随机套了一套「西装式」剪裁。
+    """
+    tags = ["white off-shoulder sweater", "black pleated skirt", "brown loafers"]
+    seeds, chars = A.load()
+    fur = chars.get("furina")
+    if not fur:
+        return True, "跳过（角色库无 furina）"
+    issues = []
+
+    t, _ = A.assemble("k2p_square_album", "furina", "keep", "auto",
+                      outfit_tags=tags, char_obj=fur)
+    low = t.lower()
+    for w in ("ceremonial outfit", "top hat"):
+        if w in low:
+            issues.append(f"身份句仍写死「{w}」")
+    if tags[0] not in t:
+        issues.append("单品未进正文")
+    if t.count("these garments") > 1:
+        issues.append(f"服装指令重复 {t.count('these garments')} 次")
+    if "tailored suit" in low or "a close-fitting technical bodysuit" in low:
+        issues.append("海报仍随机套了一套版型剪裁")
+
+    # 生成角色（Anima 桥）身份句里的服装类 signature 也要能剥掉
+    gen = B.char_entry("hatsune_miku")
+    if gen:
+        cf = A.costume_free_char(gen)
+        if "detached sleeves" in cf["identity"]:
+            issues.append("生成角色身份句仍留着 detached sleeves")
+    return (not issues), ("身份句 / 护盾 / 海报版型三处都已让位"
+                          if not issues else "；".join(issues))
+
+
+@check("按部位替换：上半身母题不写裙/鞋（服装库与官方服装都生效）")
+def t_outfit_zones():
+    """整套写入会把取景拉远：上半身特写也写「百褶裙 + 乐福鞋」，模型就去补腿和鞋。
+
+    口径：以母题自带服装描述为准，只换它写到的部位；官方服装（char:）走同一条路。
+    """
+    tags_lib = B.outfit_tags("lib", "ol_knit_pleated")
+    if not tags_lib:
+        return True, "跳过（服装库无 ol_knit_pleated）"
+    issues = []
+    seeds, _chars = A.load()
+
+    # 方形专辑：母题只写 cardigan / camisole / choker（上半身特写）
+    if "k2p_square_album" in seeds:
+        t, _ = A.assemble("k2p_square_album", "furina", "keep", "auto", outfit_tags=tags_lib)
+        low = t.lower()
+        for w in ("pleated skirt", "loafers"):
+            if w in low:
+                issues.append(f"上半身母题仍写了「{w}」")
+        if "upper body in only these garments" not in low:
+            issues.append("没切到 upper 模式")
+
+    # 展纸：母题写的是连衣裙、没写鞋 → 裙子要写、鞋不写
+    if "k2s_abandoned_garden_2" in seeds:
+        t2, _ = A.assemble("k2s_abandoned_garden_2", "furina", "keep", "auto",
+                           outfit_tags=tags_lib)
+        low2 = t2.lower()
+        if "loafers" in low2:
+            issues.append("展纸（母题无鞋）仍写了乐福鞋")
+        if "pleated skirt" not in low2:
+            issues.append("展纸丢了裙子")
+
+    # 官方服装：furina default = hat / jacket / gloves / shorts / thigh strap
+    co = B.char_outfits("furina")
+    if co and "k2p_square_album" in seeds:
+        tags_co = B.outfit_tags("char", co[0]["id"], "furina")
+        t3, _ = A.assemble("k2p_square_album", "furina", "keep", "auto", outfit_tags=tags_co)
+        low3 = t3.lower()
+        if "shorts" in low3:
+            issues.append("官方服装的 shorts 仍写进上半身母题")
+        if "jacket" not in low3:
+            issues.append("官方服装的上装没写进去")
+    return (not issues), ("上半身母题只写 upper，官方服装同样按部位拆"
+                          if not issues else "；".join(issues))
+
+
 @check("版本号 pyproject 与包一致")
 def t_version():
     p = os.path.join(ROOT, "pyproject.toml")
