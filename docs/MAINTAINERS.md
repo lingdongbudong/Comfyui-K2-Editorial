@@ -42,6 +42,10 @@ CLI 自己兜底（`assembler.main()` 里 `except AssembleError`），不影响�
 之前 `/manifest` handler 直接 `man["aspects"] = ...`，加缓存后就会把运行期字段写进缓存对象。
 现在改成 `man = dict(_load_json(...))` 拷一层。
 
+同类坑还有 `merge_motif_aspect()`：把用户覆盖的画幅合进 manifest 时，命中的母题
+必须 `dict(m, aspect=ov[id])` **新建**。直接 `m["aspect"] = ...` 会把覆盖值永久写进缓存，
+之后用户删掉覆盖也回不去（测试第 12 项守这条）。
+
 缓存键必须包含**路径**（只放 mtime/size，换数据源时会误命中），指纹用 `st_mtime_ns`
 （浮点 `getmtime` 同秒内改两次会漏）。
 
@@ -57,7 +61,7 @@ CLI 自己兜底（`assembler.main()` 里 `except AssembleError`），不影响�
 
 ### 6. 原子写只走 `_write_json()`
 
-收藏 / 勾选池 / 服装锁定三处用户态数据必须用 `_write_json()`（mkstemp + fsync + `os.replace`）。
+收藏 / 勾选池 / 服装锁定 / 场景画幅覆盖四处用户态数据必须用 `_write_json()`（mkstemp + fsync + `os.replace`）。
 直接 `open(path, "w")` 写到一半被打断，会留下半截 JSON，下次读取静默回落成空、用户数据全丢。
 
 ## 目录结构
@@ -71,18 +75,19 @@ Comfyui-K2-Editorial/
 ├── js/k2ed_panel.js         设置面板（约 1900 行，单文件）：三页 + 右栏 + 摘要绘制
 ├── presets/
 │   ├── seeds_motifs.json    原始 32 条母题
-│   ├── seeds_extra.json     手工新增母题（当前 363 条）
+│   ├── seeds_extra.json     手工新增母题（当前 521 条）
 │   ├── manifest.json        面板数据层（母题中文名 / 缩略图 / 标签 / 词数）
 │   ├── characters.json      2 位手写角色
 │   ├── costumes.json        8 套通用版型 + 角色推荐顺序
 │   ├── motif_*.json / title_*.json   构建输入（运行时不读）
+│   ├── user_motif_aspect.json  本机生成：场景默认画幅覆盖（不进仓库）
 │   └── anima/               Anima 数据快照（角色 2432 / 服装库 98 套 SFW）
 ├── thumbs/
-│   ├── anima/               角色立绘 2432 张（29 MB）
-│   └── motifs/              母题预览 395 张（11 MB）
+│   ├── anima/               角色立绘 2432 张（22 MB）
+│   └── motifs/              母题预览 553 张（14 MB）
 ├── workflows/               3 个参考工作流
 ├── tools/make_sfw_bundle.py 服装库 SFW 精简脚本
-├── tests/run_all.py         15 项回归测试
+├── tests/run_all.py         17 项回归测试
 └── docs/                    本文档
 ```
 
@@ -105,8 +110,9 @@ Comfyui-K2-Editorial/
 ```
 
 ⚠ 第 ③ 步的构建脚本（`build_manifest.py`）读 `presets/motif_names_zh.json`、
-`motif_tags.json`、`motif_aspects.json`、`title_glossary.json`、`title_translations.json`。
-这 5 份是**输入**，别删。
+`motif_tags.json`、`motif_aspects.json`、`motif_added.json`、`motif_genres.json`、
+`title_glossary.json`、`title_translations.json`。
+这 7 份是**输入**，别删（运行时一份都不读，删了只影响重建 manifest）。
 
 `manifest.branch` 必须只有 `scene` / `poster` / `short` 三类（前端按这三类筛选）。
 `seeds.branch` 可以写来源标记（如 `portrait-pose`），构建时会被归一。
@@ -135,13 +141,14 @@ generate(角色, 母题, 画幅, 服装, ...)
 
 | 方法 | 路径 | 参数 | 返回 |
 | --- | --- | --- | --- |
-| GET | `/manifest` | — | 母题 + 版型 + 标签 + 数据源状态（约 216 KB） |
+| GET | `/manifest` | — | 母题 + 版型 + 标签 + 数据源状态（约 340 KB） |
 | GET | `/chars` | `q` `work` `offset` `limit`(≤200) | `{total, items, works, fav, anima}` |
 | GET | `/char` | `id` | 单个角色 |
 | GET | `/outfits` | `char` | `{character, library, categories}` |
 | GET/POST | `/favs` | POST `{kind, id, on}` | 四个收藏桶 |
 | GET/POST | `/pick` | POST `{add?, remove?, set?, clear?}` | 勾选池 id 列表 |
 | GET/POST | `/charoutfit` | POST `{char, id}` | 角色服装锁定表 |
+| GET/POST | `/motif/aspect` | POST `{id, aspect}` | 场景默认画幅覆盖（`portrait` / `landscape` / `square`；`both` = 删覆盖回推荐值） |
 | GET | `/build` | `motif` `char` `aspect` `costume` `item` `display` `notext` `mode` | `{ok, text, log, words, paras, pct, issues}` |
 | GET | `/thumb/{path}` | — | `image/webp`，24h 缓存 |
 
@@ -161,23 +168,26 @@ python assembler.py --seed "GRAIN SANCTUM" --char miku --aspect 16:9 --out out.t
 ## 测试基线
 
 ```bash
-python tests/run_all.py          # 全量 ~4.5s
+python tests/run_all.py          # 全量 ~8s
 python tests/run_all.py --fast   # 抽样 40 条母题
 python tests/run_all.py --http   # 加打 8188 端点（服务需在跑）
 ```
 
-15 项，全绿才算通过。有几项是**专门防回归**的，改代码时别绕过去：
+17 项，全绿才算通过。有几项是**专门防回归**的，改代码时别绕过去：
 
 | # | 守什么 |
 | --- | --- |
-| 05 | 2370 组全量装配零告警（含 `orig_char` 残留检查） |
+| 05 | 3318 组全量装配零告警（含 `orig_char` 残留检查） |
 | 08 | 非法入参必须抛 `Exception` 子类 —— 守住 `SystemExit` 那条红线 |
 | 09 | `generate()` 不污染全局 `random` 状态 |
 | 10 | `load()` 缓存命中 < 首次 1/3，且改 mtime 后能重新解析 |
 | 11 | 原子写失败时原文件不损坏、无 `.tmp` 残留 |
-| 12 | `__version__` 与 `pyproject.toml` 一致 |
-| 13 | 三个随机池仍在 `optional` 末尾 |
-| 15 | HTTP 端点 + 路径穿越 3 条用例 |
+| 12 | 场景画幅覆盖层：样例必须「推荐值 ≠ 覆盖值」才证明生效；合流后缓存里仍是推荐值 |
+| 13 | 卡片徽标是 `button`、循环链 `竖→横→方`、连点有 `dataset.busy` 挡 |
+| 14 | `__version__` 与 `pyproject.toml` 一致 |
+| 15 | 三个随机池仍在 `optional` 末尾 |
+| 16 | 前端 JS 过 `node --check` |
+| 17 | HTTP 端点 + 路径穿越 3 条用例 |
 
 加新检查的写法：`@check("名字")` 修饰一个返回 `(bool, detail)` 的函数，放进 `CHECKS` 即可。
 
@@ -185,7 +195,7 @@ python tests/run_all.py --http   # 加打 8188 端点（服务需在跑）
 
 1. **确认零漂移**：改装配逻辑的话，用 `--fast` 前后对比指纹（固定 `random.seed` 跑同一批母题，逐字节比对）
 2. **改三处版本号**：`__init__.py` 的 `__version__`、`pyproject.toml` 的 `version`、README 的版本行
-   （测试第 12 项会校验前两者一致）
+   （测试第 14 项会校验前两者一致）
 3. **跑全量测试**：`python tests/run_all.py --http`
 4. **重启验证**：启动日志出现新版本号，`/k2ed/manifest` 正常
 5. **重新精简服装库**（仅当更新了 Anima 快照）：
@@ -193,12 +203,26 @@ python tests/run_all.py --http   # 加打 8188 端点（服务需在跑）
 6. **提交**：`git add -A && git commit -m "v1.x.y: <一句话>"`
 7. **打 tag 并推送**：`git tag v1.x.y && git push --tags`
 
+### 打包一份可分享的 ZIP
+
+仓库里有 45 MB 图片资源，GitHub 的 `Code → Download ZIP` 只带 `HEAD`，且国内直连很慢。
+要给别人的话，从本地工作区打一个 `git archive` 包（只含已跟踪文件，自动排除
+`.git`、`user_*.json`、`_bak_*/`、`__pycache__`）：
+
+```bash
+git archive --format=zip --prefix=Comfyui-K2-Editorial/ \
+            -o ../Comfyui-K2-Editorial-v1.13.0.zip HEAD
+```
+
+⚠ 打完之后要**改目录名断言**：解压出来的第一层必须是 `Comfyui-K2-Editorial/`，
+里面直接是 `__init__.py`（多套一层会让 ComfyUI 加载不到）。
+
 ### 关于 ComfyUI Registry
 
 `pyproject.toml` 已按 Registry 格式写好（`[tool.comfy]`）。发布前需要：
 
 - 补 `LICENSE`（已有 AGPL-3.0）并在 pyproject 里启用 `license` 字段
-- 确认包体大小：仓库 47 MB，Registry 有单包上限，超了就把 `thumbs/` 排除
+- 确认包体大小：仓库 45 MB，Registry 有单包上限，超了就把 `thumbs/` 排除
 - `PublisherId` 需与 Registry 账号一致
 
 ### 关于 SFW 精简

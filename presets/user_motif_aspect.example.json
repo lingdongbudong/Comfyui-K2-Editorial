@@ -1,0 +1,12 @@
+{
+ "_meta": {
+  "note": "场景卡片上「竖/横/方」徽标点出来的用户覆盖层，优先级高于 manifest.json 的 aspect。删掉本条即恢复推荐值。",
+  "values": {
+   "portrait": "竖屏",
+   "landscape": "横屏",
+   "both": "通用",
+   "square": "方屏"
+  }
+ },
+ "aspects": {}
+}

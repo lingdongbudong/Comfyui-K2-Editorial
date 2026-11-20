@@ -338,6 +338,65 @@ def t_atomic():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+@check("场景默认画幅：覆盖层读写 / 合流 / 不污染缓存")
+def t_motif_aspect():
+    """卡片徽标点出来的覆盖值（v1.13.0）。
+
+    三条不变量：写进去读得回、合流只改返回的副本（manifest 缓存对象不许被改写）、
+    传 both 能把覆盖删干净。全程用临时文件，不碰用户真实数据。
+    """
+    tmp = os.path.join(ROOT, "tests", "_tmp_asp")
+    os.makedirs(tmp, exist_ok=True)
+    keep = N.MOTIF_ASPECT_FILE
+    try:
+        N.MOTIF_ASPECT_FILE = os.path.join(tmp, "user_motif_aspect.json")
+        cached = N._load_json(N.MANIFEST, {})
+        items = [m for m in (cached.get("motifs") or []) if m.get("id")]
+        if not items:
+            return False, "manifest 没有母题"
+        # 必须挑一条「推荐值 ≠ 要写的值」的，否则覆盖前后看不出差别
+        pick = next((m for m in items
+                     if (m.get("aspect") or "landscape") != "portrait"), items[0])
+        mid = pick["id"]
+        base = pick.get("aspect") or "landscape"
+        want = "square" if base == "portrait" else "portrait"
+
+        N.save_motif_aspect(mid, want)
+        readback = N.motif_aspect_user().get(mid)
+
+        merged = N.merge_motif_aspect({"motifs": list(cached.get("motifs") or [])})
+        eff = next((m.get("aspect") for m in merged["motifs"] if m.get("id") == mid), None)
+        cache_kept = next((m.get("aspect") for m in
+                           (N._load_json(N.MANIFEST, {}).get("motifs") or [])
+                           if m.get("id") == mid), None)
+
+        N.save_motif_aspect(mid, "both")          # 删覆盖 = 回推荐值
+        cleared = mid not in N.motif_aspect_user()
+
+        ok = (readback == want and eff == want
+              and cache_kept == base and cleared and base != want)
+        return ok, (f"{mid} 推荐 {base} → 覆盖 {want} / 合流 {eff} / "
+                    f"缓存仍是 {cache_kept} / 删覆盖 {'OK' if cleared else '失败'}")
+    finally:
+        N.MOTIF_ASPECT_FILE = keep
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+@check("徽标按钮 + 三态循环链")
+def t_js_aspect_badge():
+    """前端不变量：徽标是 <button>、点击接 cycleMotifAspect、循环链是竖→横→方。"""
+    p = os.path.join(ROOT, "js", "k2ed_panel.js")
+    src = open(p, encoding="utf-8").read()
+    need = ['MOTIF_ASP_CYCLE = ["portrait", "landscape", "square"]',
+            'if (cur === "both") return "portrait"',
+            'badge.onclick = (ev) => cycleMotifAspect(ev, m, badge)',
+            'el("button", "", ASP_ZH[asp]',
+            'if (badge.dataset.busy) return']
+    miss = [n for n in need if n not in src]
+    return (not miss), ("徽标按钮 / 循环链 / 连点保护都就位" if not miss
+                        else f"缺：{miss}")
+
+
 @check("版本号 pyproject 与包一致")
 def t_version():
     p = os.path.join(ROOT, "pyproject.toml")

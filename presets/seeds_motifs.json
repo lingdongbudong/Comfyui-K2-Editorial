@@ -1,12 +1,12 @@
 {
  "_meta": {
-  "source": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格",
+  "source": "MIKU-未来科幻风格",
   "count": 32
  },
  "seeds": [
   {
    "id": "ComfyUI_temp_bttco_00002_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00002_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00002_.png",
    "title": "STILL SECTION",
    "character": "Hatsune Miku",
    "words": 1805,
@@ -40,7 +40,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00003_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00003_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00003_.png",
    "title": "VEIL FALL",
    "character": "Hatsune Miku",
    "words": 2290,
@@ -77,7 +77,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00004_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00004_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00004_.png",
    "title": "VEIL FALL",
    "character": "Hatsune Miku",
    "words": 2290,
@@ -114,7 +114,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00005_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00005_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00005_.png",
    "title": "MERIDIAN CUT",
    "character": "Hatsune Miku",
    "words": 2332,
@@ -151,7 +151,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00006_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00006_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00006_.png",
    "title": "TRIPLE REGISTER",
    "character": "",
    "words": 2275,
@@ -189,7 +189,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00007_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00007_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00007_.png",
    "title": "TRIPLE REGISTER",
    "character": "",
    "words": 2275,
@@ -227,7 +227,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00008_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00008_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00008_.png",
    "title": "ROOT REGISTER",
    "character": "Hatsune Miku",
    "words": 2179,
@@ -264,7 +264,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00010_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00010_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00010_.png",
    "title": "POD SEPARATION",
    "character": "Hatsune Miku",
    "words": 2276,
@@ -302,7 +302,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00011_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00011_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00011_.png",
    "title": "VEIN PROJECTION",
    "character": "Hatsune Miku",
    "words": 1768,
@@ -337,7 +337,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00012_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00012_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00012_.png",
    "title": "CALYX CORRIDOR",
    "character": "Hatsune Miku",
    "words": 1777,
@@ -371,7 +371,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00013_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00013_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00013_.png",
    "title": "POLLEN STORM",
    "character": "Hatsune Miku",
    "words": 1882,
@@ -406,7 +406,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00014_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00014_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00014_.png",
    "title": "SECOND SPECIMEN",
    "character": "Hatsune Miku",
    "words": 1991,
@@ -442,7 +442,7 @@
   },
   {
    "id": "ComfyUI_temp_bttco_00015_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_bttco_00015_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_bttco_00015_.png",
    "title": "CLOSING REGISTER",
    "character": "Hatsune Miku",
    "words": 1877,
@@ -477,7 +477,7 @@
   },
   {
    "id": "ComfyUI_temp_flvjc_00001_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_flvjc_00001_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_flvjc_00001_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 1497,
@@ -511,7 +511,7 @@
   },
   {
    "id": "ComfyUI_temp_flvjc_00006_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_flvjc_00006_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_flvjc_00006_.png",
    "title": "CELESTIAL COROLLA",
    "character": "Hatsune Miku",
    "words": 2126,
@@ -549,7 +549,7 @@
   },
   {
    "id": "ComfyUI_temp_ixist_00001_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_ixist_00001_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_ixist_00001_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 1798,
@@ -581,7 +581,7 @@
   },
   {
    "id": "ComfyUI_temp_ixist_00002_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_ixist_00002_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_ixist_00002_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 2031,
@@ -616,7 +616,7 @@
   },
   {
    "id": "ComfyUI_temp_ixist_00005_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_ixist_00005_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_ixist_00005_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 1875,
@@ -651,7 +651,7 @@
   },
   {
    "id": "ComfyUI_temp_ixist_00007_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_ixist_00007_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_ixist_00007_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 2030,
@@ -687,7 +687,7 @@
   },
   {
    "id": "ComfyUI_temp_majdv_00001_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_majdv_00001_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_majdv_00001_.png",
    "title": "HELIX CHOIR",
    "character": "Hatsune Miku",
    "words": 2421,
@@ -725,7 +725,7 @@
   },
   {
    "id": "ComfyUI_temp_majdv_00002_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_majdv_00002_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_majdv_00002_.png",
    "title": "CAUSTIC REQUIEM",
    "character": "Hatsune Miku",
    "words": 2431,
@@ -763,7 +763,7 @@
   },
   {
    "id": "ComfyUI_temp_majdv_00003_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_majdv_00003_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_majdv_00003_.png",
    "title": "DENDRITE SURVEY",
    "character": "Hatsune Miku",
    "words": 1779,
@@ -797,7 +797,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00001_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00001_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00001_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 1497,
@@ -831,7 +831,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00002_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00002_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00002_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 1669,
@@ -866,7 +866,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00003_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00003_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00003_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 1692,
@@ -901,7 +901,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00004_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00004_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00004_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 1692,
@@ -936,7 +936,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00005_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00005_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00005_.png",
    "title": "",
    "character": "Hatsune Miku",
    "words": 1539,
@@ -970,7 +970,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00008_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00008_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00008_.png",
    "title": "MIRROR PLUME",
    "character": "Hatsune Miku",
    "words": 2198,
@@ -1009,7 +1009,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00009_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00009_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00009_.png",
    "title": "ORBITAL CELESTA",
    "character": "Hatsune Miku",
    "words": 2156,
@@ -1047,7 +1047,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00010_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00010_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00010_.png",
    "title": "ECHO CODEX",
    "character": "Hatsune Miku",
    "words": 2081,
@@ -1085,7 +1085,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00011_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00011_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00011_.png",
    "title": "MIRROR TIDE OPERA",
    "character": "Furina from Genshin Impact",
    "words": 2249,
@@ -1124,7 +1124,7 @@
   },
   {
    "id": "ComfyUI_temp_zmmyf_00012_",
-   "file": "C:/Users/VGBFC/Desktop/MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00012_.png",
+   "file": "MIKU-未来科幻风格\\ComfyUI_temp_zmmyf_00012_.png",
    "title": "GRAIN SANCTUM",
    "character": "Hatsune Miku",
    "words": 2667,

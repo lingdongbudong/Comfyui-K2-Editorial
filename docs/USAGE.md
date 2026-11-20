@@ -21,7 +21,7 @@
 | ComfyUI | 0.42.x | 实测 0.42.1；更老版本可能缺 `widget.inputEl` |
 | Python | ≥ 3.10 | 用了 `X \| None` 注解；实测 3.13.12 |
 | 第三方包 | 无 | 只用标准库 + ComfyUI 自带 `folder_paths` |
-| 磁盘 | 约 47 MB | 立绘 29 MB + 母题预览 11 MB + 数据 7 MB |
+| 磁盘 | 约 45 MB | 立绘 22 MB + 母题预览 14 MB + 数据与代码 8 MB |
 | 网络 | 不需要 | 运行时零联网 |
 
 ### 两种安装方式
@@ -42,16 +42,16 @@ git clone https://github.com/lingdongbudong/Comfyui-K2-Editorial.git
 
 ```bash
 # ① 启动日志：重启 ComfyUI 后找这行
-#    [K2-Editorial] v1.12.0 已加载：['K2EditorialBuilder']
+#    [K2-Editorial] v1.13.0 已加载：['K2EditorialBuilder']
 
 # ② 节点已注册
 curl -s --noproxy '*' http://127.0.0.1:8188/object_info/K2EditorialBuilder | head -c 120
 
-# ③ 数据与装配链路都通（15 项，含 HTTP 冒烟）
+# ③ 数据与装配链路都通（17 项，含 HTTP 冒烟）
 python tests/run_all.py --http
 ```
 
-第 ③ 步全绿说明：数据文件完整、395 条母题装配无告警、缓存与原子写正常、端点可访问。
+第 ③ 步全绿说明：数据文件完整、553 条母题装配无告警、缓存与原子写正常、端点可访问。
 
 ### 数据源配置
 
@@ -86,8 +86,10 @@ set K2ED_ANIMA_SOURCE=bundle
 | `presets/user_favs.json` | **本机生成**（收藏） | 随便改，不影响仓库 |
 | `presets/user_random_pools.json` | **本机生成**（勾选场景池） | 同上 |
 | `presets/user_char_outfit.json` | **本机生成**（角色服装锁定） | 同上 |
+| `presets/user_motif_aspect.json` | **本机生成**（场景默认画幅覆盖） | 同上；删掉某条即退回推荐画幅 |
 
-三个 `user_*.json` 不在仓库里（`.gitignore` 排除），首次运行时自动创建。
+四个 `user_*.json` 不在仓库里（`.gitignore` 排除），首次运行时自动创建
+（`user_motif_aspect.json` 在你第一次点卡片画幅徽标时才创建）。
 仓库里放的是 `*.example.json` 空结构模板，想预置可直接复制改名。
 
 ### 升级与卸载
@@ -118,7 +120,7 @@ cd <ComfyUI>/custom_nodes/Comfyui-K2-Editorial && git pull
 | 参数 | 类型 | 默认 |
 | --- | --- | --- |
 | `角色` | STRING | `"miku"` |
-| `母题` | 下拉 395 项（面板里选） | `"ComfyUI_temp_bttco_00002_"` |
+| `母题` | 下拉 553 项（面板里选） | `"ComfyUI_temp_bttco_00002_"` |
 | `画幅` | 下拉 `16:9` / `3:2` / `4:3` / `1:1` / `4:5` / `3:4` / `2:3` / `9:16` | `"16:9"` |
 | `服装` | 下拉 `自动（跟随母题）` / `保持母题原样` / 8 套版型 id | `"自动（跟随母题）"` |
 | `单品` | STRING | `""` |
@@ -174,9 +176,19 @@ cd <ComfyUI>/custom_nodes/Comfyui-K2-Editorial && git pull
 | 第 1 行 | `★ 只看收藏` / 分类（全部 · 3D 场景 · 平面海报 · 短提示词）/ 推荐画幅（全部 · 横 · 竖 · 通用 · 方） |
 | 第 2 行 | 关键词搜索 + 场景标签（由母题正文自动生成，带条数） |
 | 第 3 行 | 随机池三档 + `☑ 全选当前` / `⇄ 反选` / `✕ 清空勾选`，显示池大小 |
-| 网格 | 395 条，卡片带缩略图、中文名、英文标题、词数、推荐画幅角标、勾选框、收藏星 |
+| 网格 | 553 条，卡片带缩略图、中文名、英文标题、词数、**画幅徽标（可点）**、勾选框、收藏星 |
 
 点卡片 = 选中该母题并写回节点；按推荐画幅自动切 `画幅`；若母题登记了推荐角色，会同时切角色并把 `服装` 设为「保持母题原样」（保住原作服装）。重复点同一条不会覆盖你后来手选的设置。
+
+**卡片上的画幅徽标可以点**（`竖屏 / 横屏 / 方屏 / 通用`）：点一下 `竖 → 横 → 方 → 竖` 循环，
+点完会做两件事 ——
+
+1. 把**这条母题的默认画幅**改掉，写进 `presets/user_motif_aspect.json`，下次再选它就是这个画幅；
+2. 把**当前工作流的画幅**一起切过去（竖 `3:4` / 横 `16:9` / 方 `1:1`）；若面板上勾了「同步参数节点」，
+   连 `XB_ImageParamsMaster` 也一并推过去。
+
+`通用（both）` 不在三态循环里 —— 点它先落竖屏，之后照常走循环。想让某条退回母题自带的推荐值，
+手工把 `user_motif_aspect.json` 里那一行删掉即可（也可以直接删整个文件，全部回到推荐值）。
 
 ### 右栏预览
 
@@ -203,7 +215,7 @@ cd <ComfyUI>/custom_nodes/Comfyui-K2-Editorial && git pull
 装配时凡不在 `(poster, short)` 的都走 scene 路径。
 
 `manifest.json` 里的 `branch` 才是**分类契约**，构建脚本已把非标准值归一到三类
-（`scene` 275 / `short` 105 / `poster` 15）。前端筛选读这份，所以两个来源不冲突。
+（`scene` 312 / `short` 226 / `poster` 15）。前端筛选读这份，所以两个来源不冲突。
 
 ### 服装优先级
 
@@ -290,7 +302,7 @@ cd <ComfyUI>/custom_nodes/Comfyui-K2-Editorial && git pull
 ### 结果与画面
 
 **6. 生成的提示词只有 100 多词？**
-大概率选中了 `short` 分支母题（105 条短提示词，本来就 4–8 段）。看自检报告的段数。
+大概率选中了 `short` 分支母题（226 条短提示词，本来就 4–8 段）。看自检报告的段数。
 
 **7. 报告里 `⚠ 篇幅异常` 但图还能出？**
 自检只是告警，不阻断。常见于 `k2p_*` / `k2s_cx_*` 这类既有设计档，它们不遵循长文体量。
@@ -331,13 +343,13 @@ cd <ComfyUI>/custom_nodes/Comfyui-K2-Editorial && git pull
 ### 性能
 
 **18. 装配一次要多久？**
-约 2.4 ms（含 395 条母题的字典查找与文本拼接）。`load()` 有指纹缓存，命中时 0.2 ms。
+约 1.7 ms（含 553 条母题的字典查找与文本拼接）。`load()` 有指纹缓存，命中时 0.2 ms。
 
 **19. 面板第一次打开慢？**
-要拉 `/k2ed/manifest`（约 216 KB）与 72 张立绘。之后走浏览器缓存（带 `?v=mtime` 版本号）。
+要拉 `/k2ed/manifest`（约 340 KB）与 72 张立绘。之后走浏览器缓存（带 `?v=mtime` 版本号）。
 
-**20. 47 MB 的立绘能不能删？**
-能删 `thumbs/anima/`（角色立绘）与 `thumbs/motifs/`（母题预览），插件功能不受影响，只是面板无图。删完跑一次 `tests/run_all.py` 会红（manifest 校验要求缩略图存在），属预期。
+**20. 36 MB 的立绘能不能删？**
+能删 `thumbs/anima/`（角色立绘 22 MB）与 `thumbs/motifs/`（母题预览 14 MB），插件功能不受影响，只是面板无图。删完跑一次 `tests/run_all.py` 会红（manifest 校验要求缩略图存在），属预期。
 
 ### 合规
 

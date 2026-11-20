@@ -49,6 +49,7 @@ const STATE = {
     favs: { characters: [], costumes: [], motifs: [], works: [] },
     favOnlyCostume: false, favOnlyMotif: false, motifAspect: "", motifBranch: "",
     motifQ: "", motifTag: "",   // 场景页：关键词搜索 / 场景标签
+    addedOnly: false, motifGenre: "",   // 场景页：只看新增（入库批次）/ 题材第二维度
     displayText: "", noText: false,
     /* 随机池：模式写回节点（可复现），勾选的场景 id 存服务端（可能几百条） */
     charPool: "关闭", charPoolWork: "", motifPool: "关闭", picks: [],
@@ -443,6 +444,12 @@ function ensurePanel() {
     .k2ed-aspbadge.portrait{color:#9fd2ff}
     .k2ed-aspbadge.both{color:#d8cf8a}
     .k2ed-aspbadge.square{color:#c7a4ef}
+    /* 徽标现在是 <button>（点一下改默认画幅）：清掉浏览器默认外观，补上可点手感 */
+    .k2ed-aspbadge{cursor:pointer;font-family:inherit;border:0;appearance:none;-webkit-appearance:none;
+      transition:background .12s ease,color .12s ease}
+    .k2ed-aspbadge:hover{background:rgba(58,64,78,.95);color:#fff}
+    .k2ed-aspbadge:active{transform:translateY(1px)}
+    .k2ed-aspbadge[data-busy]{opacity:.5;cursor:progress}
     /* 场景卡左上角工具条：勾选框 + 推荐画幅同排流式布局。
        原来两个 absolute 都钉在 left:5/top:5，勾选框正好压住「横屏/竖屏」只露半个字。
        父层收 pointer-events，避免透明空隙挡住卡片本身的点选。 */
@@ -1141,6 +1148,73 @@ async function renderCostumePage() {
     page.appendChild(g3);
 }
 
+/* ---------------- 场景默认画幅（卡片徽标） ----------------
+   徽标点一下改「这条母题的默认画幅」，三态循环：竖 → 横 → 方 → 竖。
+   「通用（both）」不在三态里，点一下先落竖屏，之后照常走循环。
+   改完同时把当前工作流画幅切过去（竖 3:4 / 横 16:9 / 方 1:1），
+   与 Anima-Wardrobe 那边的徽标行为保持一致。 */
+const MOTIF_ASP_CYCLE = ["portrait", "landscape", "square"];
+const MOTIF_ASP_ZH = { portrait: "竖屏", landscape: "横屏", both: "通用", square: "方屏" };
+const MOTIF_ASP_FRAME = { portrait: "3:4", landscape: "16:9", square: "1:1" };
+
+function nextMotifAspect(cur) {
+    if (cur === "both") return "portrait";      // 通用 → 竖屏，然后进循环
+    const i = MOTIF_ASP_CYCLE.indexOf(cur);
+    /* indexOf 为 -1（脏数据）时 (i+1)%3 = 0 → portrait，也算合理回落 */
+    return MOTIF_ASP_CYCLE[(i + 1) % MOTIF_ASP_CYCLE.length];
+}
+
+async function postMotifAspect(id, aspect) {
+    const r = await api.fetchApi("/k2ed/motif/aspect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, aspect }),
+    });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return await r.json();
+}
+
+/* 点徽标：改默认画幅 → 跟着切当前画幅。
+   ⚠️ 必须 stopPropagation：卡片本身的 onclick 是「选中这个场景」。 */
+async function cycleMotifAspect(ev, m, badge) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    if (badge.dataset.busy) return;             // 连点保护，避免写入交错
+    badge.dataset.busy = "1";
+    try {
+        const nxt = nextMotifAspect(m.aspect || "landscape");
+        const d = await postMotifAspect(m.id, nxt);
+        const eff = d.aspect || nxt;            // 服务端回的是生效值
+        m.aspect = eff;                         // 前端内存同步：筛选 / 角标 / 右侧预览都读它
+        badge.textContent = MOTIF_ASP_ZH[eff] || eff;
+        badge.className = "k2ed-aspbadge " + eff;
+        badge.title = `默认画幅：${MOTIF_ASP_ZH[eff] || eff}`
+            + (m.ratio ? `（${m.ratio}）` : "") + "\n点击切换：竖 → 横 → 方";
+
+        /* 只动画幅相关的东西：不碰「覆盖提示词」，也不重写角色/场景选择 */
+        const want = MOTIF_ASP_FRAME[eff];
+        let tail = "";
+        if (want && STATE.aspect !== want) {
+            STATE.aspect = want;
+            renderAspects();
+            if (CUR) setW(CUR, "画幅", want);
+            const syncEl = PANEL.panel.querySelector("#k2ed-sync");
+            if (syncEl && syncEl.checked && want !== STATE._syncedAspect) {
+                tail = "　|　" + syncAspect(want);
+                STATE._syncedAspect = want;
+            }
+            app.graph.setDirtyCanvas(true, true);
+        }
+        PANEL.stat(`${m.zh || m.title || m.id}　默认画幅 → ${MOTIF_ASP_ZH[eff] || eff}`
+            + (want ? `，当前画幅 ${want}` : "") + tail);
+        if (STATE.motif === m.id) renderSide();   // 右侧「推荐画幅」那行要跟着改
+    } catch (e) {
+        PANEL.stat("⚠ 默认画幅保存失败：" + e);
+    } finally {
+        delete badge.dataset.busy;
+    }
+}
+
 /* ---------------- ③ 场景页 ---------------- */
 function renderMotifPage() {
     bindMotifScrollMemory();
@@ -1173,9 +1247,11 @@ function renderMotifPage() {
         page.querySelectorAll(".k2ed-chip[data-k]").forEach((b) => {
             const k = b.dataset.k, v = b.dataset.v;
             const on = k === "fav" ? STATE.favOnlyMotif
+                : k === "added" ? STATE.addedOnly
                 : k === "branch" ? STATE.motifBranch === v
                     : k === "aspect" ? STATE.motifAspect === v
                         : k === "tag" ? STATE.motifTag === v
+                            : k === "genre" ? STATE.motifGenre === v
                             : false;
             b.classList.toggle("on", on);
         });
@@ -1184,6 +1260,13 @@ function renderMotifPage() {
     mkChip(STATE.favOnlyMotif, `★ 只看收藏（${favs.length}）`, () => {
         STATE.favOnlyMotif = !STATE.favOnlyMotif; repaintFilters();
     }, null, "fav");
+    /* 只看新增：manifest 里 added 有值的母题（按入库批次标记） */
+    const addedN = MAN.added_count || MAN.motifs.filter((m) => m.added).length;
+    if (addedN) {
+        mkChip(STATE.addedOnly, `✦ 只看新增（${addedN}）`, () => {
+            STATE.addedOnly = !STATE.addedOnly; repaintFilters();
+        }, null, "added");
+    }
     chips.appendChild(el("span", "k2ed-lbl", "　分类"));
     [["", "全部"], ["scene", "3D 场景"], ["poster", "平面海报"],
      ["short", "短提示词"]]
@@ -1212,14 +1295,28 @@ function renderMotifPage() {
             repaintFilters();
         }, tools, "tag", t.key);
     });
-    if (STATE.motifQ || STATE.motifTag) {
+    if (STATE.motifQ || STATE.motifTag || STATE.motifGenre || STATE.addedOnly) {
         mkChip(false, "✕ 清除", () => {
             STATE.motifQ = ""; STATE.motifTag = "";
+            STATE.motifGenre = ""; STATE.addedOnly = false;
             inp.value = "";                 // 不整页重建，输入框自己清
             repaintFilters();
         }, tools);
     }
     page.appendChild(tools);
+
+    /* 行 2b：题材第二维度（daily/fantasy/industrial/landscape/shop/nature） */
+    if ((MAN.genres || []).length) {
+        const genres = el("div", "k2ed-chips");
+        genres.appendChild(el("span", "k2ed-lbl", "　题材"));
+        MAN.genres.forEach((g) => {
+            mkChip(STATE.motifGenre === g.key, `${g.zh} ${g.count}`, () => {
+                STATE.motifGenre = STATE.motifGenre === g.key ? "" : g.key;
+                repaintFilters();
+            }, genres, "genre", g.key);
+        });
+        page.appendChild(genres);
+    }
 
     /* 行 3：随机抽取 + 勾选（全选/反选的作用域 = 当前筛选结果） */
     const rnd = el("div", "k2ed-chips");
@@ -1287,9 +1384,11 @@ function renderMotifPage() {
     };
     const filtered = () => MAN.motifs
         .filter((m) => !STATE.favOnlyMotif || favs.includes(m.id))
+        .filter((m) => !STATE.addedOnly || m.added)
         .filter((m) => !STATE.motifBranch || (m.branch || "scene") === STATE.motifBranch)
         .filter((m) => !STATE.motifAspect || (m.aspect || "landscape") === STATE.motifAspect)
         .filter((m) => !STATE.motifTag || (m.tags || []).includes(STATE.motifTag))
+        .filter((m) => !STATE.motifGenre || m.genre === STATE.motifGenre)
         .filter(matchQ);
 
     const paintGrid = () => {
@@ -1327,15 +1426,29 @@ function renderMotifPage() {
                 syncLabels();
             };
             corner.appendChild(pk);
-            const badge = el("div", "", ASP_ZH[asp] || "");
+            /* 默认画幅徽标 = 按钮：点一下循环切（竖 → 横 → 方），点它不会选中卡片 */
+            const badge = el("button", "", ASP_ZH[asp] || "");
+            badge.type = "button";
             badge.className = "k2ed-aspbadge " + asp;
-            badge.title = "推荐画幅：" + (ASP_ZH[asp] || "横屏")
-                + (m.ratio ? "（" + m.ratio + "）" : "");
+            badge.title = "默认画幅：" + (ASP_ZH[asp] || "横屏")
+                + (m.ratio ? "（母题原比例 " + m.ratio + "）" : "")
+                + "\n点击切换：竖 → 横 → 方";
+            badge.onclick = (ev) => cycleMotifAspect(ev, m, badge);
             corner.appendChild(badge);
             k.appendChild(corner);
             k.appendChild(favStar("motifs", m.id, false));
             const cp = el("div", "cp");
-            cp.appendChild(el("div", "n", m.zh || m.title || m.id));
+            const nm = el("div", "n", m.zh || m.title || m.id);
+            /* 新增角标：manifest 的 added 字段有值就显示（入库批次日期见 title 提示） */
+            if (m.added) {
+                const nb = el("span", "", "NEW");
+                nb.style.cssText = "margin-left:6px;padding:0 4px;border-radius:3px;"
+                    + "font-size:9px;letter-spacing:.5px;line-height:14px;"
+                    + "background:#2f6f4e;color:#eafff4;vertical-align:middle;";
+                nb.title = `本次新增（${m.added} 入库）`;
+                nm.appendChild(nb);
+            }
+            cp.appendChild(nm);
             cp.appendChild(el("div", "w",
                 `${m.branch === "poster" ? "海报 · " : ""}`
                 + `${m.title && m.zh ? m.title + "　" : ""}`

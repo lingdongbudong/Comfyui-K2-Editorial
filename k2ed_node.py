@@ -43,6 +43,9 @@ MANIFEST = os.path.join(HERE, "presets", "manifest.json")
 FAVS_FILE = os.path.join(HERE, "presets", "user_favs.json")
 LOCK_FILE = os.path.join(HERE, "presets", "user_char_outfit.json")
 POOLS_FILE = os.path.join(HERE, "presets", "user_random_pools.json")
+# 场景默认画幅的用户覆盖层：卡片上点「竖/横/方」徽标写这里。
+# ⚠️ 绝不写进 manifest.json —— 那是 build 产物，重跑一次就把用户改的盖回推荐值。
+MOTIF_ASPECT_FILE = os.path.join(HERE, "presets", "user_motif_aspect.json")
 
 NODE_NAME = "K2EditorialBuilder"
 ASPECTS = ["16:9", "3:2", "4:3", "1:1", "4:5", "3:4", "2:3", "9:16"]
@@ -155,6 +158,53 @@ def save_pool_state(data: dict) -> None:
                                  "last": data.get("last") or {}})
     except Exception as exc:
         print(f"[K2-Editorial] 随机池写入失败：{exc}")
+
+
+# 卡片徽标的三态循环：竖 → 横 → 方（「通用」点一下先进竖屏，之后进入循环）
+MOTIF_ASPECT_CYCLE = ("portrait", "landscape", "square")
+MOTIF_ASPECT_ZH = {"portrait": "竖屏", "landscape": "横屏",
+                   "both": "通用", "square": "方屏"}
+
+
+def motif_aspect_user() -> dict:
+    """用户改过的场景默认画幅：{母题 id: portrait|landscape|square}。
+
+    独立于 manifest.json 保存，优先级更高；删掉一条就恢复推荐值。
+    """
+    d = _load_json(MOTIF_ASPECT_FILE, {}) or {}
+    a = d.get("aspects")
+    return dict(a) if isinstance(a, dict) else {}
+
+
+def save_motif_aspect(mid: str, aspect: str) -> dict:
+    """写一条覆盖值。aspect 传 "both" 表示删掉这条、回到 manifest 的推荐值。"""
+    cur = motif_aspect_user()
+    if aspect == "both":
+        cur.pop(mid, None)
+    else:
+        cur[mid] = aspect
+    _write_json(MOTIF_ASPECT_FILE, {
+        "_meta": {"note": "场景卡片上「竖/横/方」徽标点出来的用户覆盖层，"
+                          "优先级高于 manifest.json 的 aspect。删掉本条即恢复推荐值。",
+                  "values": MOTIF_ASPECT_ZH},
+        "aspects": cur,
+    })
+    return cur
+
+
+def merge_motif_aspect(man: dict) -> dict:
+    """把用户覆盖值合进 manifest 的 motifs，就地返回同一个 dict。
+
+    ⚠️ 命中的母题必须 dict(m, ...) 新建：`_load_json` 返回的是缓存对象，
+    直接 m["aspect"] = ... 会把覆盖值永久写进缓存，之后删掉用户覆盖也回不去。
+    """
+    ov = motif_aspect_user()
+    if ov:
+        man["motifs"] = [(dict(m, aspect=ov[m["id"]]))
+                         if isinstance(m, dict) and m.get("id") in ov else m
+                         for m in (man.get("motifs") or [])]
+    man["aspect_overrides"] = len(ov)
+    return man
 
 
 _ID_CACHE: dict = {}
@@ -593,7 +643,48 @@ def register_routes() -> None:
         man["keep"] = KEEP
         man["anima"] = B.available()
         man["anima_status"] = B.status()
+        # 用户点徽标改过的默认画幅合流进来（覆盖层优先级高于 manifest 的 aspect）
+        merge_motif_aspect(man)
         return web.json_response(man)
+
+    @routes.get(ROUTE + "/motif/aspect")
+    async def _masp_get(request):
+        ov = motif_aspect_user()
+        return web.json_response({"aspects": ov, "count": len(ov)})
+
+    @routes.post(ROUTE + "/motif/aspect")
+    async def _masp_post(request):
+        """场景默认画幅：卡片徽标点一下改一条。
+
+        值域 portrait / landscape / square；传 both 表示删掉覆盖、回推荐值。
+        """
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        body = body or {}
+        mid = str(body.get("id") or "").strip()
+        asp = str(body.get("aspect") or "").strip().lower()
+        if not mid or len(mid) > 96:
+            raise web.HTTPBadRequest(text="missing or bad motif id")
+        if asp not in MOTIF_ASPECT_CYCLE and asp != "both":
+            raise web.HTTPBadRequest(
+                text="aspect must be one of " + str(list(MOTIF_ASPECT_CYCLE) + ["both"]))
+        try:
+            cur = save_motif_aspect(mid, asp)
+        except Exception as exc:
+            raise web.HTTPInternalServerError(text=f"write failed: {exc}")
+        # 回给前端的是**生效值**：删覆盖时要报 manifest 里的推荐值，否则徽标会停在「通用」
+        if asp == "both":
+            eff = "landscape"
+            for m in (_load_json(MANIFEST, {}).get("motifs") or []):
+                if isinstance(m, dict) and m.get("id") == mid:
+                    eff = m.get("aspect") or "landscape"
+                    break
+        else:
+            eff = asp
+        return web.json_response({"ok": True, "id": mid, "aspect": eff,
+                                  "count": len(cur)})
 
     @routes.get(ROUTE + "/thumb/{tail:.*}")
     async def _thumb(request):

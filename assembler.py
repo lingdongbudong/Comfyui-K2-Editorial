@@ -100,6 +100,15 @@ OUTFIT_TPL = (
     "core contact point."
 )
 
+# 指定了具名单品（lib: / char:）且版型为 auto 时，整段服装只写单品。
+# 原因：版型模板（仪式礼服 / 流体褶裥…）比单品 tags 更具体、更靠前，两套衣服同一段里
+# 打架 → 模型偏向版型，用户选的服装被压成局部元素（实测：露肩针织+百褶裙出成带礼帽的礼服）。
+OUTFIT_ONLY_TPL = (
+    "Dress {short} exactly in these garments and in nothing else: {tags}. "
+    "Read them as ordinary clothing worn naturally, with every seam, cuff, hem and fold "
+    "visible, and keep the silhouette that of normal daywear rather than ceremonial costume."
+)
+
 # 平面海报分支专用：海报是二维印刷品，不能套 3D 巨构那套「材质 / 结构 / 剪裁」措辞。
 # 这里把「所选版型 + 单品」写成一小段平面化服装说明，插在首段之后，不碰排版与大标题。
 COSTUME_POSTER_TPL = (
@@ -357,7 +366,13 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
         ps[hair_i] = HAIR_TPL.format(name=ch["short"], hair=ch["hair_desc"], accent=ch["accent"])
     log.append(f"角色: 发型段 {'已换' if hair_i >= 0 else '未命中(跳过)'}")
 
-    if costume_i >= 0:
+    # 指定具名单品 + 版型 auto → 整段只写单品，不套幻想版型（见 OUTFIT_ONLY_TPL 注释）
+    garment_only = bool(outfit_tags) and costume == "auto" and costume_i >= 0
+    if garment_only:
+        ps[costume_i] = OUTFIT_ONLY_TPL.format(short=ch["short"],
+                                               tags=", ".join(outfit_tags))
+        log.append(f"服装: 指定单品 → 跳过版型，只用 {len(outfit_tags)} 条单品")
+    elif costume_i >= 0:
         tpl, cid, czh = pick_costume(char_key, costume, log)
         if tpl is None:
             log.append("服装: 保留母题原样的服装段")
@@ -371,7 +386,9 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
 
     # 单品层：来自 Anima 服装库 / 角色服装预设的 tags，追加在版型段之后
     if outfit_tags:
-        if costume_i >= 0 and costume != "keep":
+        if garment_only:
+            pass                              # 上面已整段写进，不重复追加
+        elif costume_i >= 0 and costume != "keep":
             ps[costume_i] = ps[costume_i].rstrip() + " " + OUTFIT_TPL.format(
                 tags=", ".join(outfit_tags))
             log.append(f"服装: 叠加单品 {len(outfit_tags)} 条 → {', '.join(outfit_tags[:3])}…")
@@ -444,6 +461,11 @@ COSTUME_SHORT_TPL = (
     "keeping the outfit clean and secondary to the composition."
 )
 OUTFIT_SHORT_TPL = "Include these specific garments: {tags}."
+# 指定具名单品 + 版型 auto → 不写版型句，只写单品（与 scene 分支的 OUTFIT_ONLY_TPL 同理）
+OUTFIT_SHORT_ONLY_TPL = (
+    "Dress {short} exactly in these garments and nothing else: {tags}. "
+    "Keep every seam, cuff and hem visible so the outfit reads as ordinary clothing."
+)
 
 
 def set_character_short(text: str, ch: dict, log: list[str], costume: str = "auto",
@@ -461,16 +483,22 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
     if not n:
         ps.insert(1, ch["identity"])
 
-    tpl, cid, czh = pick_costume(char_key, costume, log)
-    cut = next((t["id"].replace("_", " ") for t in ALL_TPLS if t["id"] == cid), "") \
-        or cid.replace("_", " ") or "auto"
-    extra = COSTUME_SHORT_TPL.format(short=ch["short"], cut=cut,
-                                     accent=ch["accent"], block=ch["block"])
-    if outfit_tags:
-        extra += " " + OUTFIT_SHORT_TPL.format(tags=", ".join(outfit_tags[:12]))
+    if outfit_tags and costume == "auto":
+        # 指定了具名单品 → 跳过版型，只写单品（否则「仪式礼服」会盖过「露肩针织」）
+        extra = OUTFIT_SHORT_ONLY_TPL.format(short=ch["short"],
+                                             tags=", ".join(outfit_tags[:12]))
+        log.append(f"短提示: 指定单品 → 跳过版型，只写 {len(outfit_tags)} 个单品")
+    else:
+        tpl, cid, czh = pick_costume(char_key, costume, log)
+        cut = next((t["id"].replace("_", " ") for t in ALL_TPLS if t["id"] == cid), "") \
+            or cid.replace("_", " ") or "auto"
+        extra = COSTUME_SHORT_TPL.format(short=ch["short"], cut=cut,
+                                         accent=ch["accent"], block=ch["block"])
+        if outfit_tags:
+            extra += " " + OUTFIT_SHORT_TPL.format(tags=", ".join(outfit_tags[:12]))
+        log.append(f"短提示: 已追加服装句「{cut}」"
+                   + (f" + {len(outfit_tags)} 个单品" if outfit_tags else ""))
     ps.append(extra)
-    log.append(f"短提示: 已追加服装句「{cut}」"
-               + (f" + {len(outfit_tags)} 个单品" if outfit_tags else ""))
     text = join(ps)
 
     for src in ALL_CHARS.values():

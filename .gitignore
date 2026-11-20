@@ -4,11 +4,13 @@ __pycache__/
 *.py[cod]
 
 # ── 用户个人数据（不是插件资产） ────────────────────────────────────────
-# 收藏角色 / 勾选场景池 / 角色服装锁定，都是每个使用者自己的状态，
-# 首次运行自动生成。仓库里只放 *.example.json 空结构模板，别把真数据推上去。
+# 收藏角色 / 勾选场景池 / 角色服装锁定 / 场景默认画幅覆盖，都是每个使用者
+# 自己的状态，首次运行自动生成（或点卡片徽标时生成）。
+# 仓库里只放 *.example.json 空结构模板，别把真数据推上去。
 presets/user_favs.json
 presets/user_random_pools.json
 presets/user_char_outfit.json
+presets/user_motif_aspect.json
 !presets/user_*.example.json
 
 # ── 测试临时目录 ────────────────────────────────────────────────────────
@@ -30,4 +32,6 @@ desktop.ini
 *.log
 *.bak
 *.bak-*
+# 改代码前的定版备份目录（_bak_<版本>_<改动名>_<时间戳>/，整份副本）
+_bak_*/
 _arc*.html

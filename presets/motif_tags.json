@@ -341,5 +341,993 @@
   "interior",
   "day",
   "architecture"
+ ],
+ "k2x_indus_suspended_gate": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_hydraulic_gate": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_hull_dock": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_skyport": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_offshore_deck": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_waterline": [
+  "interior",
+  "architecture",
+  "day"
+ ],
+ "k2x_dark_black_membrane": [
+  "interior",
+  "night"
+ ],
+ "k2x_dark_flooded_hall": [
+  "interior",
+  "night"
+ ],
+ "k2x_indus_foundry_canyon": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_deep_shaft": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_tidal_pressure": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_cyclopean_spine": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_one_more_turn": [
+  "interior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_radial_reactor": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_cargo_spine": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_mass_transfer": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_cantilever_yard": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_freight_lift": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_quiet_broadcast": [
+  "interior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_transfer_terminal": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_megafactory": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_open_assembly": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_dark_machine_room": [
+  "interior",
+  "night"
+ ],
+ "k2x_dark_corridor_axis": [
+  "interior",
+  "night"
+ ],
+ "k2x_indus_load_weave": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_surge_divide": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_pressure_vessels": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_tidal_spine": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_mega_field": [
+  "exterior",
+  "architecture",
+  "day"
+ ],
+ "k2x_indus_resonance_press": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_indus_signal_forge": [
+  "interior",
+  "architecture"
+ ],
+ "k2x_dark_spiral_tower": [
+  "interior",
+  "night"
+ ],
+ "k2x_dark_hover_study": [
+  "interior",
+  "night"
+ ],
+ "k2x_dark_instrument_room": [
+  "interior",
+  "night"
+ ],
+ "k2x_primary_mirror": [
+  "interior",
+  "architecture",
+  "day"
+ ],
+ "k2x_resonance_cathedral": [
+  "interior",
+  "architecture",
+  "day"
+ ],
+ "k2x_last_car": [
+  "interior",
+  "day"
+ ],
+ "k2s_open_field": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "magic"
+ ],
+ "k2s_quiet_bar": [
+  "interior",
+  "day"
+ ],
+ "k2s_quiet_room": [
+  "interior",
+  "night",
+  "day",
+  "architecture"
+ ],
+ "k2s_celestial_observatory": [
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "magic"
+ ],
+ "k2s_quiet_room_2": [
+  "interior",
+  "night",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_mirrored_lift": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_cinema_wait": [
+  "exterior",
+  "night",
+  "day",
+  "nature"
+ ],
+ "k2s_zoetrope_room": [
+  "interior",
+  "night",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_snow_vending": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture",
+  "season"
+ ],
+ "k2s_window_light": [
+  "interior",
+  "day",
+  "nature"
+ ],
+ "k2s_carriage_light": [
+  "interior",
+  "day",
+  "nature"
+ ],
+ "k2s_cinema_wait_2": [
+  "interior",
+  "night",
+  "nature",
+  "street",
+  "magic"
+ ],
+ "k2s_marble_quarry": [
+  "night",
+  "day",
+  "nature"
+ ],
+ "k2s_letterpress_studio": [
+  "interior",
+  "night",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_quiet_bar_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_bridge_line": [
+  "exterior",
+  "day",
+  "season"
+ ],
+ "k2s_last_tram": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature"
+ ],
+ "k2s_butterfly_archive": [
+  "day",
+  "nature"
+ ],
+ "k2s_cookie_shop": [
+  "interior",
+  "night",
+  "day",
+  "street"
+ ],
+ "k2s_old_harbour": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "season"
+ ],
+ "k2s_old_harbour_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_river_bank": [
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture"
+ ],
+ "k2s_river_bank_2": [
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture"
+ ],
+ "k2s_old_harbour_3": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "season"
+ ],
+ "k2s_pizza_shop": [
+  "interior",
+  "night",
+  "day",
+  "street"
+ ],
+ "k2s_fontaine_canal": [
+  "interior",
+  "exterior",
+  "day",
+  "street"
+ ],
+ "k2s_old_theater": [
+  "interior",
+  "exterior",
+  "day",
+  "nature"
+ ],
+ "k2s_biscuit_shop": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_cinema_wait_3": [
+  "exterior",
+  "day",
+  "nature",
+  "street",
+  "season"
+ ],
+ "k2s_dessert_shop": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_dressing_table": [
+  "day"
+ ],
+ "k2s_manga_shop": [
+  "interior",
+  "day",
+  "street",
+  "season"
+ ],
+ "k2s_cinema_wait_4": [
+  "interior",
+  "day",
+  "street"
+ ],
+ "k2s_bakery": [
+  "interior",
+  "day"
+ ],
+ "k2s_rain_trunk": [
+  "night"
+ ],
+ "k2s_seaside_rail": [
+  "exterior",
+  "day",
+  "nature"
+ ],
+ "k2s_cinema_wait_5": [
+  "night",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_photo_shop": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_rain_taxi": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "season"
+ ],
+ "k2s_cinema_wait_6": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature"
+ ],
+ "k2s_tatami_room": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "season"
+ ],
+ "k2s_record_store": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "street"
+ ],
+ "k2s_shrine_festival": [
+  "night",
+  "day",
+  "street",
+  "architecture",
+  "magic"
+ ],
+ "k2s_shrine_festival_2": [
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "season",
+  "magic"
+ ],
+ "k2s_shrine_festival_3": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "magic"
+ ],
+ "k2s_shrine_festival_4": [
+  "night",
+  "day",
+  "architecture",
+  "magic"
+ ],
+ "k2s_convenience_store": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "season",
+  "magic"
+ ],
+ "k2s_flooded_library": [
+  "interior",
+  "night",
+  "day",
+  "architecture",
+  "magic"
+ ],
+ "k2s_solar_observatory": [
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture"
+ ],
+ "k2s_weather_station": [
+  "exterior",
+  "night",
+  "architecture"
+ ],
+ "k2s_tatami_room_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "magic"
+ ],
+ "k2s_coastal_hotel": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "magic"
+ ],
+ "k2s_roof_orchard": [
+  "interior",
+  "exterior",
+  "night",
+  "nature",
+  "architecture",
+  "magic"
+ ],
+ "k2s_desert_radio": [
+  "exterior",
+  "night",
+  "day",
+  "magic"
+ ],
+ "k2s_suspended_train": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture",
+  "magic"
+ ],
+ "k2s_aerial_ferry": [
+  "exterior",
+  "day",
+  "nature",
+  "architecture",
+  "magic"
+ ],
+ "k2s_bridge_line_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture",
+  "magic"
+ ],
+ "k2s_night_laundry": [
+  "interior",
+  "exterior",
+  "night",
+  "nature",
+  "street",
+  "season"
+ ],
+ "k2s_mirrored_lift_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture"
+ ],
+ "k2s_cinema_wait_7": [
+  "interior",
+  "exterior",
+  "day",
+  "architecture"
+ ],
+ "k2s_cinema_wait_8": [
+  "interior",
+  "exterior",
+  "night",
+  "nature",
+  "architecture",
+  "season",
+  "magic"
+ ],
+ "k2s_quiet_bar_3": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_botanical_archive": [
+  "exterior",
+  "nature"
+ ],
+ "k2s_abandoned_garden": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_cinema_wait_9": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "architecture",
+  "season"
+ ],
+ "k2s_bridge_line_3": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture"
+ ],
+ "k2s_bridge_line_4": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_glass_greenhouse": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "architecture",
+  "season"
+ ],
+ "k2s_bridge_line_5": [
+  "interior",
+  "exterior",
+  "night",
+  "nature",
+  "architecture",
+  "season"
+ ],
+ "k2s_platform_edge": [
+  "exterior",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_last_tram_2": [
+  "interior",
+  "exterior",
+  "night",
+  "nature",
+  "season"
+ ],
+ "k2s_weather_station_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture"
+ ],
+ "k2s_quiet_bar_4": [
+  "interior",
+  "nature",
+  "street",
+  "architecture",
+  "season"
+ ],
+ "k2s_window_light_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "architecture"
+ ],
+ "k2s_river_bank_4": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season",
+  "magic"
+ ],
+ "k2s_bridge_line_6": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "architecture",
+  "season"
+ ],
+ "k2s_autumn_orchard": [
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_window_light_3": [
+  "interior",
+  "exterior",
+  "nature",
+  "season"
+ ],
+ "k2s_bakery_2": [
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_last_tram_3": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_window_light_4": [
+  "interior",
+  "nature"
+ ],
+ "k2s_abandoned_garden_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture",
+  "season"
+ ],
+ "k2s_dark_studio": [
+  "interior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "architecture"
+ ],
+ "k2s_cinema_wait_10": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture"
+ ],
+ "k2s_prism_observatory": [
+  "interior",
+  "exterior",
+  "night",
+  "nature",
+  "street",
+  "architecture"
+ ],
+ "k2s_old_theater_2": [
+  "interior",
+  "exterior",
+  "night",
+  "nature",
+  "season"
+ ],
+ "k2s_quiet_room_3": [
+  "interior",
+  "day",
+  "nature",
+  "street",
+  "architecture",
+  "season"
+ ],
+ "k2s_carriage_light_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture",
+  "season"
+ ],
+ "k2s_cinema_wait_12": [
+  "interior",
+  "exterior",
+  "night",
+  "nature"
+ ],
+ "k2s_convenience_store_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "architecture",
+  "season"
+ ],
+ "k2s_snow_vending_2": [
+  "exterior",
+  "night",
+  "day",
+  "nature"
+ ],
+ "k2s_quiet_bar_5": [
+  "interior",
+  "night",
+  "nature"
+ ],
+ "k2s_bakery_3": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "season"
+ ],
+ "k2s_platform_edge_2": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "architecture"
+ ],
+ "k2s_snow_vending_3": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature"
+ ],
+ "k2s_cinema_wait_13": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "architecture",
+  "magic"
+ ],
+ "k2s_pale_kitchen": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature"
+ ],
+ "k2s_reflect_pool": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_life_scene_8": [
+  "night",
+  "day",
+  "nature",
+  "architecture",
+  "season"
+ ],
+ "k2s_cinema_wait_14": [
+  "exterior",
+  "night",
+  "day",
+  "architecture",
+  "magic"
+ ],
+ "k2s_glass_greenhouse_3": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_cinema_wait_15": [
+  "nature",
+  "architecture"
+ ],
+ "k2s_life_scene_9": [
+  "night",
+  "nature",
+  "architecture",
+  "season"
+ ],
+ "k2s_window_light_5": [
+  "architecture",
+  "magic"
+ ],
+ "k2s_cinema_wait_16": [
+  "exterior",
+  "architecture"
+ ],
+ "k2s_glass_greenhouse_4": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "season"
+ ],
+ "k2s_cinema_wait_17": [
+  "night",
+  "day",
+  "nature",
+  "magic"
+ ],
+ "k2s_weather_station_3": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature"
+ ],
+ "k2s_cinema_wait_18": [
+  "night",
+  "day"
+ ],
+ "k2s_snow_vending_4": [
+  "interior",
+  "exterior",
+  "day",
+  "nature",
+  "magic"
+ ],
+ "k2s_life_scene_10": [
+  "night",
+  "nature",
+  "architecture"
+ ],
+ "k2s_cinema_wait_19": [
+  "night",
+  "day"
+ ],
+ "k2s_window_light_6": [
+  "interior",
+  "night",
+  "street"
+ ],
+ "k2s_cinema_wait_20": [
+  "interior",
+  "exterior",
+  "night",
+  "day",
+  "nature",
+  "street",
+  "architecture",
+  "magic"
+ ],
+ "k2s_cinema_wait_21": [
+  "interior",
+  "night",
+  "day",
+  "architecture"
+ ],
+ "k2s_rooftop": [
+  "exterior",
+  "night",
+  "day",
+  "architecture"
+ ],
+ "k2s_last_tram_4": [
+  "interior",
+  "exterior",
+  "night",
+  "nature"
+ ],
+ "k2s_record_shop": [
+  "interior",
+  "day",
+  "street"
+ ],
+ "k2s_silver_profile": [
+  "night",
+  "day",
+  "magic"
+ ],
+ "k2s_cinema_wait_23": [
+  "interior",
+  "exterior",
+  "nature",
+  "street"
+ ],
+ "k2s_last_ferry": [
+  "exterior",
+  "night",
+  "day"
  ]
 }
