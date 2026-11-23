@@ -20,6 +20,7 @@ import io
 import json
 import os
 import random
+import re
 import shutil
 import subprocess
 import sys
@@ -562,6 +563,111 @@ def t_outfit_inline():
             "The stone is scuffed in a broad arc where boots have turned")[1]:
         issues.append("把空间短语误当穿着（broad arc where boots）")
     return (not issues), ("内联/所有格/全篇三类写法都已处理，空间短语不误伤"
+                          if not issues else "；".join(issues))
+
+
+@check("换角色后不留原角色特征")
+def t_residue():
+    """母题库是围绕 Miku 写的，换角色后这些「角色特征锚点」必须一起中性化：
+
+      · "the outer twin-tail ends" / "aqua twintails"（连字符 / 无空格写法）
+      · "full body from boots to hair ornaments"
+      · "her face, eyes, hands and hair ornaments must stay readable"
+      · 护盾里的 "no duplicate Miku" / "no missing twin tails"
+      · "virtual-singer stillness" / tag 里的 virtual singer
+
+    漏掉任何一条，模型都会把 aqua + 双马尾当角色特征画出来 —— 就是用户报的
+    「换了对象还是青绿色双马尾」。同时反向验证：Miku 本人的双马尾不能被抹掉。
+    """
+    seeds, chars = A.load()
+    issues = []
+    # 1) 非 Miku 角色：逐条母题扫残留
+    key = "cirno"
+    try:
+        ch = B.char_entry("cirno")
+    except Exception:
+        ch = None
+    if not ch:
+        key, ch = "furina", chars.get("furina")
+    if not ch:
+        return True, "跳过（无可用非 Miku 角色）"
+    bad = re.compile(r"\bMiku\b|\bHatsune\b|\btwin[\s-]?tails?\b|\btwintails?\b"
+                     r"|\bvirtual[\s-]singer\b|\bhair ornaments?\b", re.I)
+    hits = []
+    for sid, seed in seeds.items():
+        txt, _ = A.assemble(sid, key, "keep", "auto", char_obj=ch)
+        for para in A.paras(txt):
+            # 角色自己的护盾里 "no missing hair ornament" 是合法的，只查正文
+            if A.is_guard(para):
+                if re.search(r"\bMiku\b|\bHatsune\b|twin[\s-]?tails?|twintails?", para, re.I):
+                    hits.append(f"{sid}: 护盾残留")
+                continue
+            m = bad.search(para)
+            if m:
+                hits.append(f"{sid}: {m.group(0)}")
+                break
+        if len(hits) >= 3:
+            break
+    if hits:
+        issues.append("残留 " + "；".join(hits[:3]))
+
+    # 2) 手写角色的 guard 不能抄 Miku 的否定项（"no Miku, no aqua twin tails"）
+    for key, c in chars.items():
+        g = (c.get("guard") or "") + " " + (c.get("guard_plain") or "")
+        if key != "miku" and re.search(r"\bMiku\b|aqua twin tails", g, re.I):
+            issues.append(f"{key} 的 guard 抄了 Miku 的否定项")
+
+    # 3) 反向：Miku 本人仍要留下双马尾
+    mk = chars.get("miku")
+    if mk:
+        txt, _ = A.assemble("k2x_veil_fall_a", "miku", "keep", "auto", char_obj=mk)
+        if not re.search(r"twin[\s-]?tails?", txt, re.I):
+            issues.append("Miku 本人的双马尾被误抹")
+    return (not issues), ("全量无残留，Miku 自身不受影响" if not issues else "；".join(issues))
+
+
+@check("短提示自动套官方服装 + 画内文字换名")
+def t_auto_official():
+    """两件事：
+
+    · 短提示词（tag 流）母题自带的是 Miku 的服装 tag（detached sleeves / thighhighs）。
+      换角色且没手选服装 → 自动套该角色的官方服装预设，否则那半套原角色衣服留在提示词里。
+      场景 / 海报分支不套（服装段本来就由版型模板接管）。
+    · 画内文字 "HATSUNE MIKU" 要跟着换角色名（大小写风格跟着原文）。
+    """
+    seeds, chars = A.load()
+    issues = []
+    ch = None
+    try:
+        ch = B.char_entry("cirno")
+    except Exception:
+        pass
+    ch = ch or chars.get("furina")
+    key = "cirno" if ch and ch.get("short") == "Cirno" else "furina"
+    if not ch:
+        return True, "跳过（无可用角色）"
+
+    tags, _why = N.auto_official_tags(key, "k2s_cx_023", "auto", [])
+    if not tags:
+        issues.append("短提示未自动套官方服装")
+    else:
+        t, _ = A.assemble("k2s_cx_023", key, "keep", "auto", char_obj=ch, outfit_tags=tags)
+        if re.search(r"detached sleeves|\bthighhighs?\b", t, re.I):
+            issues.append("原角色服装 tag 仍在正文")
+        if not any(x.lower() in t.lower() for x in tags):
+            issues.append("官方服装未进正文")
+    if N.auto_official_tags(key, "k2x_veil_fall_a", "auto", [])[0]:
+        issues.append("场景分支被误套官方服装")
+    keep = ["custom item"]
+    if N.auto_official_tags(key, "k2s_cx_023", "auto", keep)[0] != keep:
+        issues.append("手选单品被自动覆盖")
+
+    t2, _ = A.assemble("k2s_bridge_line_3", key, "keep", "auto", char_obj=ch)
+    if re.search(r"\bMIKU\b|\bHATSUNE\b", t2, re.I):
+        issues.append("画内文字仍印 MIKU")
+    elif (ch.get("short") or "").upper() not in t2.upper():
+        issues.append("画内文字未换成目标角色名")
+    return (not issues), ("自动套官方服装 / 分支隔离 / 手选优先 / 画内文字换名均正确"
                           if not issues else "；".join(issues))
 
 

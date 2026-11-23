@@ -371,6 +371,10 @@ GARMENT_NOUNS = (
     "hakama", "bloomers", "frock", "jumper", "pullover", "waistcoat", "suspenders",
     # ⚠ "top" 之前一直不在表里 —— 实测整条母题写 "white top / dark skirt" 却完全没被识别
     "top", "parka", "sweatshirt", "blazer", "qipao", "tracksuit", "sweatpants",
+    # 腿部/袜类：短提示词母题里的 "black thighhighs" 一直漏网（不在表里 → 换装后
+    # 还穿着原角色的过膝袜），补上后再由 GARMENT_RE 的 e?s 后缀吃掉复数
+    "thighhigh", "thigh-high", "kneehigh", "knee-high", "pantyhose", "leggings",
+    "legwear", "armwear", "headwear",
 )
 GARMENT_RE = re.compile(
     r"\b(?:" + "|".join(re.escape(n) for n in GARMENT_NOUNS) + r")(?:e?s)?\b", re.I)
@@ -1066,6 +1070,47 @@ def _neutralize_guard(s: str, parts: bool = False) -> tuple[str, int]:
     return out, n
 
 
+_OUTFIT_TAG_EXTRA = re.compile(r"^\s*(?:[\w-]+\s+)?(?:trims?|accent lines?|linings?|stitch\w*)\s*$",
+                               re.I)
+
+
+def replace_tag_stream_outfit(text: str, body_tags: list[str],
+                              log: list[str] | None = None) -> tuple[str, int]:
+    """短提示词（tag 流）里**整组**替换服装 tag。
+
+    母题自带的是原角色官方服装，形如
+        "black sleeveless top, teal trim, detached sleeves, black thighhighs"
+    逐条摘除会被 swap_garments 的 limit 截断，留下半套（实测 thighhighs 留在成品里，
+    出图就是「换了脸还穿着初音那身」）。tag 流本来就是逗号分隔的平铺列表，
+    按 tag 粒度整组换成目标角色的服装最稳。
+
+    只处理 `_is_tag_stream()` 认的段落 —— 散文句仍交给 rewrite_clothing。
+    """
+    log = log if log is not None else []
+    if not body_tags:
+        return text, 0
+    out, n = [], 0
+    for p in paras(text):
+        if is_guard(p) or not _is_tag_stream(p):
+            out.append(p)
+            continue
+        segs = [s.strip() for s in p.split(",") if s.strip()]
+        keep, placed = [], False
+        for seg in segs:
+            is_gar = bool(GARMENT_RE.search(seg)) or bool(_OUTFIT_TAG_EXTRA.match(seg))
+            if is_gar and not _SEG_STOP_RE.match(seg) and not _SEG_TOPIC_RE.match(seg):
+                if not placed:
+                    keep.extend(body_tags[:14])
+                    placed = True
+                    n += 1
+                continue
+            keep.append(seg)
+        out.append(", ".join(keep) if placed else p)
+    if n:
+        log.append(f"服装: tag 流整组替换 {n} 段 → {', '.join(body_tags[:3])}…")
+    return join(out), n
+
+
 def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = True,
                      log: list[str] | None = None,
                      already_placed: bool = False,
@@ -1389,7 +1434,7 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
     # 5) 散落在正文里的双马尾表述（蒙版段、景深段常提到「the lower twin tail」）
     #    发型段已经整段换过，但这些句子还留着原角色的特征 → 换非双马尾角色会画出两束长发。
     #    用复数名词 "long hair strands" 替换，句子的单复数不用跟着改。
-    if "twin tail" not in (ch.get("hair_desc") or "").lower():
+    if not has_twin_tail(ch):
         out = []
         k = 0
         for p in paras(text):
@@ -1436,10 +1481,16 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
     # 服装：指定单品时**先就地改写**母题自带的服装句（"She wears a … dress"），
     # 再决定要不要补版型句；没有可改写的句子才退回到「紧跟身份段插入」。
     if outfit_tags and costume != "keep":
-        text, n_swap = rewrite_clothing(join(ps), outfit_tags, short=ch["short"],
-                                        only=(costume == "auto"), log=log,
-                                        mode=zone_mode, raw=motif_text)
+        # tag 流母题（k2s_*）的服装是平铺 tag 列表，整组替换最稳；
+        # 散文句留给 rewrite_clothing 逐句处理。
+        text, n_tag = replace_tag_stream_outfit(join(ps), outfit_tags, log=log)
         ps = paras(text)
+        text, n_swap = rewrite_clothing(text, outfit_tags, short=ch["short"],
+                                        only=(costume == "auto"), log=log,
+                                        mode=zone_mode, raw=motif_text,
+                                        already_placed=bool(n_tag))
+        ps = paras(text)
+        n_swap += n_tag
         if n_swap:
             log.append(f"短提示: 就地替换母题自带服装 {n_swap} 处 → "
                        f"{', '.join(outfit_tags[:3])}…")
@@ -1489,7 +1540,7 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
     text = join(ps)
     log.append("短提示: 约束护盾已补齐")
 
-    if "twin tail" not in (ch.get("hair_desc") or "").lower():
+    if not has_twin_tail(ch):
         out, cnt = [], 0
         for p in paras(text):
             if not is_guard(p):
@@ -1600,7 +1651,7 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
     text = join(ps)
 
     # 6) 非双马尾角色：把「twin tails」中性化，避免画出初音的双马尾
-    if "twin tail" not in (ch.get("hair_desc") or "").lower():
+    if not has_twin_tail(ch):
         out, cnt = [], 0
         for p in paras(text):
             if not is_guard(p):
@@ -1612,6 +1663,153 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
             text = join(out)
         log.append(f"海报: 双马尾表述中性化 {cnt} 处")
     return text
+
+
+# ===========================================================================
+# 残留角色特征清洗（换角色后仍带原角色特征）
+# ---------------------------------------------------------------------------
+# 母题库是围绕 Hatsune Miku 写的。装配会整段换掉「身份句 / 发型段 / 服装段 / 色盘段」，
+# 但正文里还散落着一批**角色特征锚点**，它们不是独立段，所以一路留到输出：
+#
+#   · "full body from boots to hair ornaments"            ← 取景用发饰当身体上限
+#   · "her face, eyes, hands and hair ornaments must …"   ← 可读性锚点
+#   · "both aqua eyes clearly visible" / "aqua hair"      ← 写死 Miku 的颜色
+#   · "the outer twin-tail ends" / "aqua twintails"       ← 连字符/无空格写法
+#   · "no duplicate Miku" / "no missing twin tails"       ← 旧角色否定护盾
+#   · "virtual-singer stillness" / "virtual singer"（tag）← 身份 tag
+#
+# 换角色后这些必须一起中性化，否则模型把 aqua + twin-tail 当角色特征画出来，
+# 就是用户看到的「换了对象还是青绿色双马尾」。只在非 Miku 角色上跑，Miku 本人原样保留。
+# ---------------------------------------------------------------------------
+def _is_miku_like(ch: dict) -> bool:
+    s = f"{ch.get('short', '')} {ch.get('name', '')} {ch.get('work', '')}".lower()
+    return "miku" in s or "hatsune" in s
+
+
+def has_twin_tail(ch: dict) -> bool:
+    """角色本身是不是双马尾。
+
+    ⚠ 不能只查 "twin tail" 这一种写法：Anima 那套 tag 写的是 "worn in twintails"，
+    旧判定认不出 → 把 Miku 的双马尾在正文里中性化成 "long hair strands"，角色自己的
+    标志反而被抹掉（换回 Miku 也画不出双马尾）。
+    """
+    return bool(re.search(r"twin[\s-]?tails?|twintails?|twin[\s-]?ponytails?",
+                          ch.get("hair_desc") or "", flags=re.I))
+
+
+def _match_case(src: str, dst: str) -> str:
+    """让替换词跟原文大小写照抄：画内文字 "HATSUNE MIKU" → "CIRNO"。"""
+    if not dst:
+        return dst
+    if src.isupper() and len(src) > 1:
+        return dst.upper()
+    if src.islower():
+        return dst.lower()
+    return dst[:1].upper() + dst[1:]
+
+
+TWIN_RE = re.compile(r"\btwin[\s-]?tails?\b|\btwin[\s-]?ponytails?\b|\btwintails?\b", re.I)
+# 只吃「紧跟 eyes/bangs/hair 的颜色词」，场景里的 aqua 水/玻璃一律不碰
+CHARCOLOR_RE = re.compile(r"\b(?:luminous|bright|pale|deep)\s+(?=(?:aqua|teal|cyan|turquoise)\b)"
+                          r"|\b(?:aqua|teal|cyan|turquoise)\s+(?=(?:\w+\s+){0,2}"
+                          r"(?:eyes?|bangs?|hair|twintails?|tails?)\b)", re.I)
+VS_RE = re.compile(r"\bvirtual[\s-]singer\b", re.I)
+# 廉价预检：干净文本（没有这些词）直接返回，省掉 3318 组装配里的重正则开销。
+# 只列「角色特征」词，场景里的 aqua 水/玻璃不算 —— 否则几乎每条母题都会进慢路径。
+RESIDUE_CUE = re.compile(r"\b(?:Miku|Hatsune)\b|twin[\s-]?tails?\b|twintails?\b"
+                         r"|twin[\s-]?ponytails?\b|hair ornaments?\b|virtual[\s-]singer\b"
+                         r"|\bblue-haired girl\b|\bno short hair\b"
+                         r"|\b(?:aqua|teal|cyan)\s+(?:eyes?|bangs?)\b"
+                         r"|\b(?:aqua|teal|cyan)\s+(?:trim|accent|lining|stitch)\b", re.I)
+
+
+def neutralize_residual_traits(text: str, ch: dict, log: list[str]) -> str:
+    if _is_miku_like(ch):
+        log.append("残留特征: 角色即 Miku 本人 → 跳过清洗")
+        return text
+    if not RESIDUE_CUE.search(text):
+        log.append("残留特征: 无可清洗项")
+        return text
+
+    name = ch.get("name") or ch.get("short") or "her"
+    short = ch.get("short") or name
+    n = {"twin": 0, "orn": 0, "col": 0, "name": 0, "vs": 0, "guard": 0}
+    out = []
+    for p in paras(text):
+        guard = is_guard(p)
+        if guard:
+            # 旧角色的否定项在换角色后是反向召唤：先整项删掉，再由护盾重写补新角色的
+            p, c = re.subn(r",?\s*no (?:duplicate )?(?:Miku|Hatsune)\b", "", p, flags=re.I)
+            p, c2 = re.subn(r",?\s*no (?:missing )?(?:aqua |teal )?twin[\s-]?tails?(?: silhouette)?\b",
+                            "", p, flags=re.I)
+            p, c3 = re.subn(r",?\s*no (?:missing )?(?:aqua |teal )?twintails?\b", "", p, flags=re.I)
+            p, c4 = re.subn(r",?\s*no (?:generic )?(?:blue-haired girl|blue hair girl)\b", "", p,
+                            flags=re.I)
+            # "no short hair" 只对长发角色成立；目标是短发角色时它会把头发强行拉长
+            c5 = 0
+            if "short" in (ch.get("hair_desc") or "").lower():
+                p, c5 = re.subn(r",?\s*no short hair\b", "", p, flags=re.I)
+            # "no second virtual singer" 是 Miku 身份约束，换角色后应退回普通人物否定
+            p, c6 = re.subn(r"\bno second virtual[\s-]singer\b", "no second figure", p, flags=re.I)
+            n["guard"] += c + c2 + c3 + c4 + c5 + c6
+        else:
+            # 1) 双马尾（含 twin-tail / twintails / twin ponytails）
+            p, c = TWIN_RE.subn("long hair strands", p)
+            n["twin"] += c
+            p = re.sub(r"\blong hair strands strands\b", "long hair strands", p, flags=re.I)
+            p = re.sub(r"\bextremely long long hair\b", "extremely long hair", p, flags=re.I)
+
+            # 2) 发饰锚点：三种固定句式，逐条换掉
+            p, c = re.subn(r",?\s*and hair ornaments?\b(?=\s+(?:must|immediately|stay))", "", p,
+                           flags=re.I)
+            n["orn"] += c
+            p, c = re.subn(r"from boots to hair ornaments?\b",
+                           "from boots to the top of her head", p, flags=re.I)
+            n["orn"] += c
+            p, c = re.subn(r"\bhair ornaments? and both hands\b", "and both hands", p, flags=re.I)
+            n["orn"] += c
+            p, c = re.subn(r"one (?:aqua |teal )?eye and one hair ornament\b",
+                           "one eye and one signature accessory", p, flags=re.I)
+            n["orn"] += c
+            p, c = re.subn(r"\bhair ornaments?\b(?=,?\s*(?:and )?(?:fragments|dissolving|contours))",
+                           "hair", p, flags=re.I)
+            n["orn"] += c
+            p, c = re.subn(r"\bhair ornaments?\b", "hair details", p, flags=re.I)
+            n["orn"] += c
+
+            # 3) 写死的青绿：只吃紧贴 eyes/bangs 的修饰词（aqua hair 交给发型段/服装段）
+            p, c = CHARCOLOR_RE.subn("", p, count=0)
+            n["col"] += c
+            # 服装上的 Miku 色（teal trim / teal accent lines）换成目标角色的主色，
+            # 衣服结构不动 —— 短提示词里那身是母题自带造型，删 tag 会变成没穿衣服。
+            p, c = re.subn(r"\b(?:teal|aqua|cyan)\s+(?=(?:trim|accent|lining|stitch)\b)",
+                           f"{ch.get('accent', 'ivory')} ", p, flags=re.I)
+            n["col"] += c
+            p = re.sub(r"\b(?:luminous|bright|pale|deep)\s{2,}", "", p)
+            # "extremely long teal long hair strands" → 删掉 teal 后剩 "long long"，
+            # 上面那次压缩跑在删色之前，这里补一刀
+            p = re.sub(r"\blong\s+long\s+(hair|strands)\b", r"long \1", p, flags=re.I)
+            p = re.sub(r"\s{2,}", " ", p).strip()
+
+            # 4) virtual-singer
+            p, c = re.subn(r"virtual-singer stillness", f"{short}’s stillness", p, flags=re.I)
+            n["vs"] += c
+            p, c = re.subn(r",\s*virtual[\s-]singer\b", "", p, flags=re.I)
+            n["vs"] += c
+            p, c = re.subn(r"virtual[\s-]singer", "character", p, flags=re.I)
+            n["vs"] += c
+
+        # 5) 名字：大小写不敏感（原写法 \bHatsune Miku\b 匹配不到小写 tag "hatsune miku"）
+        def _nm(m):
+            return _match_case(m.group(0), short if m.group(0).islower() else name)
+        p, c = re.subn(r"\bHatsune Miku\b|\bHatsune\b|\bMiku\b", _nm, p, flags=re.I)
+        n["name"] += c
+        out.append(p)
+
+    msg = (f"残留特征: 双马尾 {n['twin']} / 发饰 {n['orn']} / 角色色 {n['col']} / "
+           f"护盾旧否定 {n['guard']} / virtual-singer {n['vs']} / 旧角色名 {n['name']}")
+    log.append(msg)
+    return join(out)
 
 
 # ---------------------------------------------------------------------------
@@ -1989,6 +2187,9 @@ def assemble(seed_id: str, char_key: str | None = None, aspect: str | None = Non
             text = set_character(text, ch, log, costume, char_key, seed["raw"], outfit_tags,
                                  graphics_phys=(seed.get("source") == "authored"),
                                  lock_palette=bool(seed.get("lock_palette")))
+        # 三个分支共用：把母题里写死的原角色特征（双马尾 / 发饰 / 青绿眼 / Miku 名）
+        # 中性化。放在分支之后、画内文字处理之前 —— 不能改用户填的标题。
+        text = neutralize_residual_traits(text, ch, log)
     if no_text:
         # 优先级最高：勾了「画面不显示英文」就不再管填了什么文字
         text = remove_display_text(text, find_display_text(seed["raw"]), log)

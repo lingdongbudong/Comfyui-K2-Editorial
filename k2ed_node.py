@@ -126,6 +126,34 @@ def resolve_char(key: str):
     return B.char_entry(key)
 
 
+def auto_official_tags(char_key: str, motif: str, costume: str,
+                       tags: list[str]) -> tuple[list[str], str]:
+    """短提示词母题自带的是原角色（Miku）的服装 tag。
+
+    换角色且没手选服装时，自动套该角色的**官方服装预设** —— 否则 tag 流里那半套
+    原角色衣服（detached sleeves / black thighhighs）整组留在提示词里，
+    出图就是「换了脸还穿着初音那身」。
+
+    只对短提示词分支生效：场景/海报分支的服装段本来就由版型模板接管。
+    返回 (tags, 说明)，说明进日志。
+    """
+    if tags or costume != "auto" or not char_key or char_key in ("keep", AUTO, KEEP):
+        return tags, ""
+    try:
+        if A.seed_branch(motif) != "short":
+            return tags, ""
+    except Exception:
+        return tags, ""
+    outs = B.char_outfits(char_key)
+    if not outs:
+        return tags, ""
+    oid = next((o["id"] for o in outs if o.get("id") == "default"), outs[0]["id"])
+    got = B.outfit_tags("char", oid, char_key)
+    if not got:
+        return tags, ""
+    return got, f"服装: 自动套用「{char_key}」官方服装（{oid}，{len(got)} 条）"
+
+
 # ---------------------------------------------------------------------------
 # 随机池
 # ---------------------------------------------------------------------------
@@ -380,6 +408,7 @@ class K2EditorialBuilder:
                     tags = B.outfit_tags("char", 单品[5:], 角色)
                 elif 单品.startswith("lib:"):
                     tags = B.outfit_tags("lib", 单品[4:])
+                tags, _auto_why = auto_official_tags(角色, 母题, costume, tags)
 
                 try:
                     ch = resolve_char(角色)
@@ -392,6 +421,8 @@ class K2EditorialBuilder:
                                            display_mode=("title"
                                                          if 画面文字模式 == "只留主标题"
                                                          else "all"))
+                    if _auto_why:
+                        log.insert(0, _auto_why)
                 except Exception as exc:          # 不让装配异常吞掉整张图
                     text, log = "", [f"!! 装配失败: {exc}"]
             finally:
@@ -726,6 +757,7 @@ def register_routes() -> None:
             tags = B.outfit_tags("char", item[5:], char)
         elif item.startswith("lib:"):
             tags = B.outfit_tags("lib", item[4:])
+        tags, _auto_why = auto_official_tags(char, motif, costume, tags)
         try:
             ch = resolve_char(char)
             if ch is None:
@@ -734,6 +766,8 @@ def register_routes() -> None:
                                    char_obj=ch, outfit_tags=tags,
                                    display_text=display, no_text=no_text,
                                    display_mode=mode)
+            if _auto_why:
+                log.insert(0, _auto_why)
             rep = A.validate(text, None if char == "keep" else char,
                              A.seed_branch(motif), A.seed_character(motif))
             return web.json_response({

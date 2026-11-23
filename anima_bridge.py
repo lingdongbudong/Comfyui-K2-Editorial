@@ -282,8 +282,10 @@ def build_entry(rec: dict) -> dict:
     hair_c = (rec.get("hair") or "white").lower()
     eye_c = (rec.get("eyes") or hair_c).lower()
     wl = _work_label(rec.get("work", ""))
-    accent = SHORT_COLOR.get(eye_c, "aqua")
-    block = SHORT_COLOR.get(hair_c, "cobalt")
+    # ⚠ 兜底色不能是 aqua/cobalt —— 那是 Miku 的配色。认不出的瞳色曾经一律兜到 aqua，
+    #    于是任意角色都被写上「aqua 缝线 / aqua 轮廓」，出图一片青绿（用户报的残留色）。
+    accent = SHORT_COLOR.get(eye_c) or SHORT_COLOR.get(hair_c, "ivory")
+    block = SHORT_COLOR.get(hair_c, "graphite")
 
     return {
         "name": name,
@@ -301,7 +303,7 @@ def build_entry(rec: dict) -> dict:
         "palette": [
             ["pearl white, pure white and pale silver", 62],
             [COLOR_MAP.get(hair_c, "pearl white and pale silver"), 14],
-            [COLOR_MAP.get(eye_c, "aqua and icy cyan"), 10],
+            [COLOR_MAP.get(eye_c) or COLOR_MAP.get(hair_c, "pearl white and pale silver"), 10],
             ["graphite black and matte carbon", 6],
             ["mirror silver and glass contrast", 5],
             ["champagne gold", 2],
@@ -367,7 +369,8 @@ def index() -> list[dict]:
             "work_en": work_en,
             "work_zh": zh_of.get(work_en.lower(), _work_label(work_en)),
             "thumb": f"anima/{rec['thumb']}.webp" if rec.get("thumb") else "",
-            "accent": SHORT_COLOR.get((rec.get("eyes") or "").lower(), "aqua"),
+            "accent": (SHORT_COLOR.get((rec.get("eyes") or "").lower())
+                       or SHORT_COLOR.get((rec.get("hair") or "").lower(), "ivory")),
             "pop": rec.get("pop", 0),
         })
     rows.sort(key=lambda r: -r["pop"])

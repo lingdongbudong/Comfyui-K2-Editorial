@@ -174,7 +174,7 @@
  ],
  "motifs": [
   {
-   "id": "ComfyUI_temp_bttco_00002_",
+   "id": "k2x_still_section",
    "title": "STILL SECTION",
    "zh": "静谧切片",
    "title_zh": "静默切片",
@@ -196,7 +196,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1805,
    "paras": 21,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00002_.webp",
+   "thumb": "thumbs/motifs/k2x_still_section.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -204,7 +204,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00003_",
+   "id": "k2x_veil_fall_a",
    "title": "VEIL FALL",
    "zh": "帷幕坠落·上",
    "title_zh": "帷幕坠落",
@@ -225,7 +225,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2290,
    "paras": 24,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00003_.webp",
+   "thumb": "thumbs/motifs/k2x_veil_fall_a.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -233,7 +233,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00004_",
+   "id": "k2x_veil_fall_b",
    "title": "VEIL FALL",
    "zh": "帷幕坠落·下",
    "title_zh": "帷幕坠落",
@@ -254,7 +254,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2290,
    "paras": 24,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00004_.webp",
+   "thumb": "thumbs/motifs/k2x_veil_fall_b.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -262,7 +262,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00005_",
+   "id": "k2x_meridian_cut",
    "title": "MERIDIAN CUT",
    "zh": "子午切割",
    "title_zh": "子午切面",
@@ -284,7 +284,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2332,
    "paras": 24,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00005_.webp",
+   "thumb": "thumbs/motifs/k2x_meridian_cut.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -292,7 +292,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00006_",
+   "id": "k2x_triple_register_a",
    "title": "TRIPLE REGISTER",
    "zh": "三重套印·上",
    "title_zh": "三重登记",
@@ -313,7 +313,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2275,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00006_.webp",
+   "thumb": "thumbs/motifs/k2x_triple_register_a.webp",
    "thumb_v": 1794220250,
    "character": "",
    "recommend_char": "",
@@ -321,7 +321,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00007_",
+   "id": "k2x_triple_register_b",
    "title": "TRIPLE REGISTER",
    "zh": "三重套印·下",
    "title_zh": "三重登记",
@@ -342,7 +342,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2275,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00007_.webp",
+   "thumb": "thumbs/motifs/k2x_triple_register_b.webp",
    "thumb_v": 1794220250,
    "character": "",
    "recommend_char": "",
@@ -350,7 +350,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00008_",
+   "id": "k2x_root_register",
    "title": "ROOT REGISTER",
    "zh": "根秩序",
    "title_zh": "根脉登记",
@@ -372,7 +372,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2179,
    "paras": 24,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00008_.webp",
+   "thumb": "thumbs/motifs/k2x_root_register.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -380,7 +380,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00010_",
+   "id": "k2x_pod_separation",
    "title": "POD SEPARATION",
    "zh": "荚舱分离",
    "title_zh": "荚舱分离",
@@ -402,7 +402,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2276,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00010_.webp",
+   "thumb": "thumbs/motifs/k2x_pod_separation.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -410,7 +410,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00011_",
+   "id": "k2x_vein_projection",
    "title": "VEIN PROJECTION",
    "zh": "脉络投影",
    "title_zh": "脉纹投影",
@@ -432,7 +432,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1768,
    "paras": 22,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00011_.webp",
+   "thumb": "thumbs/motifs/k2x_vein_projection.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -440,7 +440,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00012_",
+   "id": "k2x_calyx_corridor",
    "title": "CALYX CORRIDOR",
    "zh": "花萼长廊",
    "title_zh": "花萼长廊",
@@ -463,7 +463,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1777,
    "paras": 21,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00012_.webp",
+   "thumb": "thumbs/motifs/k2x_calyx_corridor.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -471,7 +471,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00013_",
+   "id": "k2x_pollen_storm",
    "title": "POLLEN STORM",
    "zh": "花粉风暴",
    "title_zh": "花粉风暴",
@@ -492,7 +492,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1882,
    "paras": 22,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00013_.webp",
+   "thumb": "thumbs/motifs/k2x_pollen_storm.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -500,7 +500,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00014_",
+   "id": "k2x_second_specimen",
    "title": "SECOND SPECIMEN",
    "zh": "第二标本",
    "title_zh": "第二标本",
@@ -522,7 +522,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1991,
    "paras": 23,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00014_.webp",
+   "thumb": "thumbs/motifs/k2x_second_specimen.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -530,7 +530,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_bttco_00015_",
+   "id": "k2x_closing_register",
    "title": "CLOSING REGISTER",
    "zh": "闭册",
    "title_zh": "收束登记",
@@ -551,7 +551,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1877,
    "paras": 22,
-   "thumb": "thumbs/motifs/ComfyUI_temp_bttco_00015_.webp",
+   "thumb": "thumbs/motifs/k2x_closing_register.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -559,7 +559,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_flvjc_00001_",
+   "id": "k2x_star_atlas_scroll",
    "title": "",
    "zh": "星图长卷",
    "title_zh": "折起的星座",
@@ -581,7 +581,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1497,
    "paras": 21,
-   "thumb": "thumbs/motifs/ComfyUI_temp_flvjc_00001_.webp",
+   "thumb": "thumbs/motifs/k2x_star_atlas_scroll.webp",
    "thumb_v": 1794220250,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -589,7 +589,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_flvjc_00006_",
+   "id": "k2x_celestial_corolla",
    "title": "CELESTIAL COROLLA",
    "zh": "天穹花冕",
    "title_zh": "天穹花冠",
@@ -612,7 +612,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2126,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_flvjc_00006_.webp",
+   "thumb": "thumbs/motifs/k2x_celestial_corolla.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -620,7 +620,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_ixist_00001_",
+   "id": "k2x_garden_zero",
    "title": "",
    "zh": "零号花园",
    "title_zh": "玻璃绽放相位06",
@@ -644,7 +644,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1798,
    "paras": 19,
-   "thumb": "thumbs/motifs/ComfyUI_temp_ixist_00001_.webp",
+   "thumb": "thumbs/motifs/k2x_garden_zero.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -652,7 +652,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_ixist_00002_",
+   "id": "k2x_gravity_culture_theatre",
    "title": "",
    "zh": "重力培植剧场",
    "title_zh": "声下沉07",
@@ -676,7 +676,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2031,
    "paras": 22,
-   "thumb": "thumbs/motifs/ComfyUI_temp_ixist_00002_.webp",
+   "thumb": "thumbs/motifs/k2x_gravity_culture_theatre.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -684,7 +684,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_ixist_00005_",
+   "id": "k2x_zero_g_design_field",
    "title": "",
    "zh": "零重力设计场",
    "title_zh": "信号织物",
@@ -705,7 +705,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1875,
    "paras": 22,
-   "thumb": "thumbs/motifs/ComfyUI_temp_ixist_00005_.webp",
+   "thumb": "thumbs/motifs/k2x_zero_g_design_field.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -713,7 +713,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_ixist_00007_",
+   "id": "k2x_prism_tide_field",
    "title": "",
    "zh": "棱镜潮汐场",
    "title_zh": "折射测试",
@@ -734,7 +734,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2030,
    "paras": 23,
-   "thumb": "thumbs/motifs/ComfyUI_temp_ixist_00007_.webp",
+   "thumb": "thumbs/motifs/k2x_prism_tide_field.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -742,7 +742,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_majdv_00001_",
+   "id": "k2x_helix_choir",
    "title": "HELIX CHOIR",
    "zh": "螺旋圣咏",
    "title_zh": "螺旋合唱",
@@ -764,7 +764,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2421,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_majdv_00001_.webp",
+   "thumb": "thumbs/motifs/k2x_helix_choir.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -772,7 +772,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_majdv_00002_",
+   "id": "k2x_caustic_requiem",
    "title": "CAUSTIC REQUIEM",
    "zh": "焦散安魂曲",
    "title_zh": "焦散安魂曲",
@@ -793,7 +793,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2431,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_majdv_00002_.webp",
+   "thumb": "thumbs/motifs/k2x_caustic_requiem.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -801,7 +801,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_majdv_00003_",
+   "id": "k2x_dendrite_survey",
    "title": "DENDRITE SURVEY",
    "zh": "枝晶测绘",
    "title_zh": "枝晶测绘",
@@ -823,7 +823,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1779,
    "paras": 21,
-   "thumb": "thumbs/motifs/ComfyUI_temp_majdv_00003_.webp",
+   "thumb": "thumbs/motifs/k2x_dendrite_survey.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -831,7 +831,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00001_",
+   "id": "k2x_star_atlas_scroll_b",
    "title": "",
    "zh": "星图长卷·变体",
    "title_zh": "折起的星座",
@@ -853,7 +853,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1497,
    "paras": 21,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00001_.webp",
+   "thumb": "thumbs/motifs/k2x_star_atlas_scroll_b.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -861,7 +861,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00002_",
+   "id": "k2x_crystal_rain_wall",
    "title": "",
    "zh": "晶雨斜墙",
    "title_zh": "降水测试",
@@ -883,7 +883,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1669,
    "paras": 22,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00002_.webp",
+   "thumb": "thumbs/motifs/k2x_crystal_rain_wall.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -891,7 +891,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00003_",
+   "id": "k2x_phonon_tunnel_a",
    "title": "",
    "zh": "声子风洞·上",
    "title_zh": "声子风",
@@ -912,7 +912,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1692,
    "paras": 22,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00003_.webp",
+   "thumb": "thumbs/motifs/k2x_phonon_tunnel_a.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -920,7 +920,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00004_",
+   "id": "k2x_phonon_tunnel_b",
    "title": "",
    "zh": "声子风洞·下",
    "title_zh": "声子风",
@@ -941,7 +941,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1692,
    "paras": 22,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00004_.webp",
+   "thumb": "thumbs/motifs/k2x_phonon_tunnel_b.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -949,7 +949,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00005_",
+   "id": "k2x_magnetic_write_field",
    "title": "",
    "zh": "磁写场",
    "title_zh": "磁字迹",
@@ -968,7 +968,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 1539,
    "paras": 21,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00005_.webp",
+   "thumb": "thumbs/motifs/k2x_magnetic_write_field.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -976,7 +976,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00008_",
+   "id": "k2x_mirror_plume",
    "title": "MIRROR PLUME",
    "zh": "镜羽",
    "title_zh": "镜羽",
@@ -998,7 +998,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2198,
    "paras": 26,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00008_.webp",
+   "thumb": "thumbs/motifs/k2x_mirror_plume.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -1006,7 +1006,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00009_",
+   "id": "k2x_orbital_celesta",
    "title": "ORBITAL CELESTA",
    "zh": "轨道钟琴",
    "title_zh": "轨道钢片琴",
@@ -1028,7 +1028,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2156,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00009_.webp",
+   "thumb": "thumbs/motifs/k2x_orbital_celesta.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -1036,7 +1036,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00010_",
+   "id": "k2x_echo_codex",
    "title": "ECHO CODEX",
    "zh": "回声圣典",
    "title_zh": "回声抄本",
@@ -1058,7 +1058,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2081,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00010_.webp",
+   "thumb": "thumbs/motifs/k2x_echo_codex.webp",
    "thumb_v": 1794220251,
    "character": "Hatsune Miku",
    "recommend_char": "",
@@ -1066,7 +1066,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00011_",
+   "id": "k2x_mirror_tide_opera",
    "title": "MIRROR TIDE OPERA",
    "zh": "镜潮歌剧",
    "title_zh": "镜潮歌剧",
@@ -1089,7 +1089,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2249,
    "paras": 26,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00011_.webp",
+   "thumb": "thumbs/motifs/k2x_mirror_tide_opera.webp",
    "thumb_v": 1794220252,
    "character": "Furina from Genshin Impact",
    "recommend_char": "",
@@ -1097,7 +1097,7 @@
    "added": ""
   },
   {
-   "id": "ComfyUI_temp_zmmyf_00012_",
+   "id": "k2x_grain_sanctum",
    "title": "GRAIN SANCTUM",
    "zh": "沙漏圣所",
    "title_zh": "颗粒圣所",
@@ -1119,7 +1119,7 @@
    "workflow": "Krea2-白垩光标准档.json",
    "words": 2667,
    "paras": 25,
-   "thumb": "thumbs/motifs/ComfyUI_temp_zmmyf_00012_.webp",
+   "thumb": "thumbs/motifs/k2x_grain_sanctum.webp",
    "thumb_v": 1794220252,
    "character": "Hatsune Miku",
    "recommend_char": "",

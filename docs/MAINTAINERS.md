@@ -211,7 +211,7 @@ python tests/run_all.py --http   # 加打 8188 端点（服务需在跑）
 
 ```bash
 git archive --format=zip --prefix=Comfyui-K2-Editorial/ \
-            -o ../Comfyui-K2-Editorial-v1.15.3.zip HEAD
+            -o ../Comfyui-K2-Editorial-v1.15.4.zip HEAD
 ```
 
 ⚠ 打完之后要**改目录名断言**：解压出来的第一层必须是 `Comfyui-K2-Editorial/`，

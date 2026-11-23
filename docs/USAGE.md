@@ -42,7 +42,7 @@ git clone https://github.com/lingdongbudong/Comfyui-K2-Editorial.git
 
 ```bash
 # ① 启动日志：重启 ComfyUI 后找这行
-#    [K2-Editorial] v1.15.3 已加载：['K2EditorialBuilder']
+#    [K2-Editorial] v1.15.4 已加载：['K2EditorialBuilder']
 
 # ② 节点已注册
 curl -s --noproxy '*' http://127.0.0.1:8188/object_info/K2EditorialBuilder | head -c 120
