@@ -177,6 +177,20 @@ git clone https://github.com/lingdongbudong/Comfyui-K2-Editorial.git
 
 ## 更新日志
 
+### v1.17.2
+
+- **`k2x_clsc_seat_side` 按参考图重做构图**，画内标题由 `COLONNADE` 改为 **`HALL LIGHT`**（场景里已经没有柱子，原名不再成立），中文名「石厅逆光」：
+  - **机位**：低位 **45° 侧前**（`forty-five degrees across her left side`，水平与座面齐高、上仰 10°），人物在画面中心偏左，腿占右半；
+  - **光**：改成**王座背后上方的一束逆光**（原来是从侧面高窗打过来），形成发丝轮廓光 + 腿的边缘光，背景压到近黑；
+  - **腿**：从「小腿垂直下垂」改成 `extends forward level with her hip, the shin angling down no more than ten degrees`
+    —— 也就是参考图那种**整条小腿水平前伸**的伸展姿态，脚下留一拳空隙；
+  - **柱子全部撤掉**（连左侧那排也去掉），背景只剩一整面暗石墙 + 一个拱形壁龛 + 地面，负面加
+    `no column / no pillar / no pilaster / no balustrade`；
+  - **无王冠**沿用 v1.17.1 的口径（`no crown / no tiara / no diadem / no headpiece`）。
+- 色盘按暗调重算（暗厅 38% / 黑缎 20% / 受光石座 14% / 皮肤与腿 10% / 暗石地 8% / 头发 6% / 头后光爆 3% / 鞋底高光 1%），合计 100。
+- 实测：45° 侧前、头后逆光、腿水平前伸、暗调、无柱、无冠六项全部达成；伸出的鞋仍会贴近地面（腿全长 + 座高的物理关系，参考图同样如此）。
+- 回归测试 23/23 全绿，manifest 558 条 558 图。
+
 ### v1.17.1
 
 - **`k2x_clsc_seat_side`（柱厅侧影 / COLONNADE）按反馈重做三处**：

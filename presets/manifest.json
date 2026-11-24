@@ -9842,12 +9842,12 @@
   },
   {
    "id": "k2x_clsc_seat_side",
-   "title": "COLONNADE",
-   "zh": "柱厅侧影·阿尔托莉雅",
+   "title": "HALL LIGHT",
+   "zh": "石厅逆光·阿尔托莉雅",
    "title_zh": "",
-   "display_orig": "COLONNADE",
+   "display_orig": "HALL LIGHT",
    "display_all": [
-    "COLONNADE"
+    "HALL LIGHT"
    ],
    "aspect": "landscape",
    "aspect_zh": "横屏",
@@ -9859,10 +9859,10 @@
    "branch": "scene",
    "branch_zh": "3D 场景",
    "workflow": "Krea2-白垩光标准档.json",
-   "words": 2911,
+   "words": 2869,
    "paras": 22,
    "thumb": "thumbs/motifs/k2x_clsc_seat_side.webp",
-   "thumb_v": 1795545884,
+   "thumb_v": 1795546413,
    "character": "",
    "recommend_char": "artoria_pendragon_(fate)",
    "genre": "",
