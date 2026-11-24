@@ -54,8 +54,8 @@ Krea2 的「白垩光」是一套**一体化长文提示词**：25 段结构里�
 | 特性 | 说明 |
 | --- | --- |
 | 母题 | 553 条长文（3D 场景 312 / 平面海报 15 / 短提示词 226），每条自带画幅建议与中英文标题 |
-| 角色 | 2432 位，跟 Anima-Wardrobe-V6 实时同步；没装则用内置快照 |
-| 服装 | 8 套通用版型 + 角色官方预设 2447 套 + 服装库 98 套（内置 SFW 快照 10 类；装了 Anima 即读其完整库） |
+| 角色 | 2432 位，跟 Anima-Wardrobe-V6 实时同步；没装则用内置快照（2432 位 / 2444 张立绘） |
+| 服装 | 8 套通用版型 + 角色官方预设 2800 套（2434 位） + 服装库 113 套（内置 SFW 快照 10 类；装了 Anima 即读其完整库 167 套 / 11 类） |
 | 服装替换 | 按部位（上装 / 下装 / 连衣裙 / 腿部 / 鞋 / 配饰）只写母题需要的部位；长文里各种旧服装写法自动让位 |
 | 替换位 | 角色身份 / 画幅 / 服装材质 / 单品 / 画内排印文字 |
 | 画幅联动 | 卡片徽标点一下 `竖 → 横 → 方 → 竖` 循环，同时切当前工作流画幅 |
@@ -176,6 +176,48 @@ git clone https://github.com/lingdongbudong/Comfyui-K2-Editorial.git
 - **角色名残留自检**只对母题里登记过 `character` 的 30 条生效（29 条 Hatsune Miku + 1 条 Furina）；其余母题不写死角色，无需检查。
 
 ## 更新日志
+
+### v1.15.5
+
+- **修：选了角色官方服装，出图还是母题自带那套（用户反馈：甘雨 × 植物档案，穿成了白色吊带裙）**。
+  根因不在装配，在这条角色预设本身：`ganyu_(genshin_impact)` 的 `default` 是 safebooru 词频统计的产物
+  （`goat horns / black gloves / bow`），**一件衣服都没有**，按部位筛完是空 → 静默回落到随机版型句，
+  而母题自带的 `spaghetti-strap camisole dress` 贴着角色、位置更靠前，于是白裙胜出。
+  现在：
+  - 空结果分两种日志 —— 「这套预设里一件真正的衣物都没有（列 tag）→ 需要修角色预设」
+    与「服装库与母题部位没有交集」，不再一概而论；
+  - **用户选了服装却筛不出单品时，不再追加随机版型句**（短提示 / 场景 / 海报三分支统一），
+    免得两套衣服在同一段提示词里互相抢。
+  - 甘雨预设按官方设定重写（白短旗袍叠黑露背连体衣 + 白袖套 + 黑长手套 + 黑裤袜 + 黑高跟）。
+- **修：`cape` 被当成帽子，披风类角色整组服装丢失**。`zone_of_tag()` 用子串匹配，
+  `"cap" in "cape"` 成立 → 披风判成配饰 → 该角色只剩 acc、没有上装。corrin / byleth / malenia /
+  artoria(lancer) 等一批 Fire Emblem / 魂系角色都栽在这里（2434 人里 73 人「当前启用那套没有一件核心服装」）。
+  - 长度 ≤3 的关键词改**词边界匹配**（长词仍走子串，保住 `sundress` / `belted` / `overshoes`）；
+  - acc 不再抢占同一 tag 里的上装主体（`belted coat` / `suspenders jacket` → upper，`top hat` 仍归 acc）；
+  - 补 11 个**早就在 `GARMENT_NOUNS` 里、却一直没进部位表**的词：
+    `bodystocking / strapless / pajama / bikini / swimsuit`（dress）、`hood / collar / clothes / armor`（upper）、
+    `veil / necktie`（acc）。
+  - 修完 73 → 17 人，与变空 0 例、`run_all` 23/23。
+- **修：短发角色被画成长发垂在窗台两侧（用户反馈：anis × 废弃花园，窗台左右各一束长发）**。
+  母题正文写死的是原型角色的长发（`She has waist-length, long and silky very long hair…` /
+  `Her long straight very long hair should descend over the windowsill…`），而**短提示分支没有发型处理**
+  （它不像场景分支那样有独立发型段可整段替换，单段母题 `locate_sections()` 什么都定位不到）。
+  新增 `drop_long_hair_sentences()`：只在 `hair_desc` 含 short/bob/cropped/pixie/buzz 的角色上生效，
+  命中「含 hair 词 + 长度词或垂落动词」的句子就换成真实发型，配饰句（`hair ornament`）与
+  身份句不动；场景分支仅在发型段没定位到时兜底（否则会误删 `HAIR_TPL`）。
+  **553 个母题里 226 条短提示，其中 103 条正文写死长发** —— 2432 个角色里 525 人是短发。
+- **修：母题把身材写死成平胸**。同批母题正文有 `a flat chest`、`a slim delicate figure`，
+  约束句甚至写着 `Do not alter the … flat chest`，与角色的 `huge breasts` 正面冲突。
+  新增 `strip_motif_body()`：正向描写 / 逗号枚举 / 约束句 / 负面句四种位置都摘，
+  跳过身份句与非人物主语句（`Place the old greenhouse … slender rusted metal frame` 里的
+  slender 是建筑不是身材）；摘空的句子整句丢。**不做「角色有没有身材词」的门槛** ——
+  `build_entry` 的 identity 只装前几个标签，2432 人里仅 60 人带身材词，拿它当门槛等于没修。
+- **新增：面板顶栏三个外链按钮** —— 使用教学（作者 B 站）、图片欣赏（母题作者 B 站）、GitHub 仓库。
+- **数据：角色官方服装预设补写 27 人**（甘雨 + 26 个原本按部位筛不出任何衣物的角色）。
+  官方设定类按原作逐项落地，皮肤类按 safebooru.org 高频服装统计（样本 1–100 张）落地，
+  全部标记 `verified: false` 待真机验收，`note` 里记了依据与百分比。
+- **数据：内置快照重打包** —— 角色预设 2447 → **2800 套**（2434 人）、服装库 113 套 / 10 类、缩略图 2444 张。
+- 回归 23/23 全绿。
 
 ### v1.15.4
 

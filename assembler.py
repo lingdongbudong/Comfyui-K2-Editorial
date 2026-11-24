@@ -524,7 +524,12 @@ _ZONE_KW = {
     "dress": ("camisole dress", "slip dress", "apron dress", "sundress", "dress", "gown",
               "kimono", "yukata", "robe", "qipao", "cheongsam", "hanfu", "one-piece",
               "jumpsuit", "overalls", "bodysuit", "leotard", "babydoll", "lingerie",
-              "nightgown", "teddy"),
+              "nightgown", "teddy",
+              # 2026-11-24 补：全身/连体的几种写法，原来一律判 style 挂空、整组丢失
+              "bodystocking", "strapless", "pajama",
+              # 泳装：Anima 里 "striped bikini" / "white print bikini" / "one-piece swimsuit"
+              # 都是常见官方皮肤标签，判不出部位就整组被丢（泳装角色只剩 halo）
+              "bikini", "swimsuit"),
     "foot": ("boots", "boot", "shoes", "shoe", "loafers", "sneakers", "sandals", "heels",
              "pumps", "mary jane", "oxfords", "flats", "mules", "slippers", "geta",
              "footwear", "barefoot", "tabi"),
@@ -536,10 +541,18 @@ _ZONE_KW = {
     "upper": ("sweater", "cardigan", "blouse", "t-shirt", "shirt", "turtleneck", "hoodie",
               "jacket", "coat", "camisole", "bodice", "jersey", "parka", "blazer",
               "tunic", "polo", "apron", "corset", "cape", "cloak", "uniform", "suit",
-              "vest", "top", "tee", "bra", "wrap"),
+              "vest", "top", "tee", "bra", "wrap",
+              # 2026-11-24 补：兜帽 / 衣领 / 泛指的 clothes / 盔甲。这几个词在
+              # GARMENT_NOUNS 里早就有（用于句子识别），却没进制部位判定，
+              # 于是 sayu 的 "animal hood"、passionlip 的 "belt collar" 全被丢掉。
+              # ⚠ 故意不加 "sleeve"：袖子是主衣的附属描述，判成独立 upper 后
+              #   会在「裙子优先」的挑选里被挤掉（甘雨的 detached sleeves 就会消失）。
+              "hood", "collar", "clothes", "armor"),
     "acc": ("necklace", "choker", "earring", "bracelet", "bag", "tote", "gloves", "scarf",
             "belt", "hat", "cap", "beret", "headband", "hairband", "headphones",
-            "headset", "glasses", "suspenders", "ribbon", "piercing"),
+            "headset", "glasses", "suspenders", "ribbon", "piercing",
+            # 2026-11-24 补：同样只在 GARMENT_NOUNS 里、没进部位表的两类配饰
+            "veil", "necktie"),
 }
 # 取景：只看到上半身的母题，别再往下写
 _FRAME_UPPER = re.compile(
@@ -552,15 +565,43 @@ _FRAME_FULL = re.compile(
     re.I)
 
 
+# 短关键词必须整词匹配：acc 里的 "cap" 会吃掉 "cape"（披风被判成帽子 → 该角色
+# 只有 acc、没有上装，装配时整组服装被清空，静默回落随机版型）。
+# 长关键词保留子串匹配，"sundress" / "belted" / "overshoes" 这类复合词才不会漏。
+_SHORT_KW = 3
+
+
+def _kw_hit(k: str, low: str) -> bool:
+    if len(k) > _SHORT_KW:
+        return k in low
+    return re.search(r"(?<![a-z])" + re.escape(k) + r"(?:s|es)?(?![a-z])", low) is not None
+
+
+# acc 里的长词（belt / suspenders / scarf / gloves…）会抢走同一 tag 里的上装：
+# "belted coat" → 被 "belt" 判成配饰 → 该角色整条上装丢失（和 cape 那个 bug 同源）。
+# 所以 acc 只在「没命中上装长词」时才生效；"top hat" 里 "top" 是 3 字母短词、
+# 不算 core，仍然规规矩矩归 acc。
+_CORE_UPPER_KW = tuple(k for k in _ZONE_KW["upper"] if len(k) > _SHORT_KW)
+
+
 def zone_of_tag(tag: str) -> str:
     """单条 tag → 部位；认不出返回 "style"（材质/风格词，跟着前一件衣服走）。
 
-    ⚠ acc 必须排在 upper 前面：否则 "top hat" 会被 upper 的 "top" 抢走。
+    ⚠ 顺序有意义：
+      1. dress/foot/leg/lower 先判 —— 这几个部位不会被配饰词误伤；
+      2. acc 次之，但要给「上装主体」让位（"belted coat" / "suspenders jacket"）；
+      3. upper 最后 —— 否则 "top hat" 会被 upper 的 "top" 抢走。
     """
     low = (tag or "").lower()
-    for zone in ("dress", "foot", "leg", "lower", "acc", "upper"):
-        if any(k in low for k in _ZONE_KW[zone]):
+    for zone in ("dress", "foot", "leg", "lower"):
+        if any(_kw_hit(k, low) for k in _ZONE_KW[zone]):
             return zone
+    if any(_kw_hit(k, low) for k in _CORE_UPPER_KW):
+        return "upper"
+    if any(_kw_hit(k, low) for k in _ZONE_KW["acc"]):
+        return "acc"
+    if any(_kw_hit(k, low) for k in _ZONE_KW["upper"]):
+        return "upper"
     return "style"
 
 
@@ -707,7 +748,16 @@ def prepare_outfit(outfit_tags: list[str] | None, motif_text: str,
     zones = motif_zones(motif_text, log)
     picked, mode = select_outfit(g_tags, zones)
     if not picked:
-        log.append("服装: 服装库与母题部位没有交集 → 不写服装句")
+        # 空结果分两种：真的没有交集（母题只要上半身、包里只有裙），和
+        # **这套预设压根没有衣服**（全是角/手套/弓这类身份与配饰 —— 词频统计的
+        # 典型产物）。后者不是装配能修的，必须回数据层补服装，所以日志要分开写，
+        # 否则用户永远只看得到「没有交集」，以为插件坏了。
+        zm = zone_map(g_tags)
+        if not (set(zm) & {"upper", "lower", "dress", "leg", "foot"}):
+            log.append(f"服装: 这套预设里一件真正的衣物都没有（{' / '.join(g_tags[:5])}）"
+                       " → 需要修该角色的服装预设，装配层补不了")
+        else:
+            log.append("服装: 服装库与母题部位没有交集 → 不写服装句")
         return None, "full"
     dropped = [t for t in g_tags if t not in picked]
     if dropped:
@@ -1310,6 +1360,7 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
                   graphics_phys: bool = False, lock_palette: bool = False) -> str:
     # 单品 tags 先分流：姿势类（crossed legs 等）不进服装句，姿势仍由母题决定
     # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
+    submitted = bool(outfit_tags)
     outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
 
     # 1) featuring 从句
@@ -1341,7 +1392,7 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
                                          zone_mode, only=True)
         log.append(f"服装: 指定单品 → 跳过版型，只用 {len(outfit_tags)} 条单品"
                    + ("（仅上半身）" if zone_mode == "upper" else ""))
-    elif costume_i >= 0:
+    elif costume_i >= 0 and not (submitted and costume != "keep"):
         tpl, cid, czh = pick_costume(char_key, costume, log)
         if tpl is None:
             log.append("服装: 保留母题原样的服装段")
@@ -1351,6 +1402,9 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
             ps[costume_i] = tpl.format(short=ch["short"], design=ch["design_language"],
                                        M1=m1, M2=m2, accent=ch["accent"],
                                        block=ch["block"], minor=ch["minor"])
+    elif costume_i >= 0:
+        # 选了服装但筛不出单品 → 保留母题服装段，不套随机版型（同短提示分支的理由）
+        log.append("服装: 所选服装筛不出可用单品 → 保留母题服装段，不套随机版型")
     log.append(f"角色: 服装段 {'已换' if costume_i >= 0 and costume != 'keep' else '未替换'}")
 
     # 单品层：来自 Anima 服装库 / 角色服装预设的 tags，追加在版型段之后
@@ -1382,6 +1436,16 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
                else "角色: 图形段 未命中(跳过)")
 
     text = join(ps)
+
+    # 2.4) 发型段没定位到的母题（单段 / 措辞不在 HAIR_STRONG 表里）→ 短发角色兜底。
+    #      ⚠ 只在 hair_i < 0 时跑：定位成功时 ps[hair_i] 已经换成 HAIR_TPL，
+    #      那段里的 "The nearer length falls past…" 会被误判成长发句整段摘掉。
+    if hair_i < 0:
+        text = drop_long_hair_sentences(text, ch, log, "角色")
+
+    # 2.45) 母题身材句兜底（同短提示分支），放在服装改写之前 —— 它会删掉
+    #       ", a flat chest and" 这类前缀，"wears …" 还留着，后面的服装改写照样命中。
+    text = strip_motif_body(text, ch, log, "角色")
 
     # 2.5) 指定单品时：把母题**别处**（机位段 / 短提示词）还写着的服装枚举原地换掉。
     #      这是「选了服装库服装、出图还是母题自带那套」的根因——只换服装段不够，
@@ -1462,11 +1526,160 @@ OUTFIT_SHORT_ONLY_TPL = (
 )
 
 
+# ---------------------------------------------------------------- 正文里的长发句
+# 短提示母题常把「原型角色是一头长发」写死在正文里（原型多是初音那样的长发），
+# 而它不像 scene 分支那样有独立发型段可整段替换 —— 单段母题的 locate_sections 什么都定位不到。
+# 实测 k2s_abandoned_garden_2（paras=1）：
+#   "She has waist-length, long and silky very long hair falling in a smooth uncurled sheet."
+#   "Her long straight very long hair should descend over the windowsill and continue downward
+#    along the weathered wall."
+# 换成短发角色 anis_(nikke) 时，身份句写着 short brown hair，正文这两句还在说腰长发垂过窗台 →
+# 出图窗台左右各垂一束长发（Krea2-文生图_00102_）。
+# 所以：**只在短发角色上**摘掉这类句子，并在原位补一句正确发型；长发角色一个字都不动（零漂移）。
+_SHORT_HAIR_RE = re.compile(r"\b(short|bob|cropped|pixie|buzz)\b", re.I)
+_HAIR_WORD_RE = re.compile(r"\b(?:hair|tresses|locks)\b", re.I)
+_HAIR_LEN_RE = re.compile(
+    r"\b(?:waist[- ]length|hip[- ]length|knee[- ]length|ankle[- ]length|floor[- ]length|"
+    r"shoulder[- ]length|very long|long|length)\b", re.I)
+_HAIR_DRAPE_RE = re.compile(
+    r"\b(?:descends?|descending|falls?|falling|hangs?|hanging|spills?|spilling|"
+    r"cascades?|cascading|trails?|trailing|drapes?|draping|flows?|flowing)\b", re.I)
+# 配饰与墙面裂纹不是发型：摘掉会破坏 "no hair ornament" 约束句与建筑描述
+_HAIR_ACC_RE = re.compile(
+    r"\b(?:hair ?ornament|hair ?pin|hair ?accessor\w*|hairband|hair ?band|hair ?clip|"
+    r"hair ?tie|hair ?bow|hair ?scrunchie|hairline)\b", re.I)
+
+
+def is_short_hair(ch: dict) -> bool:
+    """只看角色发型串里有没有 short / bob / cropped / pixie / buzz 这类明确的短发词。"""
+    return bool(_SHORT_HAIR_RE.search(ch.get("hair_desc") or ""))
+
+
+def drop_long_hair_sentences(text: str, ch: dict, log: list[str],
+                             tag: str = "短提示") -> str:
+    """短发角色：把正文里「她有一头腰长发 / 发丝垂过窗台」的句子换成正确发型。
+
+    ⚠ 只认「含 hair 词 + 长度词或垂落动词」的句子，且跳过配饰句与身份句；
+      长发角色直接 return，不进任何分支 —— 保证既有基线逐字节不变。
+    """
+    if not is_short_hair(ch):
+        return text
+    # ⚠ 按段落处理：整篇 split/join 会把 \n\n 抹平 → 段落数变少 → validate 报「段落偏少」
+    n_drop = 0
+    ps = []
+    for p in paras(text):
+        out, dropped, first = [], 0, True
+        for s in _SENT_SPLIT.split(p):
+            low = s.lower()
+            hit = ("canonical identity" not in low
+                   and _HAIR_WORD_RE.search(s) is not None
+                   and _HAIR_ACC_RE.search(s) is None
+                   and (_HAIR_LEN_RE.search(s) or _HAIR_DRAPE_RE.search(s)))
+            if not hit:
+                out.append(s)
+                continue
+            dropped += 1
+            if first:                  # 第一处被摘掉的位置补一句真实发型
+                out.append(f"She has {ch['hair_desc']}.")
+                first = False
+        if dropped:
+            n_drop += dropped
+            ps.append(" ".join(x for x in out if x.strip()))
+        else:
+            ps.append(p)
+    if not n_drop:
+        log.append(f"{tag}: 正文无长发描述（{ch['short']} 短发），未改动")
+        return text
+    log.append(f"{tag}: 短发角色 → 正文长发描述替换 {n_drop} 处（{ch['hair_desc']}）")
+    return join(ps)
+
+
+# ---------------------------------------------------------------- 母题身材句
+# 同批母题（k2s_* / k2x_*，同一个脚本渲染出来的）正文里写死了 "a flat chest"。
+# 换成有身材设定的角色就自相矛盾：身份句是 "huge breasts"，正文还在说平胸、甚至
+# 约束句还写着 "Do not alter the … flat chest"（Krea2-文生图_00102_ 那批）。
+# 处理：只在**角色身份句本身带身材词**时，把母题里那一部分摘掉，让身份句唯一发言；
+#      身份句没写身材的角色保持原样，不留空档。
+_BODY_PHR = (r"(?:a\s+)?(?:naturally\s+)?(?:flat\s+chest|"
+             r"(?:large|huge|big|medium|small)\s+breasts?|"
+             r"(?:slim|slender|delicate|graceful|petite|youthful)(?:\s+[a-z]+){0,2}\s+"
+             r"(?:figure|body|build|frame|physique|proportions))")
+_BODY_RE = re.compile(r"\b" + _BODY_PHR + r"\b", re.I)
+_BODY_SUBJ_RE = re.compile(
+    r"\b(?:she|her|the woman|the girl|the character|young woman)\b", re.I)
+_BODY_CONSTR_RE = re.compile(r"\b(?:do not|don't|preserve|keep|avoid|never)\b", re.I)
+# 环境句里的 "slender rusted metal frame" 不是身材，含这些词的一律跳过
+_BODY_SKIP_RE = re.compile(
+    r"\b(?:greenhouse|roof|metal|rusted|masonry|facade|wall|window|column|beam|arch)\b", re.I)
+_CH_BODY_RE = re.compile(r"\b(?:chest|breasts?|bust)\b", re.I)
+
+
+def _clean_body_mention(s: str) -> str:
+    """摘掉身材短语并修补留下的连接词 / 逗号。"""
+    s = re.sub(r"\bno\s+" + _BODY_PHR + r"\s*,\s*", "", s, flags=re.I)
+    s = re.sub(r"\b(?:not|without|avoid)\s+" + _BODY_PHR + r"\s*,\s*", "", s, flags=re.I)
+    s = re.sub(r",\s*" + _BODY_PHR + r"\s+(and|or)\s+", r" \1 ", s, flags=re.I)
+    s = re.sub(r"\b" + _BODY_PHR + r"\s+(and|or)\s+", r" \1 ", s, flags=re.I)
+    s = re.sub(r",\s*" + _BODY_PHR + r"\b", "", s, flags=re.I)
+    s = re.sub(r"\b" + _BODY_PHR + r"\s*,\s*", "", s, flags=re.I)
+    s = re.sub(r"\b" + _BODY_PHR + r"\b", "", s, flags=re.I)
+    s = re.sub(r"\s*,\s*,+", ",", s)
+    s = re.sub(r"\s*,\s*(?=[.;])", "", s)
+    s = re.sub(r"\bhas\s+(?:and|or)\s+", "has ", s)          # "She has and clear eyes"
+    s = re.sub(r"\b(?:and|or)\s+(?=(?:with|wearing|in)\b)", "", s, flags=re.I)
+    s = re.sub(r"\bhas\s+(?:and|or)\s*\.", ".", s)
+    s = re.sub(r",\s+(and|or)\s+", r" \1 ", s)               # ", and wears" → " and wears"
+    s = re.sub(r"\s+([.;,])", r"\1", s)
+    s = re.sub(r"\s{2,}", " ", s)
+    s = re.sub(r"\b(?:She|The woman)\s+has\s*\.\s*", "", s)  # 摘空的句子整句丢
+    return s.strip()
+
+
+def strip_motif_body(text: str, ch: dict, log: list[str], tag: str = "短提示") -> str:
+    """母题里的身材描写是**原型角色**的属性，换任何角色都不该照搬。
+
+    ⚠ 不做「角色有没有身材词」的门槛：`build_entry` 的 identity 只装前几个标签，
+    胸部标签常常进不去，用它当门槛会让 97% 的角色照样被写成平胸。
+    角色自己的设定由身份句负责；母题末尾的 "no oversized breasts" 仍然兜着 SFW。
+    ⚠ 必须**按段落**处理：直接对整篇 split/join 会把 \n\n 抹成空格，
+    段落数变少 → validate 报「段落偏少」（实测 k2x_indus_* 42 组）。
+    """
+    n = 0
+    ps = []
+    for p in paras(text):
+        out, hit = [], 0
+        for s in _SENT_SPLIT.split(p):
+            if not _BODY_RE.search(s):
+                out.append(s)
+                continue
+            is_c = bool(_BODY_CONSTR_RE.search(s)) or bool(
+                re.search(r"\bno\s+" + _BODY_PHR, s, re.I))
+            if ("canonical identity" in s.lower()
+                    or (not _BODY_SUBJ_RE.search(s) and not is_c)
+                    or (_BODY_SKIP_RE.search(s) and not is_c)):
+                out.append(s)                # 身份句 / 环境句 / 非人物主语 → 不动
+                continue
+            new = _clean_body_mention(s)
+            hit += 1
+            if new and not re.fullmatch(r"[A-Za-z' ]{0,30}has\.?", new):
+                out.append(new)
+        if hit:
+            n += hit
+            ps.append(" ".join(x for x in out if x.strip()))
+        else:
+            ps.append(p)
+    if not n:
+        return text
+    log.append(f"{tag}: 母题写死的身材描述 → 摘掉 {n} 处（改由角色身份句决定）")
+    return join(ps)
+
+
 def set_character_short(text: str, ch: dict, log: list[str], costume: str = "auto",
                         char_key: str = "", motif_text: str = "",
                         outfit_tags: list[str] | None = None) -> str:
     """短提示词分支的轻量适配：不动构图，只换身份 + 追加一两句服装。"""
     # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
+    submitted = bool(outfit_tags)          # 用户是否真的选了服装（区别于"筛完为空"）
     outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
     ps = paras(text)
 
@@ -1477,6 +1690,15 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
     if not _id_ok:
         ps.insert(1, ch["identity"])
         log.append("短提示: 身份锚点 原文无，改为插入")
+
+    # 1.5) 短发角色：摘掉正文里残留的长发描述（见 drop_long_hair_sentences 的注释）。
+    #      必须排在身份句替换之后 —— 身份句里是 "short brown hair"，先摘会误伤。
+    text = drop_long_hair_sentences(join(ps), ch, log, "短提示")
+    ps = paras(text)
+
+    # 1.6) 母题写死的 flat chest / slim figure 与身份句的身材冲突 → 摘掉母题那份。
+    text = strip_motif_body(join(ps), ch, log, "短提示")
+    ps = paras(text)
 
     # 服装：指定单品时**先就地改写**母题自带的服装句（"She wears a … dress"），
     # 再决定要不要补版型句；没有可改写的句子才退回到「紧跟身份段插入」。
@@ -1512,6 +1734,12 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
     elif outfit_tags and costume == "auto":
         # 指定了具名单品 → 跳过版型，只写单品（否则「仪式礼服」会盖过「露肩针织」）
         log.append(f"短提示: 指定单品 → 跳过版型，只写 {len(outfit_tags)} 个单品")
+    elif submitted and costume != "keep":
+        # 选了服装但筛不出单品（角色预设没衣服 / 部位无交集）→ **不追加随机版型句**。
+        # 旧行为是静默回落到 pick_costume，随机塞一句 "Render X in a panel armor…"，
+        # 与母题自带服装句并存互相抢 —— 这正是「选了官服，出图还是母题那套」的假象来源。
+        log.append("短提示: 所选服装筛不出可用单品 → 不追加随机版型句"
+                   "（母题自带服装句保持原样；请先修该角色的服装预设）")
     else:
         tpl, cid, czh = pick_costume(char_key, costume, log)
         if cid == "keep":
@@ -1563,6 +1791,7 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
     这里保留整张版式、大标题与印刷色盘，只做四件有边界的替换。
     """
     # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
+    submitted = bool(outfit_tags)
     outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
     ps = paras(text)
 
@@ -1584,6 +1813,11 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
             design=ch["design_language"], M1=m1, M2=m2,
             accent=ch["accent"], block=ch["block"])
         log.append(f"海报: 指定单品 → 跳过版型，只写 {len(outfit_tags)} 个单品")
+    elif submitted and costume != "keep":
+        # 选了服装但筛不出单品 → 不插随机版型段（同短提示分支的理由），保留原版式写法
+        cpara = ""
+        log.append("海报: 所选服装筛不出可用单品 → 不插随机版型段"
+                   "（请先修该角色的服装预设）")
     else:
         tpl, cid, czh = pick_costume(char_key, costume, log)
         # ⚠ 版型的 zh 是中文，绝不能进英文提示词；用 id 还原成英文短语
@@ -1596,7 +1830,14 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
             cpara += " " + OUTFIT_POSTER_TPL.format(tags=", ".join(outfit_tags[:14]))
         log.append(f"海报: 已插入服装段「{cut}」"
                    + (f" + {len(outfit_tags)} 个单品" if outfit_tags else ""))
-    ps.insert(1, cpara)
+    if cpara:
+        ps.insert(1, cpara)
+
+    # 2.4) 海报母题常把原型角色的长发写进版式描述（"her long hair spills across the title"），
+    #      短发角色照样会被画成长发 → 同样兜底。函数内部只对短发角色生效。
+    text = drop_long_hair_sentences(join(ps), ch, log, "海报")
+    text = strip_motif_body(text, ch, log, "海报")
+    ps = paras(text)
 
     # 3) 角色色只作为小面积登记色，不改海报自己的印刷色盘
     pidx = next((i for i, p in enumerate(ps) if "percent" in p.lower()
@@ -1754,7 +1995,15 @@ def neutralize_residual_traits(text: str, ch: dict, log: list[str]) -> str:
             n["guard"] += c + c2 + c3 + c4 + c5 + c6
         else:
             # 1) 双马尾（含 twin-tail / twintails / twin ponytails）
-            p, c = TWIN_RE.subn("long hair strands", p)
+            #    ⚠ 目标角色本人就是双马尾时必须放过：这段正文里的 "worn in twintails"
+            #    是她自己的 hair_desc 刚写进去的，不是母题库里的 Miku 残留。
+            #    另三处残留清洗（蒙版 / 景深 / 护盾）早有 has_twin_tail 守卫，这里漏了 ——
+            #    结果双马尾角色（花火等）的 twintails 被一律换成 "long hair strands"，
+            #    出图变成普通长发。
+            if has_twin_tail(ch):
+                c = 0
+            else:
+                p, c = TWIN_RE.subn("long hair strands", p)
             n["twin"] += c
             p = re.sub(r"\blong hair strands strands\b", "long hair strands", p, flags=re.I)
             p = re.sub(r"\bextremely long long hair\b", "extremely long hair", p, flags=re.I)

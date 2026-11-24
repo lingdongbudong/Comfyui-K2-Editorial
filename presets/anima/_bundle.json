@@ -1,12 +1,17 @@
 {
- "built_at": "2026-11-12 08:11:48",
+ "built_at": "2026-11-24 06:11:08",
  "source": "Comfyui-Anima-Wardrobe-V6/presets（打包时的实时数据目录，相对 custom_nodes）",
  "characters": 2432,
- "thumbs": 2432,
+ "thumbs": 2444,
  "top": 0,
- "chars_mb": 3.1,
- "thumbs_mb": 22.1,
+ "chars_mb": 1.2,
+ "thumbs_mb": 22.2,
  "missing": 0,
- "outfits": 98,
- "outfits_note": "原库 135 套（L0-L4），已用 tools/make_sfw_bundle.py 精简为 SFW 版：仅 L0-L1、剔除 nsfw_outfit 分类，共剔除 37 套。角色官方预设 character_outfits.json 未改动（2447 套，全 L0）。"
+ "outfits": 113,
+ "outfits_note": "SFW 精简版：仅 L0-L1、剔除 nsfw_outfit 分类（源库 167 套 / 11 类 → 113 套 / 10 类）。",
+ "char_outfits": {
+  "characters": 2434,
+  "sets": 2800
+ },
+ "char_outfits_note": "角色官方预设 character_outfits.json 未改动（全 L0），仅随 Anima 更新同步。"
 }

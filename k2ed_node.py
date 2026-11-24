@@ -632,9 +632,14 @@ def register_routes() -> None:
             rows = [r for r in rows if r["id"] in fav]
         elif work:
             rows = [r for r in rows if r["work_en"].lower() == work.lower()]
+        # 官方预设套数只加在当前页（72 条），不复制全量 2400+ 行；
+        # dict(r) 拷贝，避免写进 B.index() 的缓存对象。
+        n_out = B.outfit_counts()
+        items = [dict(r, n_outfits=n_out.get(B.alias_key(r["id"]), 0))
+                 for r in rows[offset:offset + limit]]
         return web.json_response({
             "total": len(rows), "offset": offset,
-            "items": rows[offset:offset + limit],
+            "items": items,
             "works": B.works(),
             "fav": fav_chars,
             "anima": B.available(),
@@ -647,7 +652,8 @@ def register_routes() -> None:
             raise web.HTTPBadRequest(text="missing id")
         for r in _merged_chars():
             if r["id"] == key:
-                return web.json_response(r)
+                return web.json_response(
+                    dict(r, n_outfits=B.outfit_counts().get(B.alias_key(key), 0)))
         raise web.HTTPNotFound()
 
     @routes.get(ROUTE + "/outfits")

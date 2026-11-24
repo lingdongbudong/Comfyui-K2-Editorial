@@ -310,17 +310,28 @@ function ensurePanel() {
       overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.6)}
     .k2ed-hd{display:flex;align-items:baseline;gap:12px;padding:12px 16px 8px}
     .k2ed-hd b{font-size:15px;font-weight:500}
-    .k2ed-hd .sub{font-size:12px;color:#8b8f98}
+    /* 副标题可压缩：加了三个外链按钮后，窗口窄时先截断它，别把按钮挤到第二行 */
+    .k2ed-hd .sub{font-size:12px;color:#8b8f98;flex:0 1 auto;min-width:0;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .k2ed-x{margin-left:auto;cursor:pointer;border:1px solid #3a3d45;background:#22242a;color:#ccc;
       border-radius:8px;padding:4px 10px;font-size:13px}
     .k2ed-x:hover{background:#2e3138;color:#fff}
-    /* 免责声明入口：占掉 header 的 auto 推挤，「关闭」变成紧跟其后 */
-    .k2ed-hd .k2ed-dis{margin-left:auto;cursor:pointer;border:1px solid #3a3d45;background:#1e2026;
+    /* 顶部外链组：教学视频 / 图片欣赏 / GitHub。auto 推挤放在这组上，
+       免责声明与关闭排在它右侧（原来 auto 在免责声明身上）。
+       ⚠ 模板字符串里不能写反引号注释，只能这样写块注释。 */
+    .k2ed-hd .k2ed-links{margin-left:auto;display:flex;align-items:center;gap:6px;
+      align-self:center;flex:0 0 auto}
+    .k2ed-hd .k2ed-links a{cursor:pointer;border:1px solid #3a3d45;background:#1e2026;
       color:#b9bdc6;border-radius:8px;padding:4px 10px;font-size:12.5px;line-height:1.5;
-      display:inline-flex;align-items:center;gap:5px}
+      text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+    .k2ed-hd .k2ed-links a:hover{background:#2e3138;color:#8fd0ff;border-color:#3d6a86}
+    /* 免责声明入口：紧跟外链组，「关闭」再跟其后 */
+    .k2ed-hd .k2ed-dis{margin-left:0;cursor:pointer;border:1px solid #3a3d45;background:#1e2026;
+      color:#b9bdc6;border-radius:8px;padding:4px 10px;font-size:12.5px;line-height:1.5;
+      display:inline-flex;align-items:center;gap:5px;flex:0 0 auto}
     .k2ed-hd .k2ed-dis:hover{background:#2e3138;color:#e8c96a;border-color:#5c4d29}
     .k2ed-hd .k2ed-dis .dot{color:#8b8f98;font-size:11px}
-    .k2ed-hd .k2ed-x{margin-left:0}
+    .k2ed-hd .k2ed-x{margin-left:0;flex:0 0 auto}
     .k2ed-tabs{display:flex;align-items:center;gap:6px;padding:0 16px 10px;border-bottom:1px solid #2a2c33}
     .k2ed-tab{padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;border:1px solid transparent;
       color:#b9bdc6;background:transparent}
@@ -379,6 +390,12 @@ function ensurePanel() {
     .k2ed-card .im11{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#22242a}
     .k2ed-card .cp{padding:6px 8px 8px}
     .k2ed-card .n{font-size:12.5px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* 角色卡名字行：名字占满剩余宽度，官方预设套数角标贴右 */
+    .k2ed-nline{display:flex;align-items:center;gap:6px}
+    .k2ed-nline .n{flex:1;min-width:0}
+    .k2ed-oc{flex:none;font-size:10.5px;line-height:14px;padding:0 5px;border-radius:5px;
+      background:rgba(61,106,134,.2);border:1px solid rgba(61,106,134,.42);color:#9fd2ff;
+      font-variant-numeric:tabular-nums}
     .k2ed-card .w{font-size:11px;color:#7f848e;margin-top:2px;white-space:nowrap;overflow:hidden;
       text-overflow:ellipsis}
     .k2ed-card .ds{font-size:11.5px;color:#9aa0aa;line-height:1.45;margin-top:3px}
@@ -500,6 +517,14 @@ function ensurePanel() {
       <div class="k2ed-hd">
         <b>K2 长文出题 · 白垩光</b>
         <span class="sub">角色 / 服装 / 场景 分三页选，选了立刻写回节点（无需再点应用）</span>
+        <div class="k2ed-links">
+          <a href="https://space.bilibili.com/516891894" target="_blank" rel="noopener noreferrer"
+             title="作者 B 站空间 · 插件使用教学视频">▶ 使用教学</a>
+          <a href="https://space.bilibili.com/1522948414" target="_blank" rel="noopener noreferrer"
+             title="母题创作者 B 站空间 · 图片欣赏">🖼 图片欣赏</a>
+          <a href="https://github.com/lingdongbudong/Comfyui-K2-Editorial" target="_blank"
+             rel="noopener noreferrer" title="GitHub 仓库 · 源码、更新与问题反馈">🐙 GitHub</a>
+        </div>
         <button class="k2ed-dis" id="k2ed-dis" title="使用条款与致谢">ⓘ 免责声明</button>
         <button class="k2ed-x" id="k2ed-close">关闭 ✕</button>
       </div>
@@ -899,7 +924,15 @@ function renderCharGrid() {
         }
 
         const cp = el("div", "cp");
-        cp.appendChild(el("div", "n", c.zh || c.id));
+        const nl = el("div", "k2ed-nline");
+        nl.appendChild(el("div", "n", c.zh || c.id));
+        if (c.n_outfits) {
+            // 官方预设套数（character_outfits.json 里该角色的 list 条数）
+            const oc = el("span", "k2ed-oc", String(c.n_outfits));
+            oc.title = `官方预设服装 ${c.n_outfits} 套`;
+            nl.appendChild(oc);
+        }
+        cp.appendChild(nl);
         cp.appendChild(el("div", "w", c.work_zh || c.work || ""));
         k.appendChild(cp);
         grid.appendChild(k);

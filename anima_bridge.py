@@ -44,6 +44,42 @@ ALIAS = {
 }
 
 
+# K2 侧角色标签补丁（不改 Anima 的任何数据文件）。
+#
+# 背景：Anima 从 V6 起把一部分角色的身份符号搬进 `presets/char_feat.json`
+# （`set` 强盖发色瞳色 / `extras` 放面具等常驻符号），`anima_v4_characters.json`
+# 的 tags 只剩「干净子集」。而 K2 只读 tags，于是补丁要在这里做：
+#   · add  —— 身份锚点被搬走导致 K2 丢失的项（发色 / 瞳色 / 特征）
+#   · drop —— 混在 tags 里、实际属于服装层的件（服装走 character_outfits，不进身份句）
+#
+# 花火（2026-11-23 Anima 精简后）：tags 去掉了 black hair / pink eyes / brown hair /
+# red eyes / long hair，K2 会退化成「expressive eyes + very long hair」，
+# 并把 red dress / black gloves 当身份写进锚点句。这里补回官设（danbooru wiki：
+# long black hair / pink eyes with butterfly-shaped pupils / facial mark），
+# 同时剔除会被服装层重复写的两件衣服。
+CHAR_TAG_PATCH: dict[str, dict[str, list[str]]] = {
+    "sparkle_(honkai:_star_rail)": {
+        "add": ["black hair", "pink eyes", "butterfly-shaped pupils", "facial mark"],
+        # mask on head 与 fox mask 同指一件头饰，都留会让锚点句写两遍；
+        # 留 fox mask（PRIORITY 命中的那个），黑手套/红裙归服装层。
+        "drop": ["red dress", "black gloves", "mask on head"],
+    },
+}
+
+
+def patched_tags(key: str, tags: list[str]) -> list[str]:
+    """把 CHAR_TAG_PATCH 应用到角色 tags（无补丁则原样返回）。"""
+    p = CHAR_TAG_PATCH.get(key)
+    if not p:
+        return tags
+    drop = set(p.get("drop") or [])
+    out = [t for t in tags if t not in drop]
+    for t in p.get("add") or []:
+        if t not in out:
+            out.append(t)
+    return out
+
+
 def alias_key(key: str) -> str:
     return ALIAS.get(key, key)
 
@@ -277,7 +313,8 @@ def build_entry(rec: dict) -> dict:
     raw_name = re.sub(r"\s*\([^)]*\)\s*$", "", raw_name).strip()
     name = " ".join(w.capitalize() for w in raw_name.split()) or rec.get("tag", "")
     short = name.split()[0] if name else rec.get("tag", "").title()
-    eyes, hair, sig_one, sig = _pick_tags(rec.get("tags") or [])
+    eyes, hair, sig_one, sig = _pick_tags(
+        patched_tags(rec.get("tag", ""), rec.get("tags") or []))
     sig_txt = ", ".join(sig[:4]) if sig else "her signature silhouette"
     hair_c = (rec.get("hair") or "white").lower()
     eye_c = (rec.get("eyes") or hair_c).lower()
@@ -400,6 +437,26 @@ def outfit_categories() -> list[dict]:
     d = _load("outfit_library.json") or {}
     return [{"id": c["id"], "zh": c["zh"]} for c in
             ((d.get("_meta") or {}).get("categories") or [])]
+
+
+_COUNT_CACHE: dict = {}
+
+
+def outfit_counts() -> dict[str, int]:
+    """Anima tag → 该角色的官方预设服装套数（角色卡片上的数字角标）。
+
+    2400+ 行按文件指纹缓存：Anima 改了 character_outfits.json 立刻能读到新数，
+    不用重启 ComfyUI，也不会每个分页请求重扫一遍 2 MB JSON。
+    """
+    key = tuple((k, d, _stamp(os.path.join(d, "character_outfits.json")))
+                for k, d in sources())
+    hit = _COUNT_CACHE.get("v")
+    if hit and hit[0] == key:
+        return hit[1]
+    d = _load("character_outfits.json") or {}
+    out = {k: len(v.get("list") or []) for k, v in (d.get("outfits") or {}).items()}
+    _COUNT_CACHE["v"] = (key, out)
+    return out
 
 
 def char_outfits(key: str) -> list[dict]:
