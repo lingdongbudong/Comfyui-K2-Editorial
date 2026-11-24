@@ -177,6 +177,20 @@ git clone https://github.com/lingdongbudong/Comfyui-K2-Editorial.git
 
 ## 更新日志
 
+### v1.17.3
+
+- **`k2x_clsc_seat_side` 的腿部改成标准二郎腿**（普通「一条腿搭在另一条腿上」）。上一版两个口径自相矛盾：
+  正面要求 `extends forward level with her hip`（腿水平前伸），负面清单里却钉着 `no leg hanging straight down beside the other`，
+  模型只能画成「直腿横跨画面」，看着像伸腿、不像翘腿。
+  现在：
+  - 动作段：`her right thigh lies across her left thigh and her right knee sits above and slightly outside her left knee`
+    —— **大腿压大腿**，全身只有这一个接触点；小腿从膝上**斜向内下方垂挂**，脚悬空、脚尖朝下、鞋底朝地，离地一拳；
+    踏地那条腿的膝低于座面，小腿垂到底、鞋底平踏，是唯一触地的那只；
+  - 负面清单：删掉 `no leg hanging straight down beside the other`（元凶），换成
+    `no straight leg held out level / no leg stretched forward across the frame / no dangling foot touching the floor`。
+- 其余口径不变：45° 侧前低机位、头后逆光、暗调、无柱、无冠、16:9。
+- 实测：标准二郎腿成立（大腿交叠 + 小腿垂挂 + 鞋悬空 + 另一只脚踏地），逆光与暗调保持不变；回归 23/23 全绿。
+
 ### v1.17.2
 
 - **`k2x_clsc_seat_side` 按参考图重做构图**，画内标题由 `COLONNADE` 改为 **`HALL LIGHT`**（场景里已经没有柱子，原名不再成立），中文名「石厅逆光」：
