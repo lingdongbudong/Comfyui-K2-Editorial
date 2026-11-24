@@ -1,10 +1,30 @@
 # Comfyui-K2-Editorial
 
+<p align="right">
+  <b>中文</b> ｜ <a href="README.en.md">English</a>
+</p>
+
+> [!CAUTION]
+> **⛔ 未经许可禁止商用 · 禁止二次包装分发** —— 版权所有 © 2026 灵冻不冻（lingdongbudong），保留所有权利。
+> 本仓库自 **2026-11-24** 起采用 **[PolyForm Strict License 1.0.0](LICENSE)**。
+>
+> - **❌ 禁止商业使用** —— 未经书面许可，不得将本插件（含源码、词库、场景库、角色库、服装库、预设数据及任何衍生物）用于任何商业目的：付费分发、捆绑销售、代跑收费、商业课程、以本插件作为商业服务的技术底座等。
+> - **❌ 禁止二次包装与再分发** —— 不得重新打包、改名、套壳、二次封装发布，不得上传至第三方整合包、网盘合集、资源站或任何分发渠道，**无论是否修改**。
+> - **❌ 禁止移除或篡改**本声明、作者署名与来源链接。
+> - **✅ 允许** —— 个人非商业使用（研究、学习、爱好、自己出图）、修改源码自用；保留完整署名与本声明的前提下引用截图／录屏做非商业分享（如 B 站教程）。
+>
+> **商业 / 二次开发 / 转载授权** → [B 站私信作者](https://space.bilibili.com/516891894) 取得书面许可。
+> **历史版本**：本次变更前发布的版本仍按其发布时的许可证（AGPL-3.0）授权，不因本次变更而撤回。
+> 完整条款与来源声明见 **[NOTICE.md](NOTICE.md)**。
+
+---
+
+
 **Krea2「白垩光 / 未来奢华编辑主视觉」长文提示词的自动装配节点** —— 选角色、母题、画幅、服装，输出 1500–2700 词的英文长提示词。一个母题决定整张画面，不是 tag 随机池。
 
 ![ComfyUI](https://img.shields.io/badge/ComfyUI-0.42.x-2f6f4e?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?style=flat-square)
-![License](https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square)
+license-PolyForm%20Strict%201.0.0-red
 ![Dependencies](https://img.shields.io/badge/dependencies-none-success?style=flat-square)
 ![Offline](https://img.shields.io/badge/runtime-100%25%20offline-informational?style=flat-square)
 
@@ -380,6 +400,15 @@ git clone https://github.com/lingdongbudong/Comfyui-K2-Editorial.git
 
 ## 许可证
 
-代码以 **GNU AGPL-3.0** 发布，全文见 [LICENSE](LICENSE)。
+**[PolyForm Strict 1.0.0](LICENSE)** © 2026 灵冻不冻 · 本项目按「原样」提供，不附带任何担保。
 
-上游素材的授权状态见 [LICENSE 末尾的 Additional attribution 段](LICENSE) —— 该段不属于许可条款，仅作来源声明。**如果你的使用场景无法接受 AGPL（例如闭源分发），请先联系原作者确认素材授权范围。**
+- ❌ **禁止商业使用** —— 需事先取得作者书面许可。
+- ❌ **禁止二次包装与再分发** —— 无论是否修改。
+- ✅ 个人非商业使用、修改源码自用；保留完整署名前提下做非商业分享。
+- **历史版本**（2026-11-24 之前）仍按 **AGPL-3.0** 授权，不因本次变更而撤回。
+
+上游素材的授权状态（母题库来自「辞雪沐春」的口头同意再分发、角色数据快照自
+[Comfyui-Anima-Wardrobe-V6](https://github.com/lingdongbudong/Comfyui-Anima-Wardrobe-V6)）
+见 [NOTICE.md](NOTICE.md) —— 该文件不属于许可条款，仅作来源声明。
+
+**如果你的使用场景无法接受本许可（例如需要商用或再分发），请先联系作者确认授权范围。**
