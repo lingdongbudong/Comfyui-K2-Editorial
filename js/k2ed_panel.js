@@ -65,72 +65,27 @@ const STATE = {
 };
 
 /* ---------------- 场景页滚动记忆（只在面板开着期间有效，不写盘） ----------------
-   两条归零路径：renderMotifPage() 整页 innerHTML=""；paintGrid() 清空 holder。
-   记「视口里第一张卡 + 它相对视口顶的偏移」当锚点，筛选后条数变了也能落回原处附近。
-   嵌套重绘用 _motifPaintDepth 计数：只有最外层 begin 采集、最外层 end 恢复。
-   重绘期间挂起 scroll 监听，避免 innerHTML="" 触发的 scrollTop 归零把记忆覆盖成 0。
-   关面板由 closePanel() 清空（openPanel 会重新 renderPage，下次从顶部开始）。 */
-let MOTIF_SCROLL = { top: 0, anchor: null, anchorOff: 0, section: null };
+   只记「滚动像素位置」，不记锚点卡片。
+   曾经试过「记住视口第一张卡 + 偏移」的锚点方案：筛选一变分组增减、卡片换行数变化，
+   锚点算出来的目标位置会偏离几百像素，表现就是「取消一个分类、列表自己跳到下面」。
+   现在统一按像素复原：筛选前后页面纹丝不动，只有内容变短时才被夹到新的底部。
+   重绘期间挂起 scroll 监听，避免 innerHTML="" 触发的归零把记忆覆盖成 0。 */
+let MOTIF_SCROLL = { top: 0 };
 let _motifPaintDepth = 0;
 
 function captureMotifScroll(force) {
     if (STATE.tab !== "motif") return;              // 页签已切走：保留旧记忆
     if (!force && _motifPaintDepth > 0) return;     // 重绘中：别被归零事件污染
     const page = pageEl();
-    if (!page) return;                              // 网格还没建：保留旧记忆
-    /* 分组视图下页面里有多个 .k2ed-grid.mo（每个系列一段），
-       只查第一个会让第二段以后的滚动全部丢锚点、退化成绝对 scrollTop，
-       筛选一变就等于乱跳（用户报的「取消选择后自己跳到下面」就是这么来的）。 */
-    const grids = [...page.querySelectorAll(".k2ed-grid.mo")];
-    if (!grids.length) return;
-    const pr = page.getBoundingClientRect();
-    let first = null;
-    for (const g of grids) {
-        for (const k of g.querySelectorAll(":scope > .k2ed-card")) {
-            const r = k.getBoundingClientRect();
-            if (r.bottom > pr.top) { first = { k: k, r: r }; break; }
-        }
-        if (first) break;
-    }
+    if (!page) return;
     MOTIF_SCROLL.top = page.scrollTop;
-    MOTIF_SCROLL.anchor = first ? (first.k.dataset.id || null) : null;
-    MOTIF_SCROLL.anchorOff = first ? (first.r.top - pr.top) : 0;
-    /* 锚点卡片被筛掉时的兜底：记住「第一个可见段头」的系列 key，
-       重绘后落在同一段的段头位置，而不是弹回绝对像素。 */
-    MOTIF_SCROLL.section = null;
-    for (const s of page.querySelectorAll(".k2ed-sec")) {
-        if (s.getBoundingClientRect().bottom > pr.top) {
-            MOTIF_SCROLL.section = s.dataset.series || null;
-            break;
-        }
-    }
 }
 
 function restoreMotifScroll() {
     const page = pageEl();
     if (!page || STATE.tab !== "motif") return;
-    const m = MOTIF_SCROLL;
-    const grids = [...page.querySelectorAll(".k2ed-grid.mo")];
-    let target = m.top;
-    if (m.anchor && grids.length) {
-        const sel = ':scope > .k2ed-card[data-id="' + CSS.escape(m.anchor) + '"]';
-        let k = null;
-        for (const g of grids) { k = g.querySelector(sel); if (k) break; }
-        if (k) {
-            const pr = page.getBoundingClientRect();
-            target = page.scrollTop + (k.getBoundingClientRect().top - pr.top) - m.anchorOff;
-        } else if (m.section) {
-            /* 锚点卡片没了：退回该段段头，避免「取消一个筛选整页跳走」 */
-            const sec = page.querySelector(
-                '.k2ed-sec[data-series="' + CSS.escape(m.section) + '"]');
-            if (sec) {
-                const pr = page.getBoundingClientRect();
-                target = page.scrollTop + (sec.getBoundingClientRect().top - pr.top) - 8;
-            }
-        }
-    }
     const clamp = () => Math.max(0, page.scrollHeight - page.clientHeight);
-    const want = Math.max(0, Math.min(target, clamp()));
+    const want = Math.max(0, Math.min(MOTIF_SCROLL.top, clamp()));
     page.scrollTop = want;
     // 重建当帧赋值可能仍被布局夹到 0，下一帧再压一次（同角色页 renderWorkList）。
     requestAnimationFrame(() => {
@@ -1332,6 +1287,9 @@ function renderMotifPage() {
         const b = el("button", "", label);
         b.className = "k2ed-chip" + (on ? " on" : "");
         if (key) { b.dataset.k = key; b.dataset.v = val === undefined ? "" : val; }
+        /* 不让按钮拿焦点：点完网格重排时，浏览器会为「保持焦点元素可见」自动滚动页面，
+           表现就是点一下分类、列表自己滑走。preventDefault 不影响 click。 */
+        b.onmousedown = (ev) => ev.preventDefault();
         b.onclick = fn;
         (host || page).appendChild(b);
         return b;
@@ -1346,6 +1304,9 @@ function renderMotifPage() {
     /* 筛选就地重绘：只重建网格，不整页 renderMotifPage()。
        整页重建要重做 395 张卡 + 搜索框，约 60ms，还会丢输入框焦点。 */
     const repaintFilters = () => {
+        /* 点击这一刻的位置：paintGrid 内部还会再记一次，但若点击本身已经让浏览器
+           滚过一截（焦点/重排），这里记的才是「用户看到的原位」，最后用它兜底。 */
+        const keep = page.scrollTop;
         page.querySelectorAll(".k2ed-chip[data-k]").forEach((b) => {
             const k = b.dataset.k, v = b.dataset.v;
             const on = k === "fav" ? STATE.favOnlyMotif
@@ -1361,6 +1322,15 @@ function renderMotifPage() {
             b.classList.toggle("on", on);
         });
         paintGrid();
+        /* 兜底：内容变短时按新的底部夹紧，否则回到点击前的位置，绝不主动往下走 */
+        const max = Math.max(0, page.scrollHeight - page.clientHeight);
+        const want = Math.min(keep, max);
+        if (Math.abs(page.scrollTop - want) > 2) page.scrollTop = want;
+        /* 自检：还有偏移就在状态栏报数值，方便判断是「内容变短被夹」还是「真跳了」 */
+        if (Math.abs(keep - page.scrollTop) > 4) {
+            PANEL?.stat(`滚动自检：${Math.round(keep)} → ${Math.round(page.scrollTop)}`
+                + `（内容高 ${Math.round(page.scrollHeight)}，可视 ${Math.round(page.clientHeight)}）`);
+        }
     };
 
     /* 行 1：视图 / 收藏 / 分类 */
@@ -2137,7 +2107,7 @@ async function openPanel(node) {
 function closePanel() {
     if (PANEL) PANEL.mask.style.display = "none";
     /* 关闭即清空滚动记忆：openPanel 每次都会重新 renderPage，下次从顶部开始 */
-    MOTIF_SCROLL = { top: 0, anchor: null, anchorOff: 0 };
+    MOTIF_SCROLL = { top: 0 };
     _motifPaintDepth = 0;
     CUR = null;
 }
