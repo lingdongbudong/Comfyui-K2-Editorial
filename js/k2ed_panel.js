@@ -48,8 +48,12 @@ const STATE = {
     outfits: null, outfitCat: "", charMeta: null, allTotal: 0,
     favs: { characters: [], costumes: [], motifs: [], works: [] },
     favOnlyCostume: false, favOnlyMotif: false, motifAspect: "", motifBranch: "",
-    motifQ: "", motifTag: "",   // 场景页：关键词搜索 / 场景标签
-    addedOnly: false, motifGenre: "",   // 场景页：只看新增（入库批次）/ 题材第二维度
+    motifQ: "",                 // 场景页：关键词搜索
+    /* 场景页筛选改成多选（集合）：同一维度内 OR，维度之间 AND。
+       单选时代没法问「室内 + 夜间」，只能一个个试。 */
+    motifTags: new Set(), motifGenres: new Set(), motifSeries: new Set(),
+    motifView: "group",         // group = 按风格系列分组平铺 / grid = 全部平铺
+    addedOnly: false,           // 场景页：只看新增（入库批次）
     displayText: "", noText: false,
     /* 随机池：模式写回节点（可复现），勾选的场景 id 存服务端（可能几百条） */
     charPool: "关闭", charPoolWork: "", motifPool: "关闭", picks: [],
@@ -411,6 +415,13 @@ function ensurePanel() {
       border-left:2px solid #3d6a86}
     .k2ed-sect:first-child{margin-top:0}
     .k2ed-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+    /* 场景页系列段头：按批次分段平铺，段头点一下 = 只看这一系列 */
+    .k2ed-sec{display:flex;align-items:baseline;gap:8px;margin:16px 0 8px;padding:7px 10px;
+      border-left:3px solid #4a7fa1;background:#1b1d23;border-radius:4px;cursor:pointer;
+      user-select:none}
+    .k2ed-sec:hover{background:#23262e}
+    .k2ed-sec .t{font-size:13px;font-weight:600;color:#e6e9ef;letter-spacing:.3px}
+    .k2ed-sec .c{font-size:11px;color:#8b919c}
     .k2ed-chip{background:#1e2026;border:1px solid #33363e;color:#b9bdc6;border-radius:999px;
       padding:4px 11px;font-size:12px;cursor:pointer}
     .k2ed-chip.on{background:#3d6a86;border-color:#4a7fa1;color:#fff}
@@ -1281,15 +1292,23 @@ function renderMotifPage() {
             const k = b.dataset.k, v = b.dataset.v;
             const on = k === "fav" ? STATE.favOnlyMotif
                 : k === "added" ? STATE.addedOnly
-                : k === "branch" ? STATE.motifBranch === v
-                    : k === "aspect" ? STATE.motifAspect === v
-                        : k === "tag" ? STATE.motifTag === v
-                            : k === "genre" ? STATE.motifGenre === v
-                            : false;
+                : k === "view" ? STATE.motifView === v
+                    : k === "branch" ? STATE.motifBranch === v
+                        : k === "aspect" ? STATE.motifAspect === v
+                            : k === "tag" ? STATE.motifTags.has(v)
+                                : k === "genre" ? STATE.motifGenres.has(v)
+                                    : k === "series" ? STATE.motifSeries.has(v)
+                                        : false;
             b.classList.toggle("on", on);
         });
         paintGrid();
     };
+    chips.appendChild(el("span", "k2ed-lbl", "　视图"));
+    [["group", "按系列分组"], ["grid", "全部平铺"]]
+        .forEach(([k, label]) => mkChip(STATE.motifView === k, label, () => {
+            STATE.motifView = k; repaintFilters();
+        }, null, "view", k));
+    chips.appendChild(el("span", "k2ed-sep"));
     mkChip(STATE.favOnlyMotif, `★ 只看收藏（${favs.length}）`, () => {
         STATE.favOnlyMotif = !STATE.favOnlyMotif; repaintFilters();
     }, null, "fav");
@@ -1314,7 +1333,19 @@ function renderMotifPage() {
         }, null, "aspect", k));
     page.appendChild(chips);
 
-    /* 行 2：搜索 + 场景标签（标签由 build_manifest 按正文关键词生成） */
+    /* 行 2：搜索 + 风格系列（10 个批次，风格一致性最高，浏览母题最顺手的维度） */
+    const seriesRow = el("div", "k2ed-chips");
+    seriesRow.appendChild(el("span", "k2ed-lbl", "　系列"));
+    (MAN.series || []).forEach((s) => {
+        mkChip(STATE.motifSeries.has(s.key), `${s.zh} ${s.count}`, () => {
+            if (STATE.motifSeries.has(s.key)) STATE.motifSeries.delete(s.key);
+            else STATE.motifSeries.add(s.key);
+            repaintFilters();
+        }, seriesRow, "series", s.key);
+    });
+    page.appendChild(seriesRow);
+
+    /* 行 3：搜索 + 场景标签（标签由 build_manifest 按正文关键词生成，可多选） */
     const tools = el("div", "k2ed-chips");
     const inp = el("input", "");
     inp.className = "k2ed-q";
@@ -1323,28 +1354,33 @@ function renderMotifPage() {
     inp.value = STATE.motifQ;
     tools.appendChild(inp);
     (MAN.tags || []).forEach((t) => {
-        mkChip(STATE.motifTag === t.key, `${t.zh} ${t.count}`, () => {
-            STATE.motifTag = STATE.motifTag === t.key ? "" : t.key;
+        mkChip(STATE.motifTags.has(t.key), `${t.zh} ${t.count}`, () => {
+            if (STATE.motifTags.has(t.key)) STATE.motifTags.delete(t.key);
+            else STATE.motifTags.add(t.key);
             repaintFilters();
         }, tools, "tag", t.key);
     });
-    if (STATE.motifQ || STATE.motifTag || STATE.motifGenre || STATE.addedOnly) {
-        mkChip(false, "✕ 清除", () => {
-            STATE.motifQ = ""; STATE.motifTag = "";
-            STATE.motifGenre = ""; STATE.addedOnly = false;
+    if (STATE.motifQ || STATE.motifTags.size || STATE.motifGenres.size
+            || STATE.motifSeries.size || STATE.addedOnly) {
+        mkChip(false, "✕ 清除筛选", () => {
+            STATE.motifQ = "";
+            STATE.motifTags.clear(); STATE.motifGenres.clear();
+            STATE.motifSeries.clear(); STATE.addedOnly = false;
             inp.value = "";                 // 不整页重建，输入框自己清
             repaintFilters();
+            PANEL?.stat("筛选已清除");
         }, tools);
     }
     page.appendChild(tools);
 
-    /* 行 2b：题材第二维度（daily/fantasy/industrial/landscape/shop/nature） */
+    /* 行 4：题材第二维度（可多选；「其他」= 正文线索不足，诚实留白不硬猜） */
     if ((MAN.genres || []).length) {
         const genres = el("div", "k2ed-chips");
         genres.appendChild(el("span", "k2ed-lbl", "　题材"));
         MAN.genres.forEach((g) => {
-            mkChip(STATE.motifGenre === g.key, `${g.zh} ${g.count}`, () => {
-                STATE.motifGenre = STATE.motifGenre === g.key ? "" : g.key;
+            mkChip(STATE.motifGenres.has(g.key), `${g.zh} ${g.count}`, () => {
+                if (STATE.motifGenres.has(g.key)) STATE.motifGenres.delete(g.key);
+                else STATE.motifGenres.add(g.key);
                 repaintFilters();
             }, genres, "genre", g.key);
         });
@@ -1420,8 +1456,9 @@ function renderMotifPage() {
         .filter((m) => !STATE.addedOnly || m.added)
         .filter((m) => !STATE.motifBranch || (m.branch || "scene") === STATE.motifBranch)
         .filter((m) => !STATE.motifAspect || (m.aspect || "landscape") === STATE.motifAspect)
-        .filter((m) => !STATE.motifTag || (m.tags || []).includes(STATE.motifTag))
-        .filter((m) => !STATE.motifGenre || m.genre === STATE.motifGenre)
+        .filter((m) => !STATE.motifTags.size || (m.tags || []).some((t) => STATE.motifTags.has(t)))
+        .filter((m) => !STATE.motifGenres.size || STATE.motifGenres.has(m.genre))
+        .filter((m) => !STATE.motifSeries.size || STATE.motifSeries.has(m.series))
         .filter(matchQ);
 
     const paintGrid = () => {
@@ -1429,8 +1466,43 @@ function renderMotifPage() {
         try {
         holder.innerHTML = "";
         const rows = filtered();
-        const grid = el("div", "");
-        grid.className = "k2ed-grid mo";
+        /* 分组平铺：同一系列的母题风格一致，按批次分段比混在 558 张里好找。
+           段头可点 = 只保留该系列的筛选（等于「只看这一类」）。 */
+        const grids = {};
+        let solo = null;
+        if (STATE.motifView === "group") {
+            const byKey = {};
+            rows.forEach((m) => {
+                const k = m.series || "";
+                (byKey[k] = byKey[k] || []).push(m);
+            });
+            (MAN.series || []).map((s) => s.key).filter((k) => byKey[k]).forEach((k) => {
+                const meta = (MAN.series || []).find((s) => s.key === k) || { zh: k };
+                const sec = el("div", "k2ed-sec");
+                sec.appendChild(el("span", "t", meta.zh));
+                sec.appendChild(el("span", "c", `${byKey[k].length} 条`));
+                sec.title = "点击 = 只看这个系列";
+                sec.onclick = () => {
+                    STATE.motifSeries.clear();
+                    STATE.motifSeries.add(k);
+                    repaintFilters();
+                };
+                holder.appendChild(sec);
+                const g = el("div", "k2ed-grid mo");
+                holder.appendChild(g);
+                grids[k] = g;
+            });
+            Object.keys(byKey).forEach((k) => {      // 未登记的系列兜底
+                if (grids[k]) return;
+                const g = el("div", "k2ed-grid mo");
+                holder.appendChild(g);
+                grids[k] = g;
+            });
+        } else {
+            solo = el("div", "k2ed-grid mo");
+            holder.appendChild(solo);
+        }
+        const slot = (m) => solo || grids[m.series || ""] || Object.values(grids)[0] || holder;
         rows.forEach((m) => {
             const k = card(m.id === STATE.motif, () => pickMotif(m));
             k.dataset.id = m.id;
@@ -1491,8 +1563,10 @@ function renderMotifPage() {
                 + `${m.words} 词 / ${m.paras} 段　${m.branch_zh || "3D 场景"}　`
                 + `推荐画幅：${ASP_ZH[asp] || "横屏"}${m.ratio ? "（" + m.ratio + "）" : ""}\n`
                 + `标签：${(m.tags || []).join(" / ") || "—"}`
+                + `${m.genre ? `\n题材：${(MAN.genres || []).find((g) => g.key === m.genre)?.zh || m.genre}` : ""}`
+                + `${m.series ? `\n系列：${(MAN.series || []).find((s) => s.key === m.series)?.zh || m.series}` : ""}`
                 + `${STATE.picks.includes(m.id) ? "\n☑ 已在随机勾选池" : ""}`;
-            grid.appendChild(k);
+            slot(m).appendChild(k);
         });
         if (!rows.length) {
             holder.appendChild(el("div", "k2ed-desc",
@@ -1500,7 +1574,6 @@ function renderMotifPage() {
             return;
         }
         holder.appendChild(el("div", "k2ed-desc", `共 ${rows.length} 条`));
-        holder.appendChild(grid);
         } finally { motifPaintEnd(); }
     };
 
