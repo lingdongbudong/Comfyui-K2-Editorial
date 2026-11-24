@@ -53,6 +53,8 @@ const STATE = {
        单选时代没法问「室内 + 夜间」，只能一个个试。 */
     motifTags: new Set(), motifGenres: new Set(), motifSeries: new Set(),
     motifView: "group",         // group = 按风格系列分组平铺 / grid = 全部平铺
+    motifMulti: false,          // 分类多选总开关（默认关 = 同维度单选）
+    motifLast: { tags: "", genres: "", series: "" },   // 各维度最后点的一项，关多选时只留它
     addedOnly: false,           // 场景页：只看新增（入库批次）
     displayText: "", noText: false,
     /* 随机池：模式写回节点（可复现），勾选的场景 id 存服务端（可能几百条） */
@@ -68,38 +70,63 @@ const STATE = {
    嵌套重绘用 _motifPaintDepth 计数：只有最外层 begin 采集、最外层 end 恢复。
    重绘期间挂起 scroll 监听，避免 innerHTML="" 触发的 scrollTop 归零把记忆覆盖成 0。
    关面板由 closePanel() 清空（openPanel 会重新 renderPage，下次从顶部开始）。 */
-let MOTIF_SCROLL = { top: 0, anchor: null, anchorOff: 0 };
+let MOTIF_SCROLL = { top: 0, anchor: null, anchorOff: 0, section: null };
 let _motifPaintDepth = 0;
 
 function captureMotifScroll(force) {
     if (STATE.tab !== "motif") return;              // 页签已切走：保留旧记忆
     if (!force && _motifPaintDepth > 0) return;     // 重绘中：别被归零事件污染
     const page = pageEl();
-    const grid = page && page.querySelector(".k2ed-grid.mo");
-    if (!page || !grid) return;                     // 网格还没建：保留旧记忆
+    if (!page) return;                              // 网格还没建：保留旧记忆
+    /* 分组视图下页面里有多个 .k2ed-grid.mo（每个系列一段），
+       只查第一个会让第二段以后的滚动全部丢锚点、退化成绝对 scrollTop，
+       筛选一变就等于乱跳（用户报的「取消选择后自己跳到下面」就是这么来的）。 */
+    const grids = [...page.querySelectorAll(".k2ed-grid.mo")];
+    if (!grids.length) return;
     const pr = page.getBoundingClientRect();
     let first = null;
-    for (const k of grid.querySelectorAll(":scope > .k2ed-card")) {
-        const r = k.getBoundingClientRect();
-        if (r.bottom > pr.top) { first = { k: k, r: r }; break; }
+    for (const g of grids) {
+        for (const k of g.querySelectorAll(":scope > .k2ed-card")) {
+            const r = k.getBoundingClientRect();
+            if (r.bottom > pr.top) { first = { k: k, r: r }; break; }
+        }
+        if (first) break;
     }
     MOTIF_SCROLL.top = page.scrollTop;
     MOTIF_SCROLL.anchor = first ? (first.k.dataset.id || null) : null;
     MOTIF_SCROLL.anchorOff = first ? (first.r.top - pr.top) : 0;
+    /* 锚点卡片被筛掉时的兜底：记住「第一个可见段头」的系列 key，
+       重绘后落在同一段的段头位置，而不是弹回绝对像素。 */
+    MOTIF_SCROLL.section = null;
+    for (const s of page.querySelectorAll(".k2ed-sec")) {
+        if (s.getBoundingClientRect().bottom > pr.top) {
+            MOTIF_SCROLL.section = s.dataset.series || null;
+            break;
+        }
+    }
 }
 
 function restoreMotifScroll() {
     const page = pageEl();
     if (!page || STATE.tab !== "motif") return;
     const m = MOTIF_SCROLL;
-    const grid = page.querySelector(".k2ed-grid.mo");
+    const grids = [...page.querySelectorAll(".k2ed-grid.mo")];
     let target = m.top;
-    if (m.anchor && grid) {
+    if (m.anchor && grids.length) {
         const sel = ':scope > .k2ed-card[data-id="' + CSS.escape(m.anchor) + '"]';
-        const k = grid.querySelector(sel);
+        let k = null;
+        for (const g of grids) { k = g.querySelector(sel); if (k) break; }
         if (k) {
             const pr = page.getBoundingClientRect();
             target = page.scrollTop + (k.getBoundingClientRect().top - pr.top) - m.anchorOff;
+        } else if (m.section) {
+            /* 锚点卡片没了：退回该段段头，避免「取消一个筛选整页跳走」 */
+            const sec = page.querySelector(
+                '.k2ed-sec[data-series="' + CSS.escape(m.section) + '"]');
+            if (sec) {
+                const pr = page.getBoundingClientRect();
+                target = page.scrollTop + (sec.getBoundingClientRect().top - pr.top) - 8;
+            }
         }
     }
     const clamp = () => Math.max(0, page.scrollHeight - page.clientHeight);
@@ -343,6 +370,21 @@ function ensurePanel() {
     .k2ed-tab.on{background:#22303a;border-color:#3d6a86;color:#fff}
     .k2ed-tabs .right{margin-left:auto;display:flex;align-items:center;gap:8px}
     .k2ed-lbl{font-size:12px;color:#8b8f98}
+    /* 场景页筛选行：一条维度一行，grid 两列（标签列 + 内容列），换行也保持对齐 */
+    .k2ed-row{display:grid;grid-template-columns:56px minmax(0,1fr);gap:8px;
+      align-items:start;margin-bottom:8px;padding-bottom:8px;
+      border-bottom:1px solid #202228}
+    .k2ed-row:last-of-type{border-bottom:0}
+    .k2ed-row > .k2ed-lbl{text-align:right;font-size:11.5px;color:#7f848e;
+      letter-spacing:.5px;padding-top:5px;white-space:nowrap}
+    .k2ed-row > .k2ed-chips{margin-bottom:0}
+    .k2ed-sublbl{font-size:11px;color:#6f747e;margin-right:1px;align-self:center}
+    .k2ed-rnd{border-bottom:0}
+    /* 右侧栏「回到顶部」：常驻按钮行下方，滚到底后一键回列表顶 */
+    .k2ed-topbtn{margin:0 12px 6px;padding:6px 0;background:#1b1d23;
+      border:1px solid #33363e;color:#9aa0aa;border-radius:6px;font-size:12px;
+      cursor:pointer;flex:none;transition:background .12s,color .12s,border-color .12s}
+    .k2ed-topbtn:hover{background:#262a31;color:#fff;border-color:#4a7fa1}
     .k2ed-q{flex:1 1 260px;min-width:200px;max-width:380px;background:#1e2026;
       border:1px solid #363943;border-radius:8px;color:#dfe3e8;padding:5px 10px;
       font-size:12.5px;outline:none}
@@ -570,6 +612,7 @@ function ensurePanel() {
             <button class="k2ed-btn" id="k2ed-copy">复制</button>
             <button class="k2ed-btn" id="k2ed-tgl">显示提示词</button>
           </div>
+          <button class="k2ed-topbtn" id="k2ed-top" title="一键回到列表顶部">↑ 回到顶部</button>
           <div class="k2ed-stat" id="k2ed-stat"></div>
         </div>
       </div>
@@ -1274,16 +1317,31 @@ function renderMotifPage() {
     const ASP_ZH = { landscape: "横屏", portrait: "竖屏",
                      both: "通用", square: "方屏" };
 
-    /* 行 1：收藏 / 分类 / 推荐画幅 */
-    const chips = el("div", "k2ed-chips");
+    /* 每行一条筛选维度：grid 两列（标签列 + 内容列），chip 换行后仍与标签列对齐。
+       返回的是 chip 容器，调用方往里塞 chip 即可。 */
+    const mkRow = (label) => {
+        const r = el("div", "k2ed-row");
+        r.appendChild(el("span", "k2ed-lbl", label));
+        const box = el("div", "k2ed-chips");
+        r.appendChild(box);
+        page.appendChild(r);
+        return box;
+    };
     /* key/val 用来就地刷新选中态（repaintFilters）；动作按钮不传 */
     const mkChip = (on, label, fn, host, key, val) => {
         const b = el("button", "", label);
         b.className = "k2ed-chip" + (on ? " on" : "");
         if (key) { b.dataset.k = key; b.dataset.v = val === undefined ? "" : val; }
         b.onclick = fn;
-        (host || chips).appendChild(b);
+        (host || page).appendChild(b);
         return b;
+    };
+    /* 单选 / 多选统一入口：多选开关关着时，点新的一项先清同维度其余项 */
+    const pick = (setKey, set, val) => {
+        if (set.has(val)) { set.delete(val); return; }
+        if (!STATE.motifMulti) set.clear();
+        set.add(val);
+        STATE.motifLast[setKey] = val;
     };
     /* 筛选就地重绘：只重建网格，不整页 renderMotifPage()。
        整页重建要重做 395 张卡 + 搜索框，约 60ms，还会丢输入框焦点。 */
@@ -1292,6 +1350,7 @@ function renderMotifPage() {
             const k = b.dataset.k, v = b.dataset.v;
             const on = k === "fav" ? STATE.favOnlyMotif
                 : k === "added" ? STATE.addedOnly
+                : k === "multi" ? STATE.motifMulti
                 : k === "view" ? STATE.motifView === v
                     : k === "branch" ? STATE.motifBranch === v
                         : k === "aspect" ? STATE.motifAspect === v
@@ -1303,93 +1362,104 @@ function renderMotifPage() {
         });
         paintGrid();
     };
-    chips.appendChild(el("span", "k2ed-lbl", "　视图"));
+
+    /* 行 1：视图 / 收藏 / 分类 */
+    const rowView = mkRow("视图");
     [["group", "按系列分组"], ["grid", "全部平铺"]]
         .forEach(([k, label]) => mkChip(STATE.motifView === k, label, () => {
             STATE.motifView = k; repaintFilters();
-        }, null, "view", k));
-    chips.appendChild(el("span", "k2ed-sep"));
-    mkChip(STATE.favOnlyMotif, `★ 只看收藏（${favs.length}）`, () => {
+        }, rowView, "view", k));
+    rowView.appendChild(el("span", "k2ed-sep"));
+    mkChip(STATE.favOnlyMotif, `★ 收藏（${favs.length}）`, () => {
         STATE.favOnlyMotif = !STATE.favOnlyMotif; repaintFilters();
-    }, null, "fav");
+    }, rowView, "fav");
     /* 只看新增：manifest 里 added 有值的母题（按入库批次标记） */
     const addedN = MAN.added_count || MAN.motifs.filter((m) => m.added).length;
     if (addedN) {
-        mkChip(STATE.addedOnly, `✦ 只看新增（${addedN}）`, () => {
+        mkChip(STATE.addedOnly, `✦ 新增（${addedN}）`, () => {
             STATE.addedOnly = !STATE.addedOnly; repaintFilters();
-        }, null, "added");
+        }, rowView, "added");
     }
-    chips.appendChild(el("span", "k2ed-lbl", "　分类"));
+    rowView.appendChild(el("span", "k2ed-sep"));
+    rowView.appendChild(el("span", "k2ed-sublbl", "分类"));
     [["", "全部"], ["scene", "3D 场景"], ["poster", "平面海报"],
      ["short", "短提示词"]]
         .forEach(([k, label]) => mkChip(STATE.motifBranch === k, label, () => {
             STATE.motifBranch = k; repaintFilters();
-        }, null, "branch", k));
-    chips.appendChild(el("span", "k2ed-lbl", "　推荐画幅"));
+        }, rowView, "branch", k));
+
+    /* 行 2：推荐画幅 / 多选开关 / 清除 / 搜索 */
+    const rowAsp = mkRow("画幅");
     [["", "全部"], ["landscape", "横屏"], ["portrait", "竖屏"],
      ["both", "通用"], ["square", "方屏"]]
         .forEach(([k, label]) => mkChip(STATE.motifAspect === k, label, () => {
             STATE.motifAspect = k; repaintFilters();
-        }, null, "aspect", k));
-    page.appendChild(chips);
-
-    /* 行 2：搜索 + 风格系列（10 个批次，风格一致性最高，浏览母题最顺手的维度） */
-    const seriesRow = el("div", "k2ed-chips");
-    seriesRow.appendChild(el("span", "k2ed-lbl", "　系列"));
-    (MAN.series || []).forEach((s) => {
-        mkChip(STATE.motifSeries.has(s.key), `${s.zh} ${s.count}`, () => {
-            if (STATE.motifSeries.has(s.key)) STATE.motifSeries.delete(s.key);
-            else STATE.motifSeries.add(s.key);
-            repaintFilters();
-        }, seriesRow, "series", s.key);
-    });
-    page.appendChild(seriesRow);
-
-    /* 行 3：搜索 + 场景标签（标签由 build_manifest 按正文关键词生成，可多选） */
-    const tools = el("div", "k2ed-chips");
-    const inp = el("input", "");
-    inp.className = "k2ed-q";
-    inp.type = "search";
-    inp.placeholder = "搜索：场景名 / 英文标题 / 母题 id";
-    inp.value = STATE.motifQ;
-    tools.appendChild(inp);
-    (MAN.tags || []).forEach((t) => {
-        mkChip(STATE.motifTags.has(t.key), `${t.zh} ${t.count}`, () => {
-            if (STATE.motifTags.has(t.key)) STATE.motifTags.delete(t.key);
-            else STATE.motifTags.add(t.key);
-            repaintFilters();
-        }, tools, "tag", t.key);
-    });
+        }, rowAsp, "aspect", k));
+    rowAsp.appendChild(el("span", "k2ed-sep"));
+    mkChip(STATE.motifMulti, STATE.motifMulti ? "☑ 多选分类" : "☐ 多选分类", () => {
+        STATE.motifMulti = !STATE.motifMulti;
+        /* 关掉多选时每个维度只留最后点的那一个，行为可预测 */
+        if (!STATE.motifMulti) {
+            [["tags", STATE.motifTags], ["genres", STATE.motifGenres],
+             ["series", STATE.motifSeries]].forEach(([k, set]) => {
+                if (set.size > 1) {
+                    const keep = STATE.motifLast[k];
+                    set.clear();
+                    if (keep) set.add(keep);
+                }
+            });
+        }
+        renderMotifPage();
+        PANEL?.stat(STATE.motifMulti ? "分类多选：开（可同时选多个）" : "分类多选：关（单选）");
+    }, rowAsp, "multi", "1");
     if (STATE.motifQ || STATE.motifTags.size || STATE.motifGenres.size
             || STATE.motifSeries.size || STATE.addedOnly) {
         mkChip(false, "✕ 清除筛选", () => {
             STATE.motifQ = "";
             STATE.motifTags.clear(); STATE.motifGenres.clear();
             STATE.motifSeries.clear(); STATE.addedOnly = false;
-            inp.value = "";                 // 不整页重建，输入框自己清
-            repaintFilters();
+            renderMotifPage();
             PANEL?.stat("筛选已清除");
-        }, tools);
+        }, rowAsp);
     }
-    page.appendChild(tools);
+    const inp = el("input", "");
+    inp.className = "k2ed-q";
+    inp.type = "search";
+    inp.placeholder = "搜索：场景名 / 英文标题 / 母题 id";
+    inp.value = STATE.motifQ;
+    rowAsp.appendChild(inp);
 
-    /* 行 4：题材第二维度（可多选；「其他」= 正文线索不足，诚实留白不硬猜） */
+    /* 行 3：风格系列（10 个批次，风格一致性最高，浏览母题最顺手的维度） */
+    const seriesRow = mkRow("系列");
+    (MAN.series || []).forEach((s) => {
+        mkChip(STATE.motifSeries.has(s.key), `${s.zh} ${s.count}`, () => {
+            pick("series", STATE.motifSeries, s.key);
+            repaintFilters();
+        }, seriesRow, "series", s.key);
+    });
+
+    /* 行 4：题材第二维度（「其他」= 正文线索不足，诚实留白不硬猜） */
     if ((MAN.genres || []).length) {
-        const genres = el("div", "k2ed-chips");
-        genres.appendChild(el("span", "k2ed-lbl", "　题材"));
+        const genresRow = mkRow("题材");
         MAN.genres.forEach((g) => {
             mkChip(STATE.motifGenres.has(g.key), `${g.zh} ${g.count}`, () => {
-                if (STATE.motifGenres.has(g.key)) STATE.motifGenres.delete(g.key);
-                else STATE.motifGenres.add(g.key);
+                pick("genres", STATE.motifGenres, g.key);
                 repaintFilters();
-            }, genres, "genre", g.key);
+            }, genresRow, "genre", g.key);
         });
-        page.appendChild(genres);
     }
+    /* 行 5：场景标签（由 build_manifest 按正文关键词生成） */
+    const tagsRow = mkRow("标签");
+    (MAN.tags || []).forEach((t) => {
+        mkChip(STATE.motifTags.has(t.key), `${t.zh} ${t.count}`, () => {
+            pick("tags", STATE.motifTags, t.key);
+            repaintFilters();
+        }, tagsRow, "tag", t.key);
+    });
 
-    /* 行 3：随机抽取 + 勾选（全选/反选的作用域 = 当前筛选结果） */
-    const rnd = el("div", "k2ed-chips");
-    rnd.appendChild(el("span", "k2ed-lbl", "🎲 每次运行随机场景"));
+    /* 行 6：随机抽取 + 勾选（全选/反选的作用域 = 当前筛选结果） */
+    const rnd = mkRow("🎲 随机池");
+    rnd.parentElement.classList.add("k2ed-rnd");
 
     let pickChip = null;
     const poolHint = el("span", "k2ed-lbl", "");
@@ -1440,7 +1510,6 @@ function renderMotifPage() {
         PANEL?.stat("勾选池已清空");
     }, rnd);
     rnd.appendChild(poolHint);
-    page.appendChild(rnd);
 
     const holder = el("div", "");
     page.appendChild(holder);
@@ -1479,6 +1548,7 @@ function renderMotifPage() {
             (MAN.series || []).map((s) => s.key).filter((k) => byKey[k]).forEach((k) => {
                 const meta = (MAN.series || []).find((s) => s.key === k) || { zh: k };
                 const sec = el("div", "k2ed-sec");
+                sec.dataset.series = k;
                 sec.appendChild(el("span", "t", meta.zh));
                 sec.appendChild(el("span", "c", `${byKey[k].length} 条`));
                 sec.title = "点击 = 只看这个系列";
@@ -2022,6 +2092,12 @@ async function openPanel(node) {
         p.built = true;
         p.panel.querySelector("#k2ed-gen").onclick = doGenerate;
         p.panel.querySelector("#k2ed-tgl").onclick = () => toggleText();
+        /* 回到顶部：三个页签共用同一个滚动容器，滚到底后一键回列表顶部 */
+        p.panel.querySelector("#k2ed-top").onclick = () => {
+            const pg = pageEl();
+            if (!pg) return;
+            pg.scrollTo({ top: 0, behavior: "smooth" });
+        };
         p.panel.querySelector("#k2ed-rnd").onclick = async () => {
             const pick = MAN.motifs[Math.floor(Math.random() * MAN.motifs.length)];
             STATE.costume = MAN.auto;
