@@ -1,7 +1,7 @@
 {
  "_meta": {
   "note": "母题中文名（面板显示用）。英文原名仍是画面内文字，不能替换 —— 提示词里 titled “GRAIN SANCTUM” 是要被画出来的标题。",
-  "count": 586
+  "count": 587
  },
  "names": {
   "k2x_still_section": "静谧切片",
@@ -586,9 +586,10 @@
   "k2s_window_light_5": "未来路口",
   "k2s_window_light_6": "雨窗咖啡",
   "k2s_zoetrope_room": "转盘动画室",
-  "k2x_clsc_seat_dawn": "窗下晨光·阿尔托莉雅",
-  "k2x_clsc_seat_ember": "炉前余烬·阿尔托莉雅",
-  "k2x_clsc_seat_salt": "盐池冷光·阿尔托莉雅",
-  "k2x_clsc_seat_snow": "雪墙落雪·阿尔托莉雅"
+  "k2x_clsc_seat_dawn": "河岸晨光·阿尔托莉雅",
+  "k2x_clsc_seat_ember": "窗边余温·阿尔托莉雅",
+  "k2x_clsc_seat_snow": "雪后站台·阿尔托莉雅",
+  "k2x_clsc_seat_neon": "后巷霓虹·阿尔托莉雅",
+  "k2x_clsc_seat_side": "柱厅侧影·阿尔托莉雅"
  }
 }
