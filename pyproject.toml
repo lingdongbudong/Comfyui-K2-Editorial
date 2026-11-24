@@ -1,6 +1,6 @@
 [project]
 name = "comfyui-k2-editorial"
-version = "1.17.0"
+version = "1.17.1"
 description = "ComfyUI 节点：Krea2 白垩光长文提示词自动装配 · 395 母题 × 2432 角色 · 一个母题决定整张画面 · 纯本地零联网"
 readme = "README.md"
 requires-python = ">=3.10"
