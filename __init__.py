@@ -18,7 +18,7 @@ Krea2「白垩光 / 未来奢华编辑主视觉」长文提示词的自动装配
 """
 from __future__ import annotations
 
-__version__ = "1.15.5"
+__version__ = "1.16.0"
 
 from .k2ed_node import K2EditorialBuilder, register_routes
 

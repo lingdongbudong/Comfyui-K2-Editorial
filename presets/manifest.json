@@ -3,7 +3,7 @@
   "note": "面板数据层。thumbs/ 与 presets/ 同级；路径相对插件根目录。",
   "counts": {
    "characters": 2,
-   "motifs": 553,
+   "motifs": 557,
    "costumes": 8
   }
  },
@@ -11,27 +11,27 @@
   {
    "key": "interior",
    "zh": "室内",
-   "count": 263
+   "count": 266
   },
   {
    "key": "exterior",
    "zh": "室外",
-   "count": 252
+   "count": 253
   },
   {
    "key": "night",
    "zh": "夜间",
-   "count": 220
+   "count": 221
   },
   {
    "key": "day",
    "zh": "白昼",
-   "count": 210
+   "count": 211
   },
   {
    "key": "nature",
    "zh": "自然",
-   "count": 194
+   "count": 195
   },
   {
    "key": "street",
@@ -41,7 +41,7 @@
   {
    "key": "architecture",
    "zh": "建筑",
-   "count": 263
+   "count": 264
   },
   {
    "key": "season",
@@ -9747,6 +9747,118 @@
    "thumb_v": 1794423356,
    "character": "",
    "recommend_char": "misaka_mikoto",
+   "genre": "",
+   "added": ""
+  },
+  {
+   "id": "k2x_clsc_seat_dawn",
+   "title": "FIRST LIGHT",
+   "zh": "窗下晨光·阿尔托莉雅",
+   "title_zh": "",
+   "display_orig": "FIRST LIGHT",
+   "display_all": [
+    "FIRST LIGHT"
+   ],
+   "aspect": "portrait",
+   "aspect_zh": "竖屏",
+   "ratio": "3:4",
+   "tags": [
+    "interior",
+    "day",
+    "architecture"
+   ],
+   "branch": "scene",
+   "branch_zh": "3D 场景",
+   "workflow": "Krea2-白垩光标准档.json",
+   "words": 2612,
+   "paras": 22,
+   "thumb": "thumbs/motifs/k2x_clsc_seat_dawn.webp",
+   "thumb_v": 1795536177,
+   "character": "",
+   "recommend_char": "artoria_pendragon_(fate)",
+   "genre": "",
+   "added": ""
+  },
+  {
+   "id": "k2x_clsc_seat_ember",
+   "title": "LAST EMBER",
+   "zh": "炉前余烬·阿尔托莉雅",
+   "title_zh": "最后余烬",
+   "display_orig": "LAST EMBER",
+   "display_all": [
+    "LAST EMBER"
+   ],
+   "aspect": "portrait",
+   "aspect_zh": "竖屏",
+   "ratio": "3:4",
+   "tags": [
+    "interior"
+   ],
+   "branch": "scene",
+   "branch_zh": "3D 场景",
+   "workflow": "Krea2-白垩光标准档.json",
+   "words": 2605,
+   "paras": 22,
+   "thumb": "thumbs/motifs/k2x_clsc_seat_ember.webp",
+   "thumb_v": 1795536178,
+   "character": "",
+   "recommend_char": "artoria_pendragon_(fate)",
+   "genre": "",
+   "added": ""
+  },
+  {
+   "id": "k2x_clsc_seat_salt",
+   "title": "SALT HALL",
+   "zh": "盐池冷光·阿尔托莉雅",
+   "title_zh": "",
+   "display_orig": "SALT HALL",
+   "display_all": [
+    "SALT HALL"
+   ],
+   "aspect": "portrait",
+   "aspect_zh": "竖屏",
+   "ratio": "3:4",
+   "tags": [
+    "interior"
+   ],
+   "branch": "scene",
+   "branch_zh": "3D 场景",
+   "workflow": "Krea2-白垩光标准档.json",
+   "words": 2630,
+   "paras": 22,
+   "thumb": "thumbs/motifs/k2x_clsc_seat_salt.webp",
+   "thumb_v": 1795536178,
+   "character": "",
+   "recommend_char": "artoria_pendragon_(fate)",
+   "genre": "",
+   "added": ""
+  },
+  {
+   "id": "k2x_clsc_seat_snow",
+   "title": "SILENT SNOW",
+   "zh": "雪墙落雪·阿尔托莉雅",
+   "title_zh": "",
+   "display_orig": "SILENT SNOW",
+   "display_all": [
+    "SILENT SNOW"
+   ],
+   "aspect": "portrait",
+   "aspect_zh": "竖屏",
+   "ratio": "3:4",
+   "tags": [
+    "exterior",
+    "night",
+    "nature"
+   ],
+   "branch": "scene",
+   "branch_zh": "3D 场景",
+   "workflow": "Krea2-白垩光标准档.json",
+   "words": 2592,
+   "paras": 22,
+   "thumb": "thumbs/motifs/k2x_clsc_seat_snow.webp",
+   "thumb_v": 1795536386,
+   "character": "",
+   "recommend_char": "artoria_pendragon_(fate)",
    "genre": "",
    "added": ""
   },
