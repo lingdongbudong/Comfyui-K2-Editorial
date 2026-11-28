@@ -557,5 +557,7 @@
  "k2x_waterline": "scene_misc",
  "k2x_wheat_field": "scene_misc",
  "k2x_window_seat": "scene_misc",
- "k2x_wiped_edge": "scene_misc"
+ "k2x_wiped_edge": "scene_misc",
+ "k2s_ref_front": "ref",
+ "k2s_ref_sheet": "ref"
 }
