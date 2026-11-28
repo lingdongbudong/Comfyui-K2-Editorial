@@ -220,6 +220,8 @@ function hideWidgets(node) {
     for (const name of HIDDEN) {
         const w = getW(node, name);
         if (!w) continue;
+        w.hidden = true;
+        if (w.options) w.options.hidden = true;
         w.computeSize = () => [0, -4];
         w.draw = () => {};
         if (w.element) w.element.style.display = "none";
@@ -2486,7 +2488,16 @@ app.registerExtension({
                     openPanel(this);
                 });
                 if (typeof this.addDOMWidget === "function") {
-                    this.addDOMWidget("k2ed-open", "button", btnEl, { serialize: false });
+                    // 注意：type 不能传 "button"，否则 ComfyUI Vue Nodes 2.0 会将其当作原生 WidgetButton 渲染，
+                    // 忽略自定义 btnEl 并只显示 widget.name（"k2ed-open"），点击时也只调 widget.callback 而不触发 btnEl 的 click。
+                    const w = this.addDOMWidget("k2ed-open", "k2ed_button", btnEl, {
+                        serialize: false,
+                        getHeight: () => 34,
+                        getMinHeight: () => 34,
+                    });
+                    if (w) {
+                        w.label = BTN_LABEL;
+                    }
                 } else {
                     // 老版本没有 addDOMWidget：退回到把节点挂在 DOM 上（比 canvas 自绘可靠）
                     const w = this.addWidget("button", BTN_LABEL, null, () => openPanel(this),
