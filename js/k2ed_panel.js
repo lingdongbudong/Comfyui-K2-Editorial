@@ -220,6 +220,8 @@ function hideWidgets(node) {
     for (const name of HIDDEN) {
         const w = getW(node, name);
         if (!w) continue;
+        w.hidden = true;
+        if (w.options) w.options.hidden = true;
         w.computeSize = () => [0, -4];
         w.draw = () => {};
         if (w.element) w.element.style.display = "none";
