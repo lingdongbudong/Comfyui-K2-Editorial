@@ -2495,7 +2495,6 @@ app.registerExtension({
                     });
                     if (w) {
                         w.label = BTN_LABEL;
-                        w.callback = () => openPanel(this);
                     }
                 } else {
                     // 老版本没有 addDOMWidget：退回到把节点挂在 DOM 上（比 canvas 自绘可靠）
