@@ -335,6 +335,10 @@ class K2EditorialBuilder:
                 "角色随机池": (CHAR_POOLS, {"default": RAND_OFF}),
                 "角色随机作品": ("STRING", {"default": ""}),
                 "场景随机池": (MOTIF_POOLS, {"default": RAND_OFF}),
+                # 角色 LORA 自带服装时：提示词里一个服装词都不写（服装交给 LORA 触发词）
+                "LORA服装触发词": ("BOOLEAN", {"default": False}),
+                # 锁定发色：发色不参与母题/角色色盘的比例分配，避免被画面色调洗掉
+                "锁定发色": ("BOOLEAN", {"default": False}),
             },
             "hidden": {
                 # ComfyUI 的 SaveImage 会把这份 prompt 原样 json.dumps 进 PNG 元数据。
@@ -360,6 +364,7 @@ class K2EditorialBuilder:
                 kw.get("画面英文文字"), kw.get("画面不显示英文"),
                 kw.get("画面文字模式"),
                 kw.get("角色随机池"), kw.get("角色随机作品"), kw.get("场景随机池"),
+                kw.get("LORA服装触发词"), kw.get("锁定发色"),
                 # 收藏/勾选变了，随机结果也会变，必须打进来，否则固定种子会复用到旧图
                 _file_stamp(FAVS_FILE), _file_stamp(POOLS_FILE),
                 # 母题库/版型改过 → 同 id 的正文已经不同，固定种子下也必须重跑
@@ -371,6 +376,7 @@ class K2EditorialBuilder:
                  服装=AUTO, 单品="", 覆盖提示词="", 画面英文文字="",
                  画面不显示英文=False, 画面文字模式="全部替换",
                  角色随机池=RAND_OFF, 角色随机作品="", 场景随机池=RAND_OFF,
+                 LORA服装触发词=False, 锁定发色=False,
                  prompt=None, extra_pnginfo=None, unique_id=None):
         ch = None
         picked = {"角色": "", "场景": "", "角色说明": "", "场景说明": ""}
@@ -418,6 +424,8 @@ class K2EditorialBuilder:
                                            char_obj=ch, outfit_tags=tags,
                                            display_text=画面英文文字,
                                            no_text=bool(画面不显示英文),
+                                           no_outfit=bool(LORA服装触发词),
+                                           hair_lock=bool(锁定发色),
                                            display_mode=("title"
                                                          if 画面文字模式 == "只留主标题"
                                                          else "all"))
@@ -757,6 +765,8 @@ def register_routes() -> None:
         item = q.get("item", "")
         display = q.get("display", "")
         no_text = q.get("notext", "").lower() in ("1", "true", "yes")
+        no_outfit = q.get("lora", "").lower() in ("1", "true", "yes")
+        hair_lock = q.get("hairlock", "").lower() in ("1", "true", "yes")
         mode = "title" if q.get("mode", "").lower() in ("title", "title_only") else "all"
         tags: list[str] = []
         if item.startswith("char:"):
@@ -771,7 +781,8 @@ def register_routes() -> None:
             text, log = A.assemble(motif, char, aspect, costume,
                                    char_obj=ch, outfit_tags=tags,
                                    display_text=display, no_text=no_text,
-                                   display_mode=mode)
+                                   display_mode=mode, no_outfit=no_outfit,
+                                   hair_lock=hair_lock)
             if _auto_why:
                 log.insert(0, _auto_why)
             rep = A.validate(text, None if char == "keep" else char,

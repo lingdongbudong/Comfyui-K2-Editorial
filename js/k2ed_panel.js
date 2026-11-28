@@ -19,7 +19,12 @@ import { api } from "../../scripts/api.js";
 const NODE_NAME = "K2EditorialBuilder";
 const HIDDEN = ["随机种子", "每次重随机", "角色", "母题", "画幅", "服装", "单品",
                 "覆盖提示词", "画面英文文字", "画面不显示英文", "画面文字模式",
-                "角色随机池", "角色随机作品", "场景随机池"];
+                "角色随机池", "角色随机作品", "场景随机池", "LORA服装触发词",
+                // 「⚙ 打开设置面板」不再用 widget：widget 的点击命中按 litegraph 的
+                // last_y 判，节点一收缩就落在节点外（画得出来、点不着）。改由节点自绘 + onMouseDown。
+                "⚙ 打开设置面板"];
+const BTN_LABEL = "⚙ 打开设置面板";
+const BTN_H = 26;
 const PAGE_SIZE = 72;
 const SEED_MAX = 0xFFFFFFFF;
 
@@ -48,15 +53,17 @@ const STATE = {
     outfits: null, outfitCat: "", charMeta: null, allTotal: 0,
     favs: { characters: [], costumes: [], motifs: [], works: [] },
     favOnlyCostume: false, favOnlyMotif: false, motifAspect: "", motifBranch: "",
+    motifRef: "",               // 人物参考图模式：front = 正面全身 / sheet = 四视图
     motifQ: "",                 // 场景页：关键词搜索
     /* 场景页筛选改成多选（集合）：同一维度内 OR，维度之间 AND。
        单选时代没法问「室内 + 夜间」，只能一个个试。 */
     motifTags: new Set(), motifGenres: new Set(), motifSeries: new Set(),
+    motifShots: new Set(),      // 景别：特写 / 近景 / 中景 / 远景 / 超远景
     motifView: "group",         // group = 按风格系列分组平铺 / grid = 全部平铺
     motifMulti: false,          // 分类多选总开关（默认关 = 同维度单选）
-    motifLast: { tags: "", genres: "", series: "" },   // 各维度最后点的一项，关多选时只留它
+    motifLast: { tags: "", genres: "", series: "", shots: "" },   // 各维度最后点的一项，关多选时只留它
     addedOnly: false,           // 场景页：只看新增（入库批次）
-    displayText: "", noText: false,
+    displayText: "", noText: false, lora: false, hairlock: false,
     /* 随机池：模式写回节点（可复现），勾选的场景 id 存服务端（可能几百条） */
     charPool: "关闭", charPoolWork: "", motifPool: "关闭", picks: [],
     locks: {},
@@ -261,6 +268,8 @@ function installSummary(node) {
         let y = 26;
         for (const t of lines) { ctx.fillText(t, 12, y); y += 15; }
         ctx.restore();
+
+        // 按钮已改为 DOM widget（见 onNodeCreated），这里只画摘要文字
     };
 }
 
@@ -273,6 +282,10 @@ function syncStateFromNode(node) {
     STATE.displayText = getW(node, "画面英文文字")?.value || "";
     const nt = getW(node, "画面不显示英文")?.value;
     STATE.noText = (nt === true || nt === "true" || nt === 1);
+    const lo = getW(node, "LORA服装触发词")?.value;
+    STATE.lora = (lo === true || lo === "true" || lo === 1);
+    const hl = getW(node, "锁定发色")?.value;
+    STATE.hairlock = (hl === true || hl === "true" || hl === 1);
     const rand = getW(node, "每次重随机")?.value;
     STATE.seedMode = (rand === false || rand === "false" || rand === 0) ? "fixed" : "random";
     const sv = parseInt(getW(node, "随机种子")?.value, 10);
@@ -284,7 +297,12 @@ function syncStateFromNode(node) {
 
 /* ---------------- 面板骨架 ---------------- */
 function ensurePanel() {
-    if (PANEL) return PANEL;
+    // ⚠ 不能只判 null：ComfyUI 换工作流 / 前端重挂时 body 可能被重建，
+    //   PANEL 还指着已经脱离文档的旧节点 —— 之后 display:flex 设了也看不见，
+    //   表现就是「点打开设置面板没反应」（用户报的间歇性问题）。
+    if (PANEL && PANEL.mask && document.body.contains(PANEL.mask)) return PANEL;
+    if (PANEL) { try { PANEL.mask.remove(); } catch (e) { /* 已脱离文档 */ } }
+    PANEL = null;
 
     const style = el("style", "");
     style.textContent = `
@@ -318,7 +336,10 @@ function ensurePanel() {
     .k2ed-hd .k2ed-dis:hover{background:#2e3138;color:#e8c96a;border-color:#5c4d29}
     .k2ed-hd .k2ed-dis .dot{color:#8b8f98;font-size:11px}
     .k2ed-hd .k2ed-x{margin-left:0;flex:0 0 auto}
-    .k2ed-tabs{display:flex;align-items:center;gap:6px;padding:0 16px 10px;border-bottom:1px solid #2a2c33}
+    /* flex-wrap：页签行现在有 4 个页签 + LORA 开关 + 角色自检 + 锁定发色 + 右侧画幅/种子，
+       窄屏或放大字号时靠 wrap 兜底，别把右侧的种子框挤没 */
+    .k2ed-tabs{display:flex;align-items:center;gap:6px;row-gap:6px;flex-wrap:wrap;
+      padding:0 16px 10px;border-bottom:1px solid #2a2c33}
     .k2ed-tab{padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;border:1px solid transparent;
       color:#b9bdc6;background:transparent}
     .k2ed-tab:hover{background:#1f2127}
@@ -356,6 +377,30 @@ function ensurePanel() {
       padding:3px 8px;font-size:12px;cursor:pointer;line-height:1.4}
     .k2ed-dice:hover{background:#2a2d35;color:#fff}
     .k2ed-dice:disabled{opacity:.4;cursor:default}
+    .k2ed-loratog{display:flex;align-items:center;gap:5px;cursor:pointer;
+      margin-left:10px;padding:3px 9px;border:1px solid #363943;border-radius:7px;
+      background:#1e2026;color:#8b8f98;white-space:nowrap}
+    .k2ed-loratog:hover{background:#2a2d35;color:#dfe3e8}
+    .k2ed-loratog.on{background:#23384a;border-color:#3d6a86;color:#cfe6f5}
+    .k2ed-loratog input{accent-color:#3d6a86;cursor:pointer;margin:0}
+    /* 页签行统一行高：页签 / LORA 开关 / 自检按钮 / 画幅分段 / 种子框 / 勾选项
+       逐个 padding 对不齐，统一成 28px + inline-flex 居中 */
+    .k2ed-tabs{min-height:28px}
+    .k2ed-tab,.k2ed-loratog,.k2ed-chkbtn{height:28px;display:inline-flex;align-items:center;
+      line-height:1;box-sizing:border-box}
+    .k2ed-tab{padding:0 16px}
+    .k2ed-tabs .right{height:28px}
+    .k2ed-tabs .right > *{height:28px;box-sizing:border-box}
+    .k2ed-tabs .k2ed-seg{display:flex;align-items:stretch}
+    .k2ed-tabs .k2ed-seg button{padding:0 10px;line-height:1}
+    .k2ed-tabs .k2ed-seedin{padding:0 7px}
+    .k2ed-tabs .k2ed-dice{padding:0 8px;height:28px;display:inline-flex;
+      align-items:center;line-height:1}
+    .k2ed-tabs label.k2ed-lbl{display:inline-flex;align-items:center;gap:5px;line-height:1}
+    .k2ed-chkbtn{margin-left:6px;padding:0 10px;border:1px solid #363943;border-radius:7px;
+      background:#1e2026;color:#8b8f98;font-size:12px;font-family:inherit;cursor:pointer;
+      white-space:nowrap}
+    .k2ed-chkbtn:hover{background:#2a2d35;color:#dfe3e8}
     .k2ed-dispin{width:100%;box-sizing:border-box;background:#1e2026;border:1px solid #363943;
       border-radius:7px;color:#dfe3e8;padding:5px 8px;font-size:12px;outline:none;margin-top:3px}
     .k2ed-dispin:focus{border-color:#3d6a86}
@@ -431,6 +476,8 @@ function ensurePanel() {
     .k2ed-btn:disabled{opacity:.45;cursor:default}
     .k2ed-stat{font-size:11.5px;color:#8b8f98;min-height:16px;line-height:1.4;flex:none;
       max-height:44px;overflow:hidden}
+    /* 角色自检不一致：红字提醒，但不拦生成 */
+    .k2ed-stat.warn{color:#f07178}
     .k2ed-charwrap{display:flex;gap:14px;height:100%;min-height:0}
     .k2ed-works{width:196px;flex:none;overflow-y:auto;padding-right:6px;border-right:1px solid #2a2c33}
     .k2ed-wk{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;cursor:pointer;
@@ -540,6 +587,16 @@ function ensurePanel() {
         <button class="k2ed-tab" data-tab="char">① 角色</button>
         <button class="k2ed-tab" data-tab="costume">② 服装</button>
         <button class="k2ed-tab" data-tab="motif">③ 场景</button>
+        <label class="k2ed-lbl k2ed-loratog" id="k2ed-lorawrap"
+               title="开启后不再生成任何服装提示词（单品 / 版型 / 官方预设 / 母题自带服装全部停写），服装交给角色 LORA 的触发词">
+          <input type="checkbox" id="k2ed-lora"> LORA 服装触发词模式
+        </label>
+        <button class="k2ed-chkbtn" id="k2ed-chk"
+                title="比对节点角色、图里的角色 LoRA 与触发词是否同一个人；随机池开着也会提醒">🔍 角色自检</button>
+        <label class="k2ed-lbl k2ed-loratog" id="k2ed-hairwrap"
+               title="开启后发色不参与母题/角色的色彩比例分配，避免被画面色调洗淡、压暗或改色（发色失真的根因是色盘里头发只占 14%）">
+          <input type="checkbox" id="k2ed-hairlock"> 🔒 锁定发色
+        </label>
         <div class="right">
           <span class="k2ed-lbl">画幅</span>
           <div class="k2ed-seg" id="k2ed-asp"></div>
@@ -603,6 +660,43 @@ function ensurePanel() {
     mask.addEventListener("mousedown", (e) => { if (e.target === mask) closePanel(); });
     panel.querySelector("#k2ed-close").onclick = closePanel;
 
+    /* 角色一致性自检：节点角色 vs 图里的角色 LoRA / 触发词 vs 随机池 */
+    panel.querySelector("#k2ed-chk").onclick = () => runCharCheck();
+
+    /* LORA 服装触发词模式：开了就一个服装词都不写，服装交给角色 LORA 的触发词 */
+    const loraBox = panel.querySelector("#k2ed-lora");
+    if (loraBox) {
+        loraBox.checked = !!STATE.lora;
+        loraBox.onchange = async () => {
+            STATE.lora = loraBox.checked;
+            panel.querySelector("#k2ed-lorawrap")?.classList.toggle("on", STATE.lora);
+            if (CUR) setW(CUR, "LORA服装触发词", STATE.lora);
+            app.graph.setDirtyCanvas(true, true);
+            PANEL.stat(STATE.lora
+                ? "LORA 服装触发词模式：已写回节点，不再生成任何服装提示词（单品 / 版型 / 官方预设 / 母题自带服装全部停写）"
+                : "已关闭 LORA 服装模式，恢复正常的服装提示词");
+            renderSide();
+            if (STATE.showText) await doGenerate();
+        };
+    }
+
+    /* 锁定发色：发色不参与色盘比例，写回节点（节点上是 optional 末尾的「锁定发色」） */
+    const hairBox = panel.querySelector("#k2ed-hairlock");
+    if (hairBox) {
+        hairBox.checked = !!STATE.hairlock;
+        panel.querySelector("#k2ed-hairwrap")?.classList.toggle("on", STATE.hairlock);
+        hairBox.onchange = async () => {
+            STATE.hairlock = hairBox.checked;
+            panel.querySelector("#k2ed-hairwrap")?.classList.toggle("on", STATE.hairlock);
+            if (CUR) setW(CUR, "锁定发色", STATE.hairlock);
+            app.graph.setDirtyCanvas(true, true);
+            PANEL.stat(STATE.hairlock
+                ? "锁定发色：已写回节点。发色不再参与色盘比例分配，画面整体色调不许把头发洗淡或改色"
+                : "已关闭发色锁定，头发重新跟随画面色彩比例");
+            if (STATE.showText) await doGenerate();
+        };
+    }
+
     /* 免责声明浮层：点按钮开、点「我知道了」或浮层空白/ESC 关；不影响面板状态 */
     const disWrap = panel.querySelector("#k2ed-dis-wrap");
     const showDis = () => { disWrap.style.display = "flex"; };
@@ -619,7 +713,11 @@ function ensurePanel() {
     });
 
     PANEL = { mask, panel, dis: disWrap, built: false,
-              stat: (t) => { panel.querySelector("#k2ed-stat").textContent = t || ""; } };
+              stat: (t, kind) => {
+                  const s = panel.querySelector("#k2ed-stat");
+                  s.textContent = t || "";
+                  s.classList.toggle("warn", kind === "warn");
+              } };
     return PANEL;
 }
 
@@ -1313,12 +1411,14 @@ function renderMotifPage() {
                 : k === "added" ? STATE.addedOnly
                 : k === "multi" ? STATE.motifMulti
                 : k === "view" ? STATE.motifView === v
-                    : k === "branch" ? STATE.motifBranch === v
+                    : k === "ref" ? STATE.motifRef === v
+                        : k === "branch" ? STATE.motifBranch === v
                         : k === "aspect" ? STATE.motifAspect === v
                             : k === "tag" ? STATE.motifTags.has(v)
                                 : k === "genre" ? STATE.motifGenres.has(v)
                                     : k === "series" ? STATE.motifSeries.has(v)
-                                        : false;
+                                        : k === "shot" ? STATE.motifShots.has(v)
+                                            : false;
             b.classList.toggle("on", on);
         });
         paintGrid();
@@ -1358,6 +1458,18 @@ function renderMotifPage() {
             STATE.motifBranch = k; repaintFilters();
         }, rowView, "branch", k));
 
+    /* 视图行末：人物参考图模式（白底单人 / 白底四视图），点一下只看那一类，再点取消 */
+    const refN = MAN.motifs.filter((m) => m.ref).length;
+    if (refN) {
+        rowView.appendChild(el("span", "k2ed-sep"));
+        [["front", "参考图·正面全身"], ["sheet", "参考图·四视图"]].forEach(([k, label]) => {
+            mkChip(STATE.motifRef === k, label, () => {
+                STATE.motifRef = STATE.motifRef === k ? "" : k;
+                repaintFilters();
+            }, rowView, "ref", k);
+        });
+    }
+
     /* 行 2：推荐画幅 / 多选开关 / 清除 / 搜索 */
     const rowAsp = mkRow("画幅");
     [["", "全部"], ["landscape", "横屏"], ["portrait", "竖屏"],
@@ -1371,7 +1483,7 @@ function renderMotifPage() {
         /* 关掉多选时每个维度只留最后点的那一个，行为可预测 */
         if (!STATE.motifMulti) {
             [["tags", STATE.motifTags], ["genres", STATE.motifGenres],
-             ["series", STATE.motifSeries]].forEach(([k, set]) => {
+             ["series", STATE.motifSeries], ["shots", STATE.motifShots]].forEach(([k, set]) => {
                 if (set.size > 1) {
                     const keep = STATE.motifLast[k];
                     set.clear();
@@ -1383,11 +1495,14 @@ function renderMotifPage() {
         PANEL?.stat(STATE.motifMulti ? "分类多选：开（可同时选多个）" : "分类多选：关（单选）");
     }, rowAsp, "multi", "1");
     if (STATE.motifQ || STATE.motifTags.size || STATE.motifGenres.size
-            || STATE.motifSeries.size || STATE.addedOnly) {
+            || STATE.motifSeries.size || STATE.motifShots.size
+            || STATE.motifRef || STATE.addedOnly) {
         mkChip(false, "✕ 清除筛选", () => {
             STATE.motifQ = "";
             STATE.motifTags.clear(); STATE.motifGenres.clear();
-            STATE.motifSeries.clear(); STATE.addedOnly = false;
+            STATE.motifSeries.clear(); STATE.motifShots.clear();
+            STATE.motifRef = "";
+            STATE.addedOnly = false;
             renderMotifPage();
             PANEL?.stat("筛选已清除");
         }, rowAsp);
@@ -1398,6 +1513,23 @@ function renderMotifPage() {
     inp.placeholder = "搜索：场景名 / 英文标题 / 母题 id";
     inp.value = STATE.motifQ;
     rowAsp.appendChild(inp);
+
+    /* 行 2.5：景别（人像 = 脸到胸以上 / 半身 = 腰膝以上 / 全景 = 全身及更小） */
+    const SHOT_ORDER = ["人像", "半身", "全景"];
+    const shotCount = {};
+    MAN.motifs.forEach((m) => {
+        if (m.shot) shotCount[m.shot] = (shotCount[m.shot] || 0) + 1;
+    });
+    if (Object.keys(shotCount).length) {
+        const shotRow = mkRow("景别");
+        SHOT_ORDER.forEach((s) => {
+            if (!shotCount[s]) return;
+            mkChip(STATE.motifShots.has(s), `${s} ${shotCount[s]}`, () => {
+                pick("shots", STATE.motifShots, s);
+                repaintFilters();
+            }, shotRow, "shot", s);
+        });
+    }
 
     /* 行 3：风格系列（10 个批次，风格一致性最高，浏览母题最顺手的维度） */
     const seriesRow = mkRow("系列");
@@ -1418,7 +1550,8 @@ function renderMotifPage() {
             }, genresRow, "genre", g.key);
         });
     }
-    /* 行 5：场景标签（由 build_manifest 按正文关键词生成） */
+    /* 行 5：场景标签（多数由 build_manifest 按正文关键词生成；「坐姿」是 motif_tags.json 手工标注，
+       姿势没法从关键词可靠判定 —— 站姿母题里也常出现 seated 的否定句） */
     const tagsRow = mkRow("标签");
     (MAN.tags || []).forEach((t) => {
         mkChip(STATE.motifTags.has(t.key), `${t.zh} ${t.count}`, () => {
@@ -1498,6 +1631,8 @@ function renderMotifPage() {
         .filter((m) => !STATE.motifTags.size || (m.tags || []).some((t) => STATE.motifTags.has(t)))
         .filter((m) => !STATE.motifGenres.size || STATE.motifGenres.has(m.genre))
         .filter((m) => !STATE.motifSeries.size || STATE.motifSeries.has(m.series))
+        .filter((m) => !STATE.motifShots.size || STATE.motifShots.has(m.shot))
+        .filter((m) => !STATE.motifRef || m.ref === STATE.motifRef)
         .filter(matchQ);
 
     const paintGrid = () => {
@@ -1639,8 +1774,12 @@ function pickMotif(m) {
     const asp = m.aspect || "landscape";
     let switched = "";
     if (asp !== "both") {
-        const want = asp === "portrait" ? "3:4"
-            : (asp === "square" ? "1:1" : "16:9");
+        /* 人物参考图母题（ref）按 ratio 精确切：它们的比例是设计的一部分（9:16），
+           不能折进「竖屏 → 3:4」的粗映射里 —— 会把 9:16 的参考图强行变成 3:4。
+           其余母题保持原手感（竖 3:4 / 横 16:9 / 方 1:1）。 */
+        const exact = (m.ref && ASPECT_SIZE[m.ratio]) ? m.ratio : "";
+        const want = exact || (asp === "portrait" ? "3:4"
+            : (asp === "square" ? "1:1" : "16:9"));
         if (STATE.aspect !== want) {
             STATE.aspect = want;
             switched = `，画幅切到 ${want}`;
@@ -1740,7 +1879,11 @@ async function renderSide() {
 
     const ib = p.querySelector("#k2ed-pv-item");
     ib.innerHTML = "";
-    if (!STATE.item) ib.appendChild(el("div", "desc", "未叠加单品"));
+    if (STATE.lora) {
+        // LORA 模式下一个服装词都不写，单品 / 版型选择只是留档，不生效
+        ib.appendChild(el("div", "desc",
+            "LORA 服装触发词模式：单品与版型都不写进提示词，服装由角色 LORA 的触发词决定"));
+    } else if (!STATE.item) ib.appendChild(el("div", "desc", "未叠加单品"));
     else {
         if (!STATE.outfits) await fetchOutfits();
         let tags = [];
@@ -1933,6 +2076,10 @@ function renderTabs() {
         b.classList.toggle("on", b.dataset.tab === STATE.tab);
         b.onclick = () => { STATE.tab = b.dataset.tab; renderTabs(); renderPage(); };
     });
+    const wrap = PANEL.panel.querySelector("#k2ed-lorawrap");
+    const box = PANEL.panel.querySelector("#k2ed-lora");
+    if (box) box.checked = !!STATE.lora;
+    if (wrap) wrap.classList.toggle("on", !!STATE.lora);
 }
 
 async function renderPage() {
@@ -1951,13 +2098,18 @@ async function doGenerate() {
         STATE.tab = "motif"; renderTabs(); renderPage();
         return;
     }
-    PANEL.stat("生成中…");
+    /* 生成前自检：角色 / LoRA / 触发词 / 随机池不一致时红字提醒，但照常生成 */
+    const chk = await charCheck();
+    if (chk?.bad) PANEL.stat(`⚠ 角色自检：${chk.text}　|　生成中…`, "warn");
+    else PANEL.stat("生成中…");
     try {
         const q = new URLSearchParams({
             motif: STATE.motif, char: STATE.char, aspect: STATE.aspect,
             costume: STATE.costume || MAN.auto, item: STATE.item || "",
             display: STATE.displayText || "",
             notext: STATE.noText ? "1" : "",
+            lora: STATE.lora ? "1" : "",
+            hairlock: STATE.hairlock ? "1" : "",
         });
         const r = await api.fetchApi("/k2ed/build?" + q.toString());
         const d = await r.json();
@@ -1968,7 +2120,9 @@ async function doGenerate() {
         if (!STATE.showText) toggleText(true);
         PANEL.stat(`已生成 ${d.words} 词 / ${d.paras} 段 / 色盘 ${d.pct}`
             + (d.outfit_tags?.length ? `　单品 ${d.outfit_tags.length} 条` : "")
-            + (d.issues?.length ? "　⚠ " + d.issues.join("；") : "　✓"));
+            + (d.issues?.length ? "　⚠ " + d.issues.join("；") : "　✓")
+            + (chk?.bad ? `　|　⚠ 角色自检：${chk.text}` : ""),
+            (chk?.bad || d.issues?.length) ? "warn" : "");
     } catch (e) {
         PANEL.stat("请求失败：" + e);
     }
@@ -1997,6 +2151,89 @@ function syncAspect(aspect) {
 
 let _dispTimer = null;
 
+/* ---------------- 角色一致性自检 ----------------
+   踩过的坑（2026-11-26 实测）：节点「角色」写 hsin，但「角色随机池=收藏角色 · genshin impact」
+   把提示词换成了雷电将军 / 甘雨；同时触发词串里还挂着 Hsin 的 white horns / fox-like ears。
+   三套身份一起进模型 → 紫发 + 角 + 狐耳全冒出来。这个自检就是把这三者摆到一起看。 */
+async function runCharCheck() {
+    const r = await charCheck();
+    if (r) PANEL.stat(r.text, r.bad ? "warn" : "");
+}
+
+/* 返回 { text, bad }；生成前会自动调用（不一致只红字提醒，不拦生成） */
+async function charCheck() {
+    if (!CUR) return null;
+    if (!STATE.chars.length) { try { await fetchChars(true); } catch (e) { /* noop */ } }
+    const key = getW(CUR, "角色")?.value || "";
+    const c = (STATE.chars || []).find((x) => x.id === key) || {};
+    const label = c.zh || c.name || key || "（未选角色）";
+    const toks = [String(key).split("_(")[0], c.name, c.zh]
+        .filter((t) => t && String(t).length >= 1)
+        .map((t) => String(t).toLowerCase());
+
+    const loras = new Set(), active = new Set();
+    let trig = "";
+    for (const n of (app.graph?._nodes || [])) {
+        const ws = n.widgets || [];
+        const isLora = /lora/i.test(n.type || "");
+        for (const w of ws) {
+            if (typeof w.value === "string") {
+                for (const m of w.value.matchAll(/<lora:([^:>]+)/gi)) {
+                    loras.add(m[1]);
+                    active.add(m[1]);        // <lora:…> 写法本身就是启用
+                }
+            } else if (isLora && Array.isArray(w.value)) {
+                for (const it of w.value) {
+                    if (!it || !it.name) continue;
+                    loras.add(it.name);
+                    if (it.active !== false) active.add(it.name);
+                }
+            }
+        }
+        if (/TriggerWord/i.test(n.type || "")) {
+            trig += " " + ws.map((w) => String(w.value ?? "")).join(" ");
+        }
+    }
+    const lowTrig = trig.toLowerCase();
+    const hitLora = [...active].filter((n) => {
+        const ln = n.toLowerCase();
+        return toks.some((t) => {
+            if (!t) return false;
+            if (ln === t) return true;
+            if (t.length >= 3 && (ln.includes(t) || t.includes(ln))) return true;
+            // 中文名常常只取一个字（角色「心」↔ LoRA「心月狐 / 心·月狐形态」）
+            return ln.startsWith(t) && ln.length >= 2;
+        });
+    });
+    const hitTrig = toks.some((t) => lowTrig.includes(t));
+
+    const parts = [`角色 ${label}`];
+    let bad = false;
+    if (!loras.size) {
+        parts.push("图里没找到 LoRA 节点");
+    } else {
+        parts.push(`LoRA ${[...loras].join(" / ")}`);
+        if (hitLora.length) {
+            parts.push(`✓ 与角色一致（${hitLora.join(" / ")}）`);
+        } else {
+            bad = true;
+            parts.push(`与角色不一致 —— 提示词写 ${label}，LoRA 是 `
+                + `${[...active].join(" / ") || "无启用的"}`);
+        }
+    }
+    if (trig.trim()) {
+        if (hitTrig) parts.push("触发词含该角色");
+        else { bad = true; parts.push(`触发词里没有「${label}」`); }
+    }
+    if (STATE.charPool && STATE.charPool !== "关闭") {
+        bad = true;
+        parts.push(`角色随机池=「${STATE.charPool}」`
+            + (STATE.charPoolWork ? `·${STATE.charPoolWork}` : "")
+            + "，提示词里的角色每张都会被随机替换（面板上选的角色等于没选）");
+    }
+    return { text: parts.join("　|　"), bad };
+}
+
 /* 选中即写回：不必先生成预览，也不用再点「应用」 */
 function applySelect(reason) {
     if (!CUR) return;
@@ -2009,6 +2246,7 @@ function applySelect(reason) {
     setW(CUR, "覆盖提示词", "");        // 换了选择，之前手改的文本作废
     setW(CUR, "画面英文文字", STATE.displayText || "");
     setW(CUR, "画面不显示英文", !!STATE.noText);
+    setW(CUR, "LORA服装触发词", !!STATE.lora);
     setW(CUR, "角色随机池", STATE.charPool || "关闭");
     setW(CUR, "角色随机作品", STATE.charPoolWork || "");
     setW(CUR, "场景随机池", STATE.motifPool || "关闭");
@@ -2042,66 +2280,130 @@ function onTextEdited() {
 }
 
 /* ---------------- 打开 / 关闭 ---------------- */
+/* 超时包装：某个请求挂住时不能把整个面板拖死（openPanel 里每个 await 都要能放手） */
+function withTimeout(promise, ms, label) {
+    return Promise.race([
+        promise,
+        new Promise((_, rej) => setTimeout(() => rej(new Error(label + " 超时")), ms)),
+    ]);
+}
+
+/* ⚠ 不能用布尔锁：上一个版本用 `if (_opening) return` + finally 复位，
+   只要某个 await 永不返回（fetch 挂住 / 缩略图批量加载卡住），
+   finally 就永远不执行，之后每次点击都被静默拦掉 —— 表现就是「点了一点反应都没有」。
+   改成时间戳：超过 20 秒自动视为失效，允许重试。 */
+// 版本埋点：面板打不开时让用户按 F12 就能确认浏览器加载的是哪一版 JS
+const PANEL_VER = "1.20.9";
+console.log("[K2Editorial] 面板脚本 v" + PANEL_VER + " 已加载");
+
+let _openingSince = 0;
+const OPEN_GUARD_MS = 20000;
+
 async function openPanel(node) {
+    const now = Date.now();
+    if (_openingSince && now - _openingSince < OPEN_GUARD_MS) return false;
+    _openingSince = now;
     CUR = node;
-    const p = ensurePanel();
-    if (p.dis) p.dis.style.display = "none";   // 上次若停在免责声明上，重开不继承
     try {
-        await manifest();
-    } catch (e) {
-        p.stat("加载库失败：" + e + "（确认已重启加载插件）");
+        const p = ensurePanel();
+        if (p.dis) p.dis.style.display = "none";   // 上次若停在免责声明上，重开不继承
+        // ⚠ 先亮面板再加载数据：原来 display:flex 放在函数最末尾，中间任何一步 await
+        //   抛异常都会导致「点了完全没反应」——现在至少能看到面板 + 报错。
         p.mask.style.display = "flex";
-        return;
+        p.stat("正在加载…");
+        try {
+            await withTimeout(manifest(), 10000, "加载母题库");
+        } catch (e) {
+            p.stat("加载库失败：" + (e?.message || e) + "（确认已重启加载插件）");
+            return false;
+        }
+        syncStateFromNode(node);
+        if (!MAN || !Array.isArray(MAN.motifs) || !MAN.motifs.length) {
+            p.stat("母题库为空：manifest 没读到数据，检查插件是否正常加载");
+            return false;
+        }
+        if (!MAN.motifs.some((m) => m.id === STATE.motif)) STATE.motif = MAN.motifs[0].id;
+        // 打开面板不主动改参数节点；之后只有画幅真的变了才同步
+        STATE._syncedAspect = STATE.aspect;
+
+        if (!p.built) {
+            // built 只在绑定**全部成功**后才置 true：中途抛错会让按钮永远不响应，
+            // 而且下次打开会跳过绑定 —— 这是「有时打得开有时打不开」的另一半原因。
+            try {
+                bindPanelOnce(p);
+                p.built = true;
+            } catch (e) {
+                p.stat("面板初始化失败：" + (e?.message || e));
+                console.error("[K2Editorial] bindPanelOnce", e);
+                return false;
+            }
+        }
+
+        if (!STATE.chars.length) {
+            try { await withTimeout(fetchChars(true), 10000, "加载角色表"); } catch (e) { /* noop */ }
+        }
+        try { await withTimeout(fetchFavs(), 6000, "加载收藏"); } catch (e) { /* noop */ }
+        try { await withTimeout(fetchLocks(), 6000, "加载服装锁定"); } catch (e) { /* noop */ }
+        // 没有手动选单品时，用该角色锁定的官方服装
+        if (!STATE.item && STATE.locks[STATE.char]) STATE.item = "char:" + STATE.locks[STATE.char];
+        const ov = getW(node, "覆盖提示词")?.value || "";
+        STATE.text = ov;
+        STATE.edited = !!ov;
+        p.panel.querySelector("#k2ed-ta").value = STATE.text;
+        toggleText(STATE.showText);
+
+        // 渲染分步容错：某一块画不出来不该让整个面板消失
+        try { renderTabs(); } catch (e) { console.error("[K2Editorial] renderTabs", e); }
+        try { renderSeed(); } catch (e) { console.error("[K2Editorial] renderSeed", e); }
+        try { await withTimeout(renderPage(), 12000, "渲染场景页"); }
+        catch (e) {
+            p.stat("场景页渲染：" + (e?.message || e) + "（可继续用其它页签）");
+            console.error("[K2Editorial] renderPage", e);
+        }
+        try { await withTimeout(renderSide(), 8000, "渲染侧栏"); }
+        catch (e) { console.error("[K2Editorial] renderSide", e); }
+        if (!p.panel.querySelector("#k2ed-stat").textContent) p.stat("");
+        p.mask.style.display = "flex";
+        app.graph?.setDirtyCanvas(true, true);   // 名字表刚登记，让节点摘要用中文重画
+        return true;
+    } catch (e) {
+        // 最后兜底：无论如何要让面板亮出来并说明原因，不能「点了没反应」
+        try {
+            const p = ensurePanel();
+            p.mask.style.display = "flex";
+            p.stat("打开面板出错：" + (e?.message || e));
+        } catch (e2) { /* 连面板都建不起来 */ }
+        console.error("[K2Editorial] openPanel", e);
+        window.__k2ed && (window.__k2ed.lastError = String((e && e.stack) || e));
+    } finally {
+        _openingSince = 0;
     }
-    syncStateFromNode(node);
-    if (!MAN.motifs.some((m) => m.id === STATE.motif)) STATE.motif = MAN.motifs[0].id;
-    // 打开面板不主动改参数节点；之后只有画幅真的变了才同步
-    STATE._syncedAspect = STATE.aspect;
+}
 
-    if (!p.built) {
-        p.built = true;
-        p.panel.querySelector("#k2ed-gen").onclick = doGenerate;
-        p.panel.querySelector("#k2ed-tgl").onclick = () => toggleText();
-        /* 回到顶部：三个页签共用同一个滚动容器，滚到底后一键回列表顶部 */
-        p.panel.querySelector("#k2ed-top").onclick = () => {
-            const pg = pageEl();
-            if (!pg) return;
-            pg.scrollTo({ top: 0, behavior: "smooth" });
-        };
-        p.panel.querySelector("#k2ed-rnd").onclick = async () => {
-            const pick = MAN.motifs[Math.floor(Math.random() * MAN.motifs.length)];
-            STATE.costume = MAN.auto;
-            STATE.item = "";
-            pickMotif(pick);
-            await renderSide();
-        };
-        p.panel.querySelector("#k2ed-copy").onclick = async () => {
-            const t = p.panel.querySelector("#k2ed-ta").value;
-            try { await navigator.clipboard.writeText(t); PANEL.stat("已复制 " + t.length + " 字符"); }
-            catch { PANEL.stat("复制失败，请手动全选"); }
-        };
-        p.panel.querySelector("#k2ed-ta").addEventListener("input", onTextEdited);
-        bindSeed();
-    }
-
-    if (!STATE.chars.length) { try { await fetchChars(true); } catch (e) { /* noop */ } }
-    await fetchFavs();
-    await fetchLocks();
-    // 没有手动选单品时，用该角色锁定的官方服装
-    if (!STATE.item && STATE.locks[STATE.char]) STATE.item = "char:" + STATE.locks[STATE.char];
-    const ov = getW(node, "覆盖提示词")?.value || "";
-    STATE.text = ov;
-    STATE.edited = !!ov;
-    p.panel.querySelector("#k2ed-ta").value = STATE.text;
-    toggleText(STATE.showText);
-
-    renderTabs();
-    renderSeed();
-    await renderPage();
-    await renderSide();
-    p.stat("");
-    p.mask.style.display = "flex";
-    app.graph?.setDirtyCanvas(true, true);   // 名字表刚登记，让节点摘要用中文重画
+/* 一次性绑定：只在 p.built 为 false 时调用；失败可重试 */
+function bindPanelOnce(p) {
+    p.panel.querySelector("#k2ed-gen").onclick = doGenerate;
+    p.panel.querySelector("#k2ed-tgl").onclick = () => toggleText();
+    /* 回到顶部：三个页签共用同一个滚动容器，滚到底后一键回列表顶部 */
+    p.panel.querySelector("#k2ed-top").onclick = () => {
+        const pg = pageEl();
+        if (!pg) return;
+        pg.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    p.panel.querySelector("#k2ed-rnd").onclick = async () => {
+        const pick = MAN.motifs[Math.floor(Math.random() * MAN.motifs.length)];
+        STATE.costume = MAN.auto;
+        STATE.item = "";
+        pickMotif(pick);
+        await renderSide();
+    };
+    p.panel.querySelector("#k2ed-copy").onclick = async () => {
+        const t = p.panel.querySelector("#k2ed-ta").value;
+        try { await navigator.clipboard.writeText(t); PANEL.stat("已复制 " + t.length + " 字符"); }
+        catch { PANEL.stat("复制失败，请手动全选"); }
+    };
+    p.panel.querySelector("#k2ed-ta").addEventListener("input", onTextEdited);
+    bindSeed();
 }
 
 function closePanel() {
@@ -2113,6 +2415,36 @@ function closePanel() {
 }
 
 /* ---------------- 扩展注册 ---------------- */
+/* 诊断入口：面板按钮没反应时，可以让用户在 Console 执行
+     __k2ed.nodes()      列出图上的 K2 节点
+     __k2ed.open()       绕过按钮直接打开第一个节点面板
+     __k2ed.lastError    最近一次失败原因 */
+window.__k2ed = {
+    ver: PANEL_VER,
+    lastError: null,
+    nodes: () => (app.graph?._nodes || [])
+        .filter((n) => n.type === NODE_NAME || n.comfyClass === NODE_NAME)
+        .map((n, i) => ({ i, id: n.id, widgets: (n.widgets || []).map((w) => w.name + ":" + w.type) })),
+    // 打印按钮与各 widget 的实际坐标，用来判断「按钮画在 widget 下面还是被盖住/画出界」
+    debug: () => {
+        const n = (app.graph?._nodes || []).find((x) => x.type === NODE_NAME || x.comfyClass === NODE_NAME);
+        if (!n) return "no-node";
+        return {
+            size: n.size,
+            btnEl: !!n.__k2edBtnEl,
+            widgets_full: (n.widgets || []).map((w) => w.name),
+            userResized: !!n.__k2edUserResized,
+            widgets: (n.widgets || []).map((w) => ({ name: w.name, last_y: w.last_y, h: w.height })),
+        };
+    },
+    open: (idx = 0) => {
+        const ns = (app.graph?._nodes || []).filter((n) => n.type === NODE_NAME || n.comfyClass === NODE_NAME);
+        if (!ns.length) { console.warn("[K2Editorial] 图上没有 K2 节点"); return "no-node"; }
+        console.log("[K2Editorial] 手动打开", ns[idx]?.id);
+        return openPanel(ns[idx || 0]);
+    },
+};
+
 app.registerExtension({
     name: "K2Editorial.Panel",
     async beforeRegisterNodeDef(nodeType, nodeData) {
@@ -2124,19 +2456,67 @@ app.registerExtension({
             if (this._k2ed_done) return;
             this._k2ed_done = true;
 
-            const btn = this.addWidget("button", "⚙ 打开设置面板", null, () => openPanel(this), { serialize: false });
-            btn.serialize = false;
+            // 「⚙ 打开设置面板」用 **DOM widget**：canvas 自绘会被 DOM 层盖住，
+            // 而 litegraph 的老式 canvas button 命中又依赖 last_y，节点一收缩就点不着。
+            // DOM 元素走浏览器自己的点击事件，不经过任何坐标换算 —— 这是最稳的一层。
+            try {
+                const btnEl = document.createElement("button");
+                btnEl.type = "button";
+                btnEl.textContent = BTN_LABEL;
+                btnEl.style.cssText = [
+                    "width:100%", "height:28px", "margin:4px 0 2px", "padding:0 10px",
+                    "border-radius:7px", "border:1px solid #3a3d47", "background:#2b2d35",
+                    "color:#dfe3e8", "font:13px/26px system-ui,'Microsoft YaHei',sans-serif",
+                    "cursor:pointer", "box-sizing:border-box",
+                ].join(";");
+                btnEl.addEventListener("mouseenter", () => {
+                    btnEl.style.background = "#2f3a46";
+                    btnEl.style.borderColor = "#4b7fa3";
+                    btnEl.style.color = "#cfe6f5";
+                });
+                btnEl.addEventListener("mouseleave", () => {
+                    btnEl.style.background = "#2b2d35";
+                    btnEl.style.borderColor = "#3a3d47";
+                    btnEl.style.color = "#dfe3e8";
+                });
+                btnEl.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    console.log("[K2Editorial] DOM 按钮点击 → openPanel");
+                    openPanel(this);
+                });
+                if (typeof this.addDOMWidget === "function") {
+                    this.addDOMWidget("k2ed-open", "button", btnEl, { serialize: false });
+                } else {
+                    // 老版本没有 addDOMWidget：退回到把节点挂在 DOM 上（比 canvas 自绘可靠）
+                    const w = this.addWidget("button", BTN_LABEL, null, () => openPanel(this),
+                                             { serialize: false });
+                    w.serialize = false;
+                }
+                this.__k2edBtnEl = btnEl;
+            } catch (e) {
+                console.error("[K2Editorial] 创建打开按钮失败", e);
+            }
 
             syncStateFromNode(this);
             installSummary(this);
             const self = this;
             const fold = () => {
                 hideWidgets(self);
-                self.setSize([Math.max(self.size[0], 300), 104]);
+                // 折叠后可见内容：摘要（2 行，画到 y≈56）+ 锁定发色（≈26）+ DOM 按钮（≈34）
+                // 高度写死 104 会把按钮挤出节点；这里按内容给足，并保证不小于 150。
+                self.setSize([Math.max(self.size[0], 320), 150]);
                 self.setDirtyCanvas(true, true);
             };
             setTimeout(fold, 30);
             setTimeout(fold, 260);
+
+            // 备用入口：双击节点打开面板。按钮回调失效时用它判断是「按钮没绑上」
+            // 还是「openPanel 本身有问题」—— 双击能开 = 按钮绑定问题，双击也开不了 = openPanel 问题
+            this.onDblClick = (e, pos, canvas) => {
+                console.log("[K2Editorial] 节点双击 → openPanel");
+                openPanel(this);
+            };
         };
 
         const onConfigure = nodeType.prototype.onConfigure;

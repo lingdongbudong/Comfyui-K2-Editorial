@@ -153,6 +153,20 @@ def t_manifest():
                      f"：{list(BAD_BRANCH)[:3] or (miss + nofile + nothumb)[:5]}")
 
 
+@check("景别标签：每条母题都有且值域合法")
+def t_shots():
+    man = _json("manifest.json")
+    SHOTS = {"人像", "半身", "全景"}
+    miss = [m["id"] for m in man.get("motifs") or [] if not m.get("shot")]
+    bad = [f"{m['id']}:{m.get('shot')}" for m in man.get("motifs") or []
+           if m.get("shot") and m["shot"] not in SHOTS]
+    dist = {k: sum(1 for m in man.get("motifs") or [] if m.get("shot") == k) for k in SHOTS}
+    empty = [k for k, v in dist.items() if v == 0]
+    ok = not miss and not bad and not empty
+    return ok, ("三档齐全 " + " / ".join(f"{k}{v}" for k, v in dist.items()) if ok
+                else f"缺标签 {len(miss)} / 越界 {bad[:3]} / 空档 {empty}")
+
+
 @check("版型与手写角色完整")
 def t_chars():
     A.load()                       # ALL_TPLS / ALL_CHARS 是 load() 的副作用
@@ -432,10 +446,22 @@ def t_outfit_swap():
     if "spaghetti-strap" not in t3:
         issues.append("未选单品却动了母题服装")
 
-    # 服装 = 保持母题原样 → 明确忽略单品，不偷换
-    t4, _ = A.assemble(probe, "miku", "keep", "keep", outfit_tags=tags)
-    if tags[0] in t4:
-        issues.append("keep 模式下仍强行换装")
+    # v1.19.6 单品优先：服装=保持母题原样 + **有效单品** → 单品生效（不再静默忽略）
+    t4, l4 = A.assemble(probe, "miku", "keep", "keep", outfit_tags=tags)
+    if t4 != t:
+        issues.append("keep+单品 与 auto+单品 输出不一致（应完全等价）")
+    if tags[0] not in t4 or "spaghetti-strap" in t4:
+        issues.append("keep + 有效单品：单品未替换母题服装")
+    if not any("覆盖「保持母题原样」" in x for x in l4):
+        issues.append("keep + 有效单品：日志缺少覆盖说明")
+
+    # ⚠ 反向守卫：单品被部位/姿势规则**全筛掉**时，keep 必须保持原语义，
+    #   不能静默退回「随机套版型」（那比忽略单品更难排查）
+    t5, l5 = A.assemble(probe, "miku", "keep", "keep", outfit_tags=["crossed legs"])
+    if "spaghetti-strap" not in t5:
+        issues.append("keep + 单品全被筛掉：母题服装被动了（应保持原样）")
+    if any("覆盖「保持母题原样」" in x for x in l5):
+        issues.append("keep + 单品全被筛掉：不应触发覆盖")
 
     # 三个分支都要覆盖（短提示 / 长篇场景 / 平面海报）
     probes = [probe,
@@ -626,6 +652,181 @@ def t_residue():
     return (not issues), ("全量无残留，Miku 自身不受影响" if not issues else "；".join(issues))
 
 
+@check("母题角色装饰：只有登记角色保留水晶翼")
+def t_owner_props():
+    """唱片店 / 榻榻米房正文里写着「六片水晶翼」—— 那是甘雨的专属装饰，不是场景陈设。
+
+    换别人还留着，模型就把翼画在人背上（阿尔托莉雅版实测 428 词里三处 wing 全在）。
+    母题用 _meta.json 的 owner_char 登记归属，装配时按角色分流：
+
+      · 选中角色 == owner_char → 保留
+      · 选中其他角色           → 连子句一起摘掉，且同段其它内容一个字不动
+    """
+    seeds, _ = A.load()
+    probes = {"k2s_record_store": "icy-blue bob", "k2s_tatami_room": "back rim lighting"}
+    issues = []
+    for sid, same_para in probes.items():
+        seed = seeds.get(sid)
+        if not seed:
+            issues.append(f"{sid}: 母题缺失")
+            continue
+        owner = seed.get("owner_char") or ""
+        if not owner:
+            issues.append(f"{sid}: 未登记 owner_char")
+            continue
+        if not re.search(r"wings?", seed["raw"], re.I):
+            issues.append(f"{sid}: 正文已无翼（本用例失效，需同步更新）")
+            continue
+        t_own = A.strip_owner_props(seed["raw"], [], owner, owner)
+        t_other = A.strip_owner_props(seed["raw"], [], owner, "furina")
+        if not re.search(r"wings?", t_own, re.I):
+            issues.append(f"{sid}: 原角色的翼被误删")
+        if re.search(r"wings?", t_other, re.I):
+            issues.append(f"{sid}: 换角色仍带翼")
+        if same_para not in t_other:
+            issues.append(f"{sid}: 摘翼时误伤同段内容「{same_para}」")
+        # 没登记 owner_char 的母题必须原样返回（别把全场母题都洗一遍）
+        if A.strip_owner_props("her wings spread", [], "", "furina") != "her wings spread":
+            issues.append("未登记母题的正文被改动")
+    # 反向：本人就有冰翼的角色（琪露诺）不能被误伤 —— 摘的是母题那一份，不是她的身份
+    try:
+        cir = B.char_entry("cirno")
+    except Exception:
+        cir = None
+    if cir and re.search(r"wings?", cir.get("identity") or "", re.I):
+        t = A.assemble("k2s_record_store", "cirno", "keep", "auto", char_obj=cir)[0]
+        if re.search(r"ice-crystal wings|crystalline wings", t, re.I):
+            issues.append("琪露诺仍带母题的水晶翼")
+        if not re.search(r"wings?", t, re.I):
+            issues.append("琪露诺自己的冰翼被误删")
+    return (not issues), ("登记角色保留 / 换角色摘除 / 同段内容完好 / 未登记母题不动 / 自带翼角色不受损"
+                          if not issues else "；".join(issues))
+
+
+@check("不显示文字：大字母与小字母一起消失")
+def t_no_text():
+    """勾「画面不显示文字」后，大标题、编号小字、铭牌、stencil 都不能再进正文。
+
+    踩过的坑：早期只删引号里那个词，`Let a second, much smaller exact readable
+    line “UNIT 9” sit on a small enamel plate` 剩下的半句照样催出一排小字。
+    """
+    seeds, _ = A.load()
+    issues = []
+    quotes = re.compile(r"[“”]|\"[^\"\n]{1,40}\"")
+    for sid, seed in seeds.items():
+        txt, _ = A.assemble(sid, None, None, "auto", no_text=True)
+        rep = A.validate(txt, None, A.seed_branch(sid), A.seed_character(sid))
+        if rep["issues"]:
+            issues.append(f"{sid}: {rep['issues'][0]}")
+        for p in A.paras(txt):
+            if A.is_guard(p) or "no readable lettering of any kind" in p:
+                # ⚠ 只查「no readable X beyond/except Y」——`no gardener beyond the gate`
+                # 是场景否定，一刀切 beyond 会误报
+                if re.search(r"no readable [^,]{0,70}\b(beyond|except|other than)\b", p, re.I):
+                    issues.append(f"{sid}: 护盾仍写「除上文那个词」")
+                continue
+            if quotes.search(p):
+                issues.append(f"{sid}: 仍有引号文字")
+                break
+            for sent in A._SENT_SPLIT.split(p):
+                if A._PROTECT_SENT.match(sent.strip()):
+                    continue
+                if A._is_text_instruction(sent):
+                    issues.append(f"{sid}: 仍有写字指令「{sent.strip()[:40]}」")
+                    break
+        if len(issues) >= 3:
+            break
+    return (not issues), ("558 条母题：无引号、无写字句、篇幅合规" if not issues
+                          else "；".join(issues[:3]))
+
+
+@check("坐姿分类：标签、名字与正文一致")
+def t_sitting_tag():
+    """「坐姿」分类里的每一条，正文必须真是坐着的，名字必须带「·坐姿」。
+
+    这个分类是手动标的（motif_tags.json），最容易的漂移是：改了母题姿势却忘摘标签，
+    或者反了 —— 正文坐姿但没进分类。两头都查。
+    """
+    seeds, _ = A.load()
+    man = json.load(open(os.path.join(PRESETS, "manifest.json"), encoding="utf-8"))
+    issues = []
+    entry = next((t for t in man.get("tags", []) if t["key"] == "sitting"), None)
+    if not entry:
+        return False, "manifest 里没有 sitting 分类"
+    if entry.get("zh") != "坐姿":
+        issues.append(f"sitting 的中文名是「{entry.get('zh')}」")
+    tagged = [m for m in man["motifs"] if "sitting" in m["tags"]]
+    if entry.get("count") != len(tagged):
+        issues.append(f"count={entry.get('count')} 实际 {len(tagged)}")
+    if not tagged:
+        issues.append("分类为空")
+    for m in tagged:
+        raw = (seeds.get(m["id"]) or {}).get("raw", "")
+        head = " ".join(A.paras(raw)[:2]).lower()
+        if not re.search(r"\b(seated|sitting|sits)\b", head):
+            issues.append(f"{m['id']}: 标了坐姿但正文是站姿")
+        if not (m.get("zh") or "").endswith("·坐姿"):
+            issues.append(f"{m['id']}: 名字没改成「…·坐姿」（{m.get('zh')}）")
+    return (not issues), (f"{len(tagged)} 条坐姿母题：标签 / 名字 / 正文三方一致"
+                          if not issues else "；".join(issues[:3]))
+
+
+@check("LORA 服装触发词模式：正文零服装词")
+def t_lora_no_outfit():
+    """开了 LORA 服装触发词模式，提示词里就不该再出现任何服装词。
+
+    服装库单品 / 版型句 / 官方预设 / 母题自带的 "wool coat" 全都要停写，
+    否则出图是「LORA 的衣服 + 母题的外套」缝在一起；色盘段里那些
+    「十二 percent 是她的外套」也要一并摘掉并**把百分比重算到 100**。
+    """
+    seeds, chars = A.load()
+    issues = []
+    ch = chars.get("furina")
+    if not ch:
+        return True, "跳过（无可用角色）"
+    for sid, seed in seeds.items():
+        txt, _ = A.assemble(sid, "furina", "keep", "auto", char_obj=ch, no_outfit=True)
+        rep = A.validate(txt, None, A.seed_branch(sid), "")
+        if rep["issues"]:
+            issues.append(f"{sid}: {rep['issues'][0]}")
+        for p in A.paras(txt):
+            if A.is_guard(p) or p.strip().startswith("Let her character trigger"):
+                continue
+            m = A._LORA_GARMENT_RE.search(p)
+            if m:
+                # 母题标题本身可能就叫 SCARF / COAT，那属于画内文字，不算服装描述
+                if re.search(r"titled\s+[“\"]?" + re.escape(m.group(0)), p, re.I):
+                    continue
+                issues.append(f"{sid}: 残留服装词「{m.group(0)}」")
+                break
+        if len(issues) >= 3:
+            break
+    return (not issues), ("558 条母题：零服装词、色盘 100、篇幅合规" if not issues
+                          else "；".join(issues[:3]))
+
+
+@check("经典人物 / 坐姿母题不绑定角色")
+def t_no_recommend_char():
+    """点母题不再自动换人 —— 面板只在 recommend_char 非空时才切角色。
+
+    v1.19.5 起 clsc（经典人物）18 条全部解绑，「坐姿」那 6 条也在其中。
+    这条用例同时查 manifest（面板数据）与 seeds_extra（装配数据），两边都不能残留。
+    """
+    seeds, _ = A.load()
+    man = json.load(open(os.path.join(PRESETS, "manifest.json"), encoding="utf-8"))
+    issues = []
+    bound = [m["id"] for m in man["motifs"] if m.get("recommend_char")]
+    if bound:
+        issues.append(f"manifest 仍有 {len(bound)} 条绑定角色：{bound[:3]}")
+    for m in man["motifs"]:
+        if m.get("series") == "clsc" or "sitting" in (m.get("tags") or []):
+            s = seeds.get(m["id"]) or {}
+            if s.get("recommend_char"):
+                issues.append(f"{m['id']}: seeds_extra 仍写 recommend_char")
+    return (not issues), ("经典人物 18 条 + 坐姿 6 条均无推荐角色绑定"
+                          if not issues else "；".join(issues[:3]))
+
+
 @check("短提示自动套官方服装 + 画内文字换名")
 def t_auto_official():
     """两件事：
@@ -685,14 +886,22 @@ def t_version():
     return (v == pkg.__version__), f"包 {pkg.__version__} / pyproject {v or '缺失'}"
 
 
-@check("控件顺序：随机池在 optional 末尾")
+@check("控件顺序：新控件只准追加在 optional 末尾")
 def t_widget_order():
-    """⚠ 新增控件必须放末尾：插到中间会让老工作流 widgets_values 错位。"""
+    """⚠ 新增控件必须放末尾：插到中间会让老工作流 widgets_values 错位。
+
+    另外随机池那三个必须**连在一起**：它们是一组，拆开会让老工作流的
+    「角色随机池」读到「场景随机池」的值（v1.19.6 只在其后再追加 LORA 开关）。
+    """
     it = N.K2EditorialBuilder.INPUT_TYPES()
     opt = list((it.get("optional") or {}).keys())
-    tail = opt[-3:]
-    want = ["角色随机池", "角色随机作品", "场景随机池"]
-    return (tail == want), f"optional 末尾 = {tail}"
+    pools = ["角色随机池", "角色随机作品", "场景随机池"]
+    i = opt.index(pools[0]) if pools[0] in opt else -1
+    ok_pool = i >= 0 and opt[i:i + 3] == pools
+    # 随机池三连 → LORA 服装触发词 → 锁定发色（v1.20.0 追加，仍必须在最末）
+    ok_tail = (opt[-2:] == ["LORA服装触发词", "锁定发色"]
+               and opt[-5:-2] == pools)
+    return (ok_pool and ok_tail), f"optional 末尾 = {opt[-5:]}"
 
 
 # --------------------------------------------------------------------------

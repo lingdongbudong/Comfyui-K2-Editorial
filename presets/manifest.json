@@ -3,7 +3,7 @@
   "note": "面板数据层。thumbs/ 与 presets/ 同级；路径相对插件根目录。",
   "counts": {
    "characters": 2,
-   "motifs": 558,
+   "motifs": 560,
    "costumes": 8
   }
  },
@@ -57,6 +57,11 @@
    "key": "magic",
    "zh": "魔法",
    "count": 49
+  },
+  {
+   "key": "sitting",
+   "zh": "坐姿",
+   "count": 6
   }
  ],
  "genres": [
@@ -156,6 +161,11 @@
    "key": "poster",
    "zh": "平面海报",
    "count": 15
+  },
+  {
+   "key": "ref",
+   "zh": "人物参考图",
+   "count": 2
   }
  ],
  "added_count": 158,
@@ -269,7 +279,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_veil_fall_a",
@@ -299,7 +310,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_veil_fall_b",
@@ -329,7 +341,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_meridian_cut",
@@ -360,7 +373,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_triple_register_a",
@@ -390,7 +404,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_triple_register_b",
@@ -420,7 +435,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_root_register",
@@ -451,7 +467,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_pod_separation",
@@ -482,7 +499,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_vein_projection",
@@ -513,7 +531,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_calyx_corridor",
@@ -545,7 +564,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_pollen_storm",
@@ -575,7 +595,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_second_specimen",
@@ -606,7 +627,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_closing_register",
@@ -636,7 +658,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_star_atlas_scroll",
@@ -667,7 +690,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_celestial_corolla",
@@ -699,7 +723,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_garden_zero",
@@ -732,7 +757,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_gravity_culture_theatre",
@@ -765,7 +791,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_zero_g_design_field",
@@ -795,7 +822,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_prism_tide_field",
@@ -825,7 +853,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_helix_choir",
@@ -856,7 +885,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_caustic_requiem",
@@ -886,7 +916,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_dendrite_survey",
@@ -917,7 +948,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_star_atlas_scroll_b",
@@ -948,7 +980,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_crystal_rain_wall",
@@ -979,7 +1012,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_phonon_tunnel_a",
@@ -1009,7 +1043,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_phonon_tunnel_b",
@@ -1039,7 +1074,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_magnetic_write_field",
@@ -1067,7 +1103,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_mirror_plume",
@@ -1098,7 +1135,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_orbital_celesta",
@@ -1129,7 +1167,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_echo_codex",
@@ -1160,7 +1199,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_mirror_tide_opera",
@@ -1192,7 +1232,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_grain_sanctum",
@@ -1223,7 +1264,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "origin",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_arashi",
@@ -1253,7 +1295,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_blackbox",
@@ -1281,7 +1324,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2p_blooming_freq",
@@ -1311,7 +1355,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_dead_signal",
@@ -1342,7 +1387,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_eclosion",
@@ -1372,7 +1418,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_future_festival",
@@ -1401,7 +1448,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2p_halcyon_01",
@@ -1431,7 +1479,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_halcyon_02",
@@ -1461,7 +1510,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_relay_01",
@@ -1492,7 +1542,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_relay_02",
@@ -1523,7 +1574,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_siren_dossier",
@@ -1553,7 +1605,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2p_square_album",
@@ -1584,7 +1637,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2p_tsubame",
@@ -1616,7 +1670,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_vertical_music",
@@ -1645,7 +1700,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2p_vesper",
@@ -1675,7 +1731,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "poster",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_abandoned_garden",
@@ -1706,7 +1763,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_abandoned_garden_2",
@@ -1738,7 +1796,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_aerial_ferry",
@@ -1770,7 +1829,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_autumn_orchard",
@@ -1800,7 +1860,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_bakery",
@@ -1827,7 +1888,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_bakery_2",
@@ -1857,7 +1919,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_bakery_3",
@@ -1889,7 +1952,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_biscuit_shop",
@@ -1919,7 +1983,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "人像"
   },
   {
    "id": "k2s_botanical_archive",
@@ -1946,7 +2011,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_bridge_line",
@@ -1974,7 +2040,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_bridge_line_2",
@@ -2010,7 +2077,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_bridge_line_3",
@@ -2045,7 +2113,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_bridge_line_4",
@@ -2076,7 +2145,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_bridge_line_5",
@@ -2107,7 +2177,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_bridge_line_6",
@@ -2138,7 +2209,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_butterfly_archive",
@@ -2167,7 +2239,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_carriage_light",
@@ -2199,7 +2272,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "人像"
   },
   {
    "id": "k2s_carriage_light_2",
@@ -2231,7 +2305,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_celestial_observatory",
@@ -2263,7 +2338,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait",
@@ -2295,7 +2371,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_10",
@@ -2329,7 +2406,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_cinema_wait_12",
@@ -2358,7 +2436,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_cinema_wait_13",
@@ -2393,7 +2472,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_14",
@@ -2423,7 +2503,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_cinema_wait_15",
@@ -2450,7 +2531,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_16",
@@ -2477,7 +2559,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_cinema_wait_17",
@@ -2506,7 +2589,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_18",
@@ -2533,7 +2617,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "人像"
   },
   {
    "id": "k2s_cinema_wait_19",
@@ -2560,7 +2645,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "人像"
   },
   {
    "id": "k2s_cinema_wait_2",
@@ -2592,7 +2678,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_20",
@@ -2625,7 +2712,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_21",
@@ -2654,7 +2742,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_23",
@@ -2683,7 +2772,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_3",
@@ -2713,7 +2803,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_4",
@@ -2741,7 +2832,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_5",
@@ -2770,7 +2862,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_6",
@@ -2800,7 +2893,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cinema_wait_7",
@@ -2833,7 +2927,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_cinema_wait_8",
@@ -2865,7 +2960,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_cinema_wait_9",
@@ -2898,7 +2994,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_coastal_hotel",
@@ -2930,7 +3027,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_convenience_store",
@@ -2961,7 +3059,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_convenience_store_2",
@@ -2996,7 +3095,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_cookie_shop",
@@ -3025,7 +3125,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_001",
@@ -3055,7 +3156,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_002",
@@ -3085,7 +3187,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_003",
@@ -3114,7 +3217,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_004",
@@ -3144,7 +3248,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_005",
@@ -3175,7 +3280,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_006",
@@ -3205,7 +3311,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_007",
@@ -3235,7 +3342,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_008",
@@ -3263,7 +3371,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_009",
@@ -3294,7 +3403,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_010",
@@ -3325,7 +3435,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_011",
@@ -3347,7 +3458,7 @@
    "branch": "short",
    "branch_zh": "短提示词",
    "workflow": "Krea2-白垩光标准档.json",
-   "words": 245,
+   "words": 267,
    "paras": 8,
    "thumb": "thumbs/motifs/k2s_cx_011.webp",
    "thumb_v": 1794239500,
@@ -3355,7 +3466,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_cx_012",
@@ -3386,7 +3498,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_013",
@@ -3416,7 +3529,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_014",
@@ -3447,7 +3561,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_015",
@@ -3478,7 +3593,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_016",
@@ -3508,7 +3624,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_017",
@@ -3538,7 +3655,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_018",
@@ -3567,7 +3685,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_019",
@@ -3596,7 +3715,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_020",
@@ -3623,7 +3743,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_021",
@@ -3650,7 +3771,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_022",
@@ -3680,7 +3802,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_023",
@@ -3708,7 +3831,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_024",
@@ -3735,7 +3859,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_025",
@@ -3765,7 +3890,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_cx_026",
@@ -3794,7 +3920,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_027",
@@ -3824,7 +3951,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_028",
@@ -3855,7 +3983,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_029",
@@ -3885,7 +4014,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_030",
@@ -3911,7 +4041,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_031",
@@ -3942,7 +4073,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_032",
@@ -3971,7 +4103,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_033",
@@ -4001,7 +4134,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_034",
@@ -4031,7 +4165,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_035",
@@ -4064,7 +4199,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_036",
@@ -4095,7 +4231,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_037",
@@ -4127,7 +4264,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_038",
@@ -4158,7 +4296,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_039",
@@ -4190,7 +4329,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_040",
@@ -4220,7 +4360,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_041",
@@ -4251,7 +4392,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_042",
@@ -4280,7 +4422,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_043",
@@ -4309,7 +4452,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_044",
@@ -4339,7 +4483,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_045",
@@ -4366,7 +4511,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_046",
@@ -4392,7 +4538,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_cx_047",
@@ -4423,7 +4570,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_048",
@@ -4453,7 +4601,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_049",
@@ -4479,7 +4628,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_cx_050",
@@ -4509,7 +4659,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_051",
@@ -4539,7 +4690,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_052",
@@ -4568,7 +4720,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_053",
@@ -4597,7 +4750,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_054",
@@ -4623,7 +4777,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_055",
@@ -4653,7 +4808,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_056",
@@ -4682,7 +4838,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_057",
@@ -4708,7 +4865,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_058",
@@ -4736,7 +4894,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_059",
@@ -4765,7 +4924,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_060",
@@ -4798,7 +4958,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_cx_061",
@@ -4820,7 +4981,7 @@
    "branch": "short",
    "branch_zh": "短提示词",
    "workflow": "Krea2-白垩光标准档.json",
-   "words": 251,
+   "words": 255,
    "paras": 8,
    "thumb": "thumbs/motifs/k2s_cx_061.webp",
    "thumb_v": 1794239505,
@@ -4828,7 +4989,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_062",
@@ -4854,7 +5016,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_063",
@@ -4880,7 +5043,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_cx_064",
@@ -4898,7 +5062,7 @@
    "branch": "short",
    "branch_zh": "短提示词",
    "workflow": "Krea2-白垩光标准档.json",
-   "words": 194,
+   "words": 197,
    "paras": 7,
    "thumb": "thumbs/motifs/k2s_cx_064.webp",
    "thumb_v": 1794239505,
@@ -4906,7 +5070,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_cx_065",
@@ -4934,7 +5099,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_066",
@@ -4960,7 +5126,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_cx_067",
@@ -4991,7 +5158,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_cx_068",
@@ -5020,7 +5188,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "cx",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_dark_studio",
@@ -5051,7 +5220,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_desert_radio",
@@ -5082,7 +5252,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_dessert_shop",
@@ -5112,7 +5283,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_dressing_table",
@@ -5138,7 +5310,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_flooded_library",
@@ -5170,7 +5343,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_fontaine_canal",
@@ -5199,7 +5373,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_glass_greenhouse",
@@ -5230,7 +5405,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_glass_greenhouse_3",
@@ -5261,7 +5437,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_glass_greenhouse_4",
@@ -5292,7 +5469,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_069",
@@ -5318,7 +5496,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_070",
@@ -5342,7 +5521,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_071",
@@ -5369,7 +5549,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_072",
@@ -5393,7 +5574,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_073",
@@ -5417,7 +5599,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_074",
@@ -5441,7 +5624,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_075",
@@ -5465,7 +5649,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_076",
@@ -5493,7 +5678,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_077",
@@ -5521,7 +5707,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_078",
@@ -5550,7 +5737,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_079",
@@ -5574,7 +5762,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_080",
@@ -5602,7 +5791,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_081",
@@ -5626,7 +5816,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_082",
@@ -5650,7 +5841,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_083",
@@ -5674,7 +5866,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_084",
@@ -5698,7 +5891,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_085",
@@ -5722,7 +5916,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_086",
@@ -5749,7 +5944,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2s_hy_087",
@@ -5776,7 +5972,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_088",
@@ -5807,7 +6004,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_089",
@@ -5837,7 +6035,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_090",
@@ -5865,7 +6064,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_091",
@@ -5891,7 +6091,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_092",
@@ -5917,7 +6118,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_093",
@@ -5944,7 +6146,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_094",
@@ -5968,7 +6171,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_095",
@@ -5995,7 +6199,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_096",
@@ -6021,7 +6226,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2s_hy_097",
@@ -6048,7 +6254,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_098",
@@ -6072,7 +6279,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_099",
@@ -6098,7 +6306,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_100",
@@ -6122,7 +6331,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_101",
@@ -6146,7 +6356,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_102",
@@ -6170,7 +6381,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_103",
@@ -6194,7 +6406,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_104",
@@ -6218,7 +6431,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_hy_105",
@@ -6242,7 +6456,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "hy",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2s_last_ferry",
@@ -6270,7 +6485,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_last_tram",
@@ -6302,7 +6518,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_last_tram_2",
@@ -6332,7 +6549,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_last_tram_3",
@@ -6363,7 +6581,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_last_tram_4",
@@ -6392,7 +6611,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_letterpress_studio",
@@ -6424,7 +6644,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_life_scene_10",
@@ -6452,7 +6673,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_life_scene_8",
@@ -6482,7 +6704,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_life_scene_9",
@@ -6511,7 +6734,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_manga_shop",
@@ -6540,7 +6764,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_marble_quarry",
@@ -6570,7 +6795,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_mirrored_lift",
@@ -6604,7 +6830,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_mirrored_lift_2",
@@ -6639,7 +6866,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_night_laundry",
@@ -6670,7 +6898,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_old_harbour",
@@ -6702,7 +6931,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_old_harbour_2",
@@ -6733,7 +6963,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_old_harbour_3",
@@ -6763,7 +6994,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_old_theater",
@@ -6792,7 +7024,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_old_theater_2",
@@ -6822,7 +7055,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_open_field",
@@ -6854,7 +7088,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "人像"
   },
   {
    "id": "k2s_pale_kitchen",
@@ -6884,7 +7119,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_photo_shop",
@@ -6915,7 +7151,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_pizza_shop",
@@ -6944,7 +7181,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_platform_edge",
@@ -6973,7 +7211,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_platform_edge_2",
@@ -7008,7 +7247,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_prism_observatory",
@@ -7039,7 +7279,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_quiet_bar",
@@ -7070,7 +7311,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "人像"
   },
   {
    "id": "k2s_quiet_bar_2",
@@ -7101,7 +7343,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_quiet_bar_3",
@@ -7132,7 +7375,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_quiet_bar_4",
@@ -7162,7 +7406,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_quiet_bar_5",
@@ -7190,7 +7435,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_quiet_room",
@@ -7219,7 +7465,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "人像"
   },
   {
    "id": "k2s_quiet_room_2",
@@ -7252,7 +7499,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_quiet_room_3",
@@ -7283,7 +7531,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_rain_taxi",
@@ -7315,7 +7564,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_rain_trunk",
@@ -7341,7 +7591,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_record_shop",
@@ -7369,7 +7620,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_record_store",
@@ -7399,7 +7651,9 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "owner_char": "ganyu_(genshin_impact)",
+   "shot": "半身"
   },
   {
    "id": "k2s_reflect_pool",
@@ -7430,7 +7684,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_river_bank",
@@ -7460,7 +7715,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_river_bank_2",
@@ -7490,7 +7746,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_river_bank_4",
@@ -7522,7 +7779,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_roof_orchard",
@@ -7555,7 +7813,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_rooftop",
@@ -7584,7 +7843,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_seaside_rail",
@@ -7612,7 +7872,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_shrine_festival",
@@ -7642,7 +7903,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_shrine_festival_2",
@@ -7676,7 +7938,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_shrine_festival_3",
@@ -7708,7 +7971,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_shrine_festival_4",
@@ -7737,7 +8001,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_silver_profile",
@@ -7765,7 +8030,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_snow_vending",
@@ -7800,7 +8066,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_snow_vending_2",
@@ -7831,7 +8098,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_snow_vending_3",
@@ -7861,7 +8129,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_snow_vending_4",
@@ -7891,7 +8160,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_solar_observatory",
@@ -7923,7 +8193,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_suspended_train",
@@ -7957,7 +8228,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_tatami_room",
@@ -7989,7 +8261,9 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "owner_char": "ganyu_(genshin_impact)",
+   "shot": "全景"
   },
   {
    "id": "k2s_tatami_room_2",
@@ -8019,7 +8293,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_weather_station",
@@ -8049,7 +8324,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_weather_station_2",
@@ -8080,7 +8356,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_weather_station_3",
@@ -8110,7 +8387,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_window_light",
@@ -8141,7 +8419,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_window_light_2",
@@ -8171,7 +8450,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2s_window_light_3",
@@ -8200,7 +8480,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "人像"
   },
   {
    "id": "k2s_window_light_4",
@@ -8227,7 +8508,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_window_light_5",
@@ -8254,7 +8536,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_window_light_6",
@@ -8282,7 +8565,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2s_zoetrope_room",
@@ -8315,7 +8599,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "short_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "半身"
   },
   {
    "id": "k2v_beam_balance",
@@ -8344,7 +8629,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_chain_reach",
@@ -8373,7 +8659,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_concrete_ring",
@@ -8403,7 +8690,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_floating_step",
@@ -8432,7 +8720,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_gate_turn",
@@ -8460,7 +8749,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_glass_brick",
@@ -8490,7 +8780,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_iron_grate",
@@ -8517,7 +8808,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_mirror_ledge",
@@ -8546,7 +8838,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_oculus_above",
@@ -8574,7 +8867,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_paper_shade",
@@ -8603,7 +8897,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_plinth_edge",
@@ -8633,7 +8928,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_porcelain_seat",
@@ -8662,7 +8958,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_sand_kneel",
@@ -8693,7 +8990,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_stone_seat",
@@ -8722,7 +9020,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_veil_column",
@@ -8750,7 +9049,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2v_water_veil",
@@ -8780,7 +9080,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_after_field",
@@ -8809,7 +9110,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_axe_foundry",
@@ -8838,7 +9140,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_back_alley",
@@ -8870,7 +9173,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_bakery",
@@ -8901,7 +9205,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_barber",
@@ -8932,7 +9237,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_blackbody",
@@ -8961,7 +9267,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_blue_hour",
@@ -8992,7 +9299,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_bow_drawn",
@@ -9021,7 +9329,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_bow_monolith",
@@ -9051,7 +9360,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_broken_blade_ruin",
@@ -9082,7 +9392,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_bus_stop",
@@ -9114,7 +9425,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_cavern",
@@ -9144,7 +9456,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_chain_flail",
@@ -9173,7 +9486,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_ascend",
@@ -9202,7 +9516,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_ash",
@@ -9230,7 +9545,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_bind",
@@ -9260,7 +9576,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2x_circle_break",
@@ -9290,7 +9607,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_bridge",
@@ -9320,7 +9638,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_cage",
@@ -9350,7 +9669,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_cast",
@@ -9380,7 +9700,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_fade",
@@ -9408,7 +9729,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_floor",
@@ -9437,7 +9759,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_forest",
@@ -9468,7 +9791,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_gate",
@@ -9497,7 +9821,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_pillars",
@@ -9525,7 +9850,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_press",
@@ -9553,7 +9879,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_circle_rift",
@@ -9582,7 +9909,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_riverbed",
@@ -9613,7 +9941,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_roof",
@@ -9643,7 +9972,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_snow",
@@ -9674,7 +10004,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_stage",
@@ -9702,7 +10033,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_tide",
@@ -9732,7 +10064,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_twin",
@@ -9760,7 +10093,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_well",
@@ -9790,7 +10124,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_circle_wrist",
@@ -9818,7 +10153,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "circle",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_cliff_edge",
@@ -9848,7 +10184,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_2b",
@@ -9875,10 +10212,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_2b.webp",
    "thumb_v": 1794434168,
    "character": "",
-   "recommend_char": "2b_(nier:automata)",
+   "recommend_char": "",
    "genre": "other",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_artoria",
@@ -9905,10 +10243,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_artoria.webp",
    "thumb_v": 1794435847,
    "character": "",
-   "recommend_char": "artoria_pendragon_(fate)",
+   "recommend_char": "",
    "genre": "nature",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_asuka",
@@ -9935,10 +10274,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_asuka.webp",
    "thumb_v": 1794435847,
    "character": "",
-   "recommend_char": "souryuu_asuka_langley",
+   "recommend_char": "",
    "genre": "urban",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_chunli",
@@ -9965,10 +10305,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_chunli.webp",
    "thumb_v": 1794435847,
    "character": "",
-   "recommend_char": "chun-li",
+   "recommend_char": "",
    "genre": "urban",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_frieren",
@@ -9996,10 +10337,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_frieren.webp",
    "thumb_v": 1794434168,
    "character": "",
-   "recommend_char": "frieren",
+   "recommend_char": "",
    "genre": "landscape",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_ganyu",
@@ -10026,10 +10368,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_ganyu.webp",
    "thumb_v": 1794435847,
    "character": "",
-   "recommend_char": "ganyu_(genshin_impact)",
+   "recommend_char": "",
    "genre": "other",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_homura",
@@ -10056,10 +10399,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_homura.webp",
    "thumb_v": 1794435847,
    "character": "",
-   "recommend_char": "akemi_homura",
+   "recommend_char": "",
    "genre": "daily",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_makima",
@@ -10086,10 +10430,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_makima.webp",
    "thumb_v": 1794434168,
    "character": "",
-   "recommend_char": "makima_(chainsaw_man)",
+   "recommend_char": "",
    "genre": "other",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_parasol",
@@ -10117,10 +10462,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_parasol.webp",
    "thumb_v": 1794426205,
    "character": "",
-   "recommend_char": "violet_evergarden",
+   "recommend_char": "",
    "genre": "nature",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_railgun",
@@ -10147,15 +10493,16 @@
    "thumb": "thumbs/motifs/k2x_clsc_railgun.webp",
    "thumb_v": 1794423356,
    "character": "",
-   "recommend_char": "misaka_mikoto",
+   "recommend_char": "",
    "genre": "urban",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_clsc_seat_dawn",
    "title": "FIRST LIGHT",
-   "zh": "河岸晨光·阿尔托莉雅",
+   "zh": "河岸晨光·坐姿",
    "title_zh": "",
    "display_orig": "FIRST LIGHT",
    "display_all": [
@@ -10168,7 +10515,8 @@
     "exterior",
     "day",
     "nature",
-    "architecture"
+    "architecture",
+    "sitting"
    ],
    "branch": "scene",
    "branch_zh": "3D 场景",
@@ -10178,15 +10526,16 @@
    "thumb": "thumbs/motifs/k2x_clsc_seat_dawn.webp",
    "thumb_v": 1795539176,
    "character": "",
-   "recommend_char": "artoria_pendragon_(fate)",
+   "recommend_char": "",
    "genre": "nature",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_seat_ember",
    "title": "LAST EMBER",
-   "zh": "窗边余温·阿尔托莉雅",
+   "zh": "窗边余温·坐姿",
    "title_zh": "最后余烬",
    "display_orig": "LAST EMBER",
    "display_all": [
@@ -10199,7 +10548,8 @@
     "interior",
     "night",
     "nature",
-    "architecture"
+    "architecture",
+    "sitting"
    ],
    "branch": "scene",
    "branch_zh": "3D 场景",
@@ -10209,15 +10559,16 @@
    "thumb": "thumbs/motifs/k2x_clsc_seat_ember.webp",
    "thumb_v": 1795539176,
    "character": "",
-   "recommend_char": "artoria_pendragon_(fate)",
+   "recommend_char": "",
    "genre": "other",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_seat_neon",
    "title": "NEON HOUR",
-   "zh": "后巷霓虹·阿尔托莉雅",
+   "zh": "后巷霓虹·坐姿",
    "title_zh": "",
    "display_orig": "NEON HOUR",
    "display_all": [
@@ -10230,7 +10581,8 @@
     "interior",
     "night",
     "street",
-    "architecture"
+    "architecture",
+    "sitting"
    ],
    "branch": "scene",
    "branch_zh": "3D 场景",
@@ -10240,15 +10592,16 @@
    "thumb": "thumbs/motifs/k2x_clsc_seat_neon.webp",
    "thumb_v": 1795539176,
    "character": "",
-   "recommend_char": "artoria_pendragon_(fate)",
+   "recommend_char": "",
    "genre": "urban",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_seat_side",
    "title": "HALL LIGHT",
-   "zh": "石厅逆光·阿尔托莉雅",
+   "zh": "石厅逆光·坐姿",
    "title_zh": "",
    "display_orig": "HALL LIGHT",
    "display_all": [
@@ -10259,7 +10612,8 @@
    "ratio": "16:9",
    "tags": [
     "interior",
-    "architecture"
+    "architecture",
+    "sitting"
    ],
    "branch": "scene",
    "branch_zh": "3D 场景",
@@ -10269,15 +10623,16 @@
    "thumb": "thumbs/motifs/k2x_clsc_seat_side.webp",
    "thumb_v": 1795546761,
    "character": "",
-   "recommend_char": "artoria_pendragon_(fate)",
+   "recommend_char": "",
    "genre": "hall",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_seat_snow",
    "title": "SILENT SNOW",
-   "zh": "雪后站台·阿尔托莉雅",
+   "zh": "雪后站台·坐姿",
    "title_zh": "",
    "display_orig": "SILENT SNOW",
    "display_all": [
@@ -10290,7 +10645,8 @@
     "interior",
     "nature",
     "architecture",
-    "season"
+    "season",
+    "sitting"
    ],
    "branch": "scene",
    "branch_zh": "3D 场景",
@@ -10300,15 +10656,16 @@
    "thumb": "thumbs/motifs/k2x_clsc_seat_snow.webp",
    "thumb_v": 1795539177,
    "character": "",
-   "recommend_char": "artoria_pendragon_(fate)",
+   "recommend_char": "",
    "genre": "nature",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_throne",
    "title": "CROWN",
-   "zh": "王座加冕·阿尔托莉雅",
+   "zh": "王座加冕·坐姿",
    "title_zh": "",
    "display_orig": "CROWN",
    "display_all": [
@@ -10320,7 +10677,8 @@
    "tags": [
     "interior",
     "day",
-    "architecture"
+    "architecture",
+    "sitting"
    ],
    "branch": "scene",
    "branch_zh": "3D 场景",
@@ -10330,10 +10688,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_throne.webp",
    "thumb_v": 1794442287,
    "character": "",
-   "recommend_char": "artoria_pendragon_(fate)",
+   "recommend_char": "",
    "genre": "hall",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_tifa",
@@ -10360,10 +10719,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_tifa.webp",
    "thumb_v": 1794435847,
    "character": "",
-   "recommend_char": "tifa_lockhart",
+   "recommend_char": "",
    "genre": "other",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_clsc_zelda",
@@ -10390,10 +10750,11 @@
    "thumb": "thumbs/motifs/k2x_clsc_zelda.webp",
    "thumb_v": 1794435847,
    "character": "",
-   "recommend_char": "princess_zelda",
+   "recommend_char": "",
    "genre": "hall",
    "series": "clsc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_balcony",
@@ -10425,7 +10786,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_breakwater",
@@ -10456,7 +10818,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_dune",
@@ -10488,7 +10851,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_lookout",
@@ -10520,7 +10884,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_pier",
@@ -10552,7 +10917,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_pontoon",
@@ -10582,7 +10948,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_pool_edge",
@@ -10614,7 +10981,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_sea_cave",
@@ -10646,7 +11014,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_shower",
@@ -10678,7 +11047,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_slipway",
@@ -10709,7 +11079,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_surf",
@@ -10741,7 +11112,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_coast_tide_pool",
@@ -10773,7 +11145,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_corridor",
@@ -10805,7 +11178,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_dark_black_membrane",
@@ -10832,7 +11206,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_dark_corridor_axis",
@@ -10859,7 +11234,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_dark_flooded_hall",
@@ -10886,7 +11262,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_dark_hover_study",
@@ -10913,7 +11290,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_dark_instrument_room",
@@ -10940,7 +11318,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_dark_machine_room",
@@ -10967,7 +11346,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_dark_spiral_tower",
@@ -10994,7 +11374,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_dropped_blade",
@@ -11024,7 +11405,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_dry_garden",
@@ -11057,7 +11439,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_first_snow",
@@ -11090,7 +11473,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_fog_chronometer",
@@ -11123,7 +11507,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_forest_path",
@@ -11156,7 +11541,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_ginkgo_walk",
@@ -11191,7 +11577,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_glass_house",
@@ -11222,7 +11609,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_greatsword_field",
@@ -11252,7 +11640,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_halberd_tower",
@@ -11282,7 +11671,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_half_sheathed",
@@ -11312,7 +11702,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_after",
@@ -11344,7 +11735,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_apple",
@@ -11376,7 +11768,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_bank",
@@ -11408,7 +11801,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_boat",
@@ -11440,7 +11834,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_fan",
@@ -11472,7 +11867,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_goldfish",
@@ -11504,7 +11900,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_mask",
@@ -11536,7 +11933,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_pov",
@@ -11568,7 +11966,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_steps",
@@ -11600,7 +11999,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_hanabi_yatai",
@@ -11633,7 +12033,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_high_noon",
@@ -11666,7 +12067,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_home_bath",
@@ -11697,7 +12099,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_home_closet",
@@ -11728,7 +12131,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_home_dinner",
@@ -11759,7 +12163,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_home_entry",
@@ -11782,7 +12187,7 @@
    "branch": "scene",
    "branch_zh": "3D 场景",
    "workflow": "Krea2-白垩光标准档.json",
-   "words": 1532,
+   "words": 1591,
    "paras": 22,
    "thumb": "thumbs/motifs/k2x_home_entry.webp",
    "thumb_v": 1794409170,
@@ -11790,7 +12195,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_home_laundry_line",
@@ -11821,7 +12227,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_home_linen",
@@ -11852,7 +12259,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_home_plants",
@@ -11883,7 +12291,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_home_stove",
@@ -11914,7 +12323,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_idle_works",
@@ -11945,7 +12355,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indigo_drift",
@@ -11975,7 +12386,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_belltower",
@@ -12006,7 +12418,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_blast",
@@ -12037,7 +12450,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_cantilever_yard",
@@ -12071,7 +12485,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_cargo_spine",
@@ -12104,7 +12519,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_cloister",
@@ -12135,7 +12551,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_conveyor",
@@ -12166,7 +12583,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_cyclopean_spine",
@@ -12200,7 +12618,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_deep_shaft",
@@ -12232,7 +12651,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_dock",
@@ -12263,7 +12683,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_foundry_canyon",
@@ -12295,7 +12716,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_freight_lift",
@@ -12329,7 +12751,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_hull_dock",
@@ -12359,7 +12782,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_hydraulic_gate",
@@ -12392,7 +12816,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_load_weave",
@@ -12424,7 +12849,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_mass_transfer",
@@ -12455,7 +12881,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_mega_field",
@@ -12488,7 +12915,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_megafactory",
@@ -12521,7 +12949,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_nave",
@@ -12552,7 +12981,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_offshore_deck",
@@ -12586,7 +13016,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_open_assembly",
@@ -12619,7 +13050,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_pressure_vessels",
@@ -12650,7 +13082,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_pump",
@@ -12681,7 +13114,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_radial_reactor",
@@ -12712,7 +13146,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_reservoir",
@@ -12743,7 +13178,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_resonance_press",
@@ -12774,7 +13210,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_signal_forge",
@@ -12806,7 +13243,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_skyport",
@@ -12839,7 +13277,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_surge_divide",
@@ -12871,7 +13310,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_suspended_gate",
@@ -12902,7 +13342,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_switchyard",
@@ -12932,7 +13373,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_tidal_pressure",
@@ -12965,7 +13407,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_tidal_spine",
@@ -12996,7 +13439,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_tower",
@@ -13027,7 +13471,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_transfer_terminal",
@@ -13059,7 +13504,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "indus",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_vent_shaft",
@@ -13089,7 +13535,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_indus_watertower",
@@ -13119,7 +13566,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "indus",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_kerb",
@@ -13150,7 +13598,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_kiln_song",
@@ -13179,7 +13628,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_kiosk",
@@ -13211,7 +13661,8 @@
    "recommend_char": "",
    "genre": "shop",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_kneel_blade",
@@ -13241,7 +13692,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_lantern_tide",
@@ -13271,7 +13723,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_last_car",
@@ -13300,7 +13753,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_last_train",
@@ -13331,7 +13785,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_lift_shaft",
@@ -13361,7 +13816,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_moon_court",
@@ -13392,7 +13848,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_moon_gate",
@@ -13423,7 +13880,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_neon_strip",
@@ -13456,7 +13914,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_night_folio",
@@ -13486,7 +13945,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_night_market",
@@ -13516,7 +13976,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_north_light",
@@ -13549,7 +14010,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_one_more_turn",
@@ -13580,7 +14042,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_organon",
@@ -13609,7 +14072,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_paper_festival",
@@ -13639,7 +14103,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_parkade",
@@ -13671,7 +14136,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_petal_line",
@@ -13703,7 +14169,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_phone_box",
@@ -13735,7 +14202,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_pier_end",
@@ -13767,7 +14235,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_primary_mirror",
@@ -13798,7 +14267,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_quiet_broadcast",
@@ -13829,7 +14299,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_rain_mart",
@@ -13862,7 +14333,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_rain_platform",
@@ -13892,7 +14364,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_resonance_cathedral",
@@ -13925,7 +14398,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_reverse_grip",
@@ -13953,7 +14427,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "人像"
   },
   {
    "id": "k2x_river_bend",
@@ -13984,7 +14459,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_roof_tank",
@@ -14015,7 +14491,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_salt_tide_archive",
@@ -14044,7 +14521,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_school_class",
@@ -14075,7 +14553,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_school_court",
@@ -14107,7 +14586,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_school_gym",
@@ -14138,7 +14618,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_school_lab",
@@ -14169,7 +14650,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_school_lockers",
@@ -14200,7 +14682,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_school_music",
@@ -14231,7 +14714,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_school_pool",
@@ -14262,7 +14746,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_school_stairs",
@@ -14293,7 +14778,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_scythe_gate",
@@ -14322,7 +14808,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_service_lane",
@@ -14352,7 +14839,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_shield_wall",
@@ -14381,7 +14869,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_shoulder_guard",
@@ -14409,7 +14898,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_skywalk",
@@ -14441,7 +14931,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_solitary_tree",
@@ -14471,7 +14962,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_spear_braced",
@@ -14500,7 +14992,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_spear_cloud",
@@ -14530,7 +15023,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_spin_cycle",
@@ -14561,7 +15055,8 @@
    "recommend_char": "",
    "genre": "industrial",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_stack_room",
@@ -14591,7 +15086,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_still_lake",
@@ -14622,7 +15118,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_street_circle",
@@ -14654,7 +15151,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_street_lane_blade",
@@ -14686,7 +15184,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_street_wiped",
@@ -14718,7 +15217,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_stuck_ground",
@@ -14747,7 +15247,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_summit_night",
@@ -14779,7 +15280,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_thread_bindery",
@@ -14809,7 +15311,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_tidal_flat",
@@ -14839,7 +15342,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_tip_down",
@@ -14868,7 +15372,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_underpass",
@@ -14900,7 +15405,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_afterschool",
@@ -14929,7 +15435,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_alley",
@@ -14960,7 +15467,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_aquarium",
@@ -14988,7 +15496,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_balcony",
@@ -15018,7 +15527,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_bar_counter",
@@ -15046,7 +15556,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_beach_dusk",
@@ -15076,7 +15587,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_bookshelf",
@@ -15104,7 +15616,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_bouquet",
@@ -15135,7 +15648,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_bus_stop",
@@ -15166,7 +15680,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_cable",
@@ -15197,7 +15712,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_cafe_closed",
@@ -15227,7 +15743,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_cafe_rain",
@@ -15257,7 +15774,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_car_ride",
@@ -15287,7 +15805,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_cave_pool",
@@ -15316,7 +15835,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_church_pew",
@@ -15345,7 +15865,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_cinema",
@@ -15373,7 +15894,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_class_desk",
@@ -15402,7 +15924,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_classroom_moon",
@@ -15432,7 +15955,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_concert",
@@ -15461,7 +15985,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_convenience",
@@ -15490,7 +16015,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_crosswalk",
@@ -15521,7 +16047,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_desert_dune",
@@ -15550,7 +16077,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_duo_umbrella",
@@ -15580,7 +16108,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_dutch_alley",
@@ -15611,7 +16140,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_ferris",
@@ -15642,7 +16172,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_fitting",
@@ -15670,7 +16201,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_flower_spin",
@@ -15700,7 +16232,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_flower_wind",
@@ -15730,7 +16263,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_forest_fog",
@@ -15760,7 +16294,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_forest_path",
@@ -15790,7 +16325,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_garden_arch",
@@ -15822,7 +16358,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_hill_sunset",
@@ -15851,7 +16388,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_hotel_window",
@@ -15880,7 +16418,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_izakaya",
@@ -15911,7 +16450,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_lake_mist",
@@ -15942,7 +16482,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_lake_moon",
@@ -15972,7 +16513,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_last_train",
@@ -16002,7 +16544,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_library_lamp",
@@ -16032,7 +16575,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_lift",
@@ -16061,7 +16605,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_lighthouse",
@@ -16091,7 +16636,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_lighthouse_night",
@@ -16122,7 +16668,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_maple_shrine",
@@ -16153,7 +16700,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_matsuri",
@@ -16183,7 +16731,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_milkyway",
@@ -16213,7 +16762,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_mountain_lookback",
@@ -16242,7 +16792,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_office_lift",
@@ -16263,7 +16814,7 @@
    "branch": "scene",
    "branch_zh": "3D 场景",
    "workflow": "Krea2-白垩光标准档.json",
-   "words": 1842,
+   "words": 1959,
    "paras": 22,
    "thumb": "thumbs/motifs/k2x_v6_office_lift.webp",
    "thumb_v": 1794584153,
@@ -16271,7 +16822,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_overtime",
@@ -16301,7 +16853,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_park_avenue",
@@ -16333,7 +16886,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_petal_crosswalk",
@@ -16366,7 +16920,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_picnic",
@@ -16396,7 +16951,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_poolside",
@@ -16427,7 +16983,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_river_lookback",
@@ -16458,7 +17015,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_rooftop_grid",
@@ -16489,7 +17047,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_ruins_light",
@@ -16519,7 +17078,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_sakura_street",
@@ -16549,7 +17109,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_shrine_petal",
@@ -16581,7 +17142,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_snow_scarf",
@@ -16610,7 +17172,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_snow_street",
@@ -16641,7 +17204,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_snow_tracks",
@@ -16670,7 +17234,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_sofa",
@@ -16699,7 +17264,8 @@
    "recommend_char": "",
    "genre": "daily",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_stairwell",
@@ -16728,7 +17294,8 @@
    "recommend_char": "",
    "genre": "fantasy",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_torii",
@@ -16759,7 +17326,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_twilight",
@@ -16790,7 +17358,8 @@
    "recommend_char": "",
    "genre": "other",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "半身"
   },
   {
    "id": "k2x_v6_umbrella",
@@ -16821,7 +17390,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_wind_hem",
@@ -16850,7 +17420,8 @@
    "recommend_char": "",
    "genre": "landscape",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_v6_winter_sill",
@@ -16881,7 +17452,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "v6",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_waterline",
@@ -16911,7 +17483,8 @@
    "recommend_char": "",
    "genre": "hall",
    "series": "scene_misc",
-   "added": "2026-11-15"
+   "added": "2026-11-15",
+   "shot": "全景"
   },
   {
    "id": "k2x_wheat_field",
@@ -16944,7 +17517,8 @@
    "recommend_char": "",
    "genre": "nature",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_window_seat",
@@ -16975,7 +17549,8 @@
    "recommend_char": "",
    "genre": "urban",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
   },
   {
    "id": "k2x_wiped_edge",
@@ -17004,7 +17579,62 @@
    "recommend_char": "",
    "genre": "other",
    "series": "scene_misc",
-   "added": ""
+   "added": "",
+   "shot": "全景"
+  },
+  {
+   "id": "k2s_ref_front",
+   "title": "",
+   "zh": "参考图·正面全身",
+   "title_zh": "",
+   "display_orig": "",
+   "display_all": [],
+   "aspect": "portrait",
+   "aspect_zh": "竖屏",
+   "ratio": "9:16",
+   "tags": [],
+   "branch": "short",
+   "branch_zh": "短提示词",
+   "workflow": "Krea2-白垩光标准档.json",
+   "words": 245,
+   "paras": 5,
+   "thumb": "thumbs/motifs/k2s_ref_front.webp",
+   "thumb_v": 1795844582,
+   "character": "",
+   "recommend_char": "",
+   "owner_char": "",
+   "genre": "other",
+   "series": "ref",
+   "added": "2026-11-28",
+   "ref": "front",
+   "shot": "全景"
+  },
+  {
+   "id": "k2s_ref_sheet",
+   "title": "",
+   "zh": "参考图·四视图",
+   "title_zh": "",
+   "display_orig": "",
+   "display_all": [],
+   "aspect": "portrait",
+   "aspect_zh": "竖屏",
+   "ratio": "9:16",
+   "tags": [],
+   "branch": "short",
+   "branch_zh": "短提示词",
+   "workflow": "Krea2-白垩光标准档.json",
+   "words": 406,
+   "paras": 7,
+   "thumb": "thumbs/motifs/k2s_ref_sheet.webp",
+   "thumb_v": 1795844582,
+   "character": "",
+   "recommend_char": "",
+   "owner_char": "",
+   "genre": "other",
+   "series": "ref",
+   "added": "2026-11-28",
+   "ref": "sheet",
+   "shot": "全景"
   }
  ]
 }

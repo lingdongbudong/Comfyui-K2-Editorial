@@ -340,7 +340,8 @@
  "k2x_clsc_throne": [
   "interior",
   "day",
-  "architecture"
+  "architecture",
+  "sitting"
  ],
  "k2x_indus_suspended_gate": [
   "interior",
@@ -1329,5 +1330,38 @@
   "exterior",
   "night",
   "day"
+ ],
+ "k2x_clsc_seat_dawn": [
+  "exterior",
+  "day",
+  "nature",
+  "architecture",
+  "sitting"
+ ],
+ "k2x_clsc_seat_ember": [
+  "interior",
+  "night",
+  "nature",
+  "architecture",
+  "sitting"
+ ],
+ "k2x_clsc_seat_neon": [
+  "interior",
+  "night",
+  "street",
+  "architecture",
+  "sitting"
+ ],
+ "k2x_clsc_seat_side": [
+  "interior",
+  "architecture",
+  "sitting"
+ ],
+ "k2x_clsc_seat_snow": [
+  "interior",
+  "nature",
+  "architecture",
+  "season",
+  "sitting"
  ]
 }

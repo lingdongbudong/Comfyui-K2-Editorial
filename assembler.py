@@ -83,6 +83,21 @@ HAIR_TPL = (
     "where the hair physically intersects transparent or reflective material."
 )
 
+# ⚠ 这份模板是照 Miku 的双马尾写的 ——「the nearer length / the farther length」把头发写死成**两束**。
+# 换角色只换 {hair} 这个词、结构不变，模型就照样画成两股马尾（用户报的「换人后变初音双马尾」）。
+# 非双马尾角色改走下面这份：一个整体发团 + 一小缕上挑，不再承诺束数。
+HAIR_TPL_SINGLE = (
+    "Integrate {name}’s {hair} into the nearest monumental structure as one continuous falling mass. "
+    "Its outer sweep drops past the closest structural edge, passes behind the dominant object, appears "
+    "magnified and doubled inside one transparent panel, and reappears as three clean {accent} contours "
+    "lying across the floor plane. A single narrow section lifts behind her head, crosses one horizontal "
+    "band of the main structure, threads between two joints, and terminates as one thin {accent} contour "
+    "beside the frame edge. Keep the mass dense, solid and recognizable around her head and down her back, "
+    "falling loose from a single parting instead of being split to either side of the head; allow "
+    "transparency, doubling and fragmentation only where the hair physically intersects transparent or "
+    "reflective material."
+)
+
 COSTUME_TPL = (
     "Dress {short} in an original ceremonial costume derived from {design}. Use a fitted {M1} bodice with "
     "{accent} luminous seams, a short asymmetric skirt built from stacked {M2} plates whose thick "
@@ -150,6 +165,52 @@ def palette_para(ch: dict) -> str:
             "marks, bearing races, filigree nodes and structural joints, and reserve the rare minor accent "
             "for three costume fasteners and one registration mark.")
     return f"{head} {mid} {tail}"
+
+
+# ---------------------------------------------------------------------------
+# 锁定发色（面板「🔒 锁定发色」开关，2026-11-28）
+# ---------------------------------------------------------------------------
+# 色盘段把头发色按 14% 分配进整幅画面的色彩比例里，模型会照着比例给所有表面
+# （包括头发）一起上色 —— 深紫发被压成灰紫、金发被环境色洗成白，都是这个原因。
+# 开启后补一句硬声明：头发是**固定局部色**，不参与这套比例。
+# 独立成句而不是改色盘段本身，是因为 lock_palette=true 的母题色盘段压根不替换，
+# 改那里对它们无效。
+HAIR_LOCK_SENT = (
+    "Hold her hair to its exact color: {hair} keeps its precise hue, saturation and highlight "
+    "structure across the whole frame. Treat the hair as a fixed local color that the surrounding "
+    "palette may never tint, desaturate, bloom out, wash or re-grade, even where every other "
+    "surface is pushed toward {primary} or toward the scene’s dominant grade. Every strand, tip, "
+    "lock and brush stroke of that hair carries the same single color from root to end, so the "
+    "scene’s cool blues, cyans and violet lights stay on its surfaces, rims and highlights while "
+    "the hair itself holds one continuous hue."
+)
+_HAIR_LOCK_CUE = "Hold her hair to its exact color"
+
+
+def apply_hair_lock(text: str, ch: dict, log: list[str], tag: str = "角色") -> str:
+    """把发色从色彩比例里摘出来。幂等：已经写过就不再重复。"""
+    ps = paras(text)
+    if any(_HAIR_LOCK_CUE in p for p in ps):
+        return text
+    pal = ch.get("palette") or []
+    primary = pal[0][0] if pal else "the surrounding palette"
+    sent = HAIR_LOCK_SENT.format(hair=ch.get("hair_desc") or "her hair", primary=primary)
+    # 优先贴身份句：那里才是「她的头发是什么颜色」的正主。
+    # ⚠ 不能退到「第一个含 hair 的段」就算了 —— tag 流母题的首段也写 hair
+    #   （唱片店：`short icy-blue bob hair`），贴上去会和角色的长发声明同段打架。
+    idx = next((i for i, p in enumerate(ps) if "canonical identity" in p.lower()), -1)
+    if idx < 0:
+        idx = next((i for i, p in enumerate(ps)
+                    if len(re.findall(r"\bpercent\b", p, re.I)) >= 3), -1)
+    if idx < 0:
+        idx = next((i for i, p in enumerate(ps) if "hair" in p.lower()), -1)
+    if idx >= 0:
+        ps[idx] = ps[idx].rstrip().rstrip(".") + ". " + sent
+    else:
+        ps.insert(min(1, len(ps)), sent)
+    log.append(f"{tag}: 发色已锁定（不参与色彩比例）")
+    return join(ps)
+
 
 GRAPHICS_TPL = (
     "Drive the graphic language from {short}’s own palette. Use one large {ink} ink bloom spreading from the "
@@ -327,8 +388,16 @@ def locate_sections(ps: list[str]) -> tuple[int, int, int, int]:
             continue                     # 概念段本身含 twin tails / hair，必须排掉
         if is_guard(p):
             continue                     # ⚠ 约束段里写着 "no aqua twin tails"，会被当成发型段整段吃掉
-        if strong["hair"] < 0 and low.startswith(HAIR_STRONG) and (
-                "hair" in low or "tail" in low):
+        if strong["hair"] < 0 and (
+                (low.startswith(HAIR_STRONG) and ("hair" in low or "tail" in low))
+                # "Let Miku's extremely long twin tails stream inland…" —— HAIR_STRONG 里只有
+                # 「let her …」，换成角色名所有格就漏了；漏了之后弱信号会被前面那段**姿态描述**
+                # 抢走（段里顺带一句 twin tails），结果姿态段被整段换成发型模板、真正的发型段
+                # 原样留下 → 双马尾结构（both lengths / nearer / farther / two tails）全保留。
+                # ⚠ 必须要求「所有格」：光看 "let " 会把 "Let the pale field make both tails…"
+                # 这类**环境段**也吞进来（那句里的 tails 是头发，但主语是原野）。
+                or (re.match(r"let\s+\S+['’]s\b", low)
+                    and ("hair" in low[:80] or "tail" in low[:80]))):
             strong["hair"] = i
         if strong["costume"] < 0 and low.startswith(COSTUME_STRONG):
             strong["costume"] = i
@@ -337,8 +406,9 @@ def locate_sections(ps: list[str]) -> tuple[int, int, int, int]:
         if gfx < 0 and ("ink bloom" in low or "graphic language" in low):
             gfx = i
 
-        if weak["hair"] < 0 and ("hair" in low or "tail" in low) and any(
-                k in low for k in HAIR_WEAK):
+        # 弱信号只看**段首**：姿态段 / 环境段里顺带提一句 twin tails 不能算发型段
+        if weak["hair"] < 0 and any(k in low[:60] for k in HAIR_WEAK) and (
+                "hair" in low[:60] or "tail" in low[:60]):
             weak["hair"] = i
         if weak["costume"] < 0 and any(k in low for k in COSTUME_WEAK):
             weak["costume"] = i
@@ -906,6 +976,12 @@ _STRUCT_PARA = re.compile(
     r"maintain|reserve|limit|confine|reduce|increase|open|close|fill|set|frame|place|"
     r"position|mask|erase|grade)\b", re.I)
 
+# 「Preserve her recognizable A, B, and C.」= 角色特征列举句（外貌和服装混写）。
+# _STRUCT_PARA 只按**段落首词**判定结构段，段落以 "Give …" / "Keep …" 开头时会把
+# 后面的身份列举句一起按 need_is（只摘 "her dress is heavy cotton"）放过 —— 镜潮歌剧
+# 6 个服装子句因此一个都没摘掉。这类句子要单独认出来，按普通服装句处理。
+_KEEP_LIST_RE = re.compile(r"^(?:preserve|keep|retain|maintain)\s+(?:her|his)\b", re.I)
+
 
 def _excise_clauses(s: str, require_her: bool = False,
                     need_is: bool = False) -> tuple[str, int]:
@@ -989,6 +1065,129 @@ def neutralize_owner_garments(p: str) -> tuple[str, int]:
     return out, n + k
 
 
+# ---------------------------------------------------------------------------
+# LORA 服装触发词模式（v1.19.6）
+# ---------------------------------------------------------------------------
+# 角色 LORA 自己带整套服装的触发词时，提示词里任何服装词都会跟它抢：
+# 服装库单品 / 版型句 / 母题自带的 "heavy charcoal wool coat" 全都要让位，
+# 否则出图是「LORA 的衣服 + 母题的外套」缝在一起。
+# 做法：服装段整段换成 NO_OUTFIT_SEG，全文按逗号项摘掉服装枚举，
+# 护盾里「no missing 礼帽」这类服装否定项也去掉（服装已经不归提示词管）。
+NO_OUTFIT_SEG = ("Let her character trigger carry what she wears: read one soft unbroken "
+                 "silhouette from shoulders to feet, its folds and edges shaped only by "
+                 "light, shadow and material grain.")
+# ⚠ 不能直接拿 GARMENT_RE 扫正文：表里有 "top"，`the top edge of the frame` 会被当成
+#   衣服整项摘掉（实测 34 条母题误伤）。"top" 只在带颜色/款式修饰词时才算上衣。
+_LORA_GARMENT_RE = re.compile(
+    r"\b(?:" + "|".join(re.escape(n) for n in GARMENT_NOUNS if n != "top")
+    + r")(?:e?s)?\b"
+    r"|\b(?:white|black|dark|blue|red|pale|cropped|crop|knit|tank|tube|halter|mesh|silk|"
+    r"velvet|pleated|collared)\s+tops?\b", re.I)
+_GARMENT_OR_HEAD_RE = re.compile(
+    _LORA_GARMENT_RE.pattern + "|" + _HEADWEAR_RE.pattern, re.I)
+_PCT_RE = re.compile(r"(?P<num>[a-z\-]+|\d+)(?=\s+percent)", re.I)
+
+
+_ASPECT_CLAUSE = re.compile(r"^(?:Create|Square|Portrait|Horizontal|Vertical)\b", re.I)
+
+
+def _drop_clauses_rx(q: str, rx) -> tuple[str, int]:
+    """逗号枚举里含 rx 的整项摘掉（同 _drop_garment_clauses，只是换正则）。
+
+    ⚠ 首句头一个子句（`Create a wide 16:9 … titled “SCARF”`）必须保住：
+    标题本身可能就叫 SCARF / COAT，被当成服装摘掉会让首句丢画幅 token。
+    """
+    chunks = q.split(", ")
+    keep = [c for c in chunks if not rx.search(c) or _ASPECT_CLAUSE.match(c.strip())]
+    if len(keep) == len(chunks):
+        return q, 0
+    out = ", ".join(keep)
+    out = re.sub(r",\s*and\b", ", and", out)
+    out = re.sub(r"(,\s*)+", ", ", out)
+    out = re.sub(r"\s*,\s*\.", ".", out)
+    return out, len(chunks) - len(keep)
+
+
+def _renormalize_palette(p: str) -> str:
+    """摘掉「十二 percent 是她的外套」之后色盘和不再等于 100 → 按比例归一。
+
+    原文百分比是英文数字词（thirty-two percent），所以要 words2num 反解再 num2words 写回。
+    """
+    ms = list(_PCT_RE.finditer(p))
+    vals = []
+    for m in ms:
+        tok = m.group("num")
+        v = int(tok) if tok.isdigit() else words2num(tok)
+        if v is None:
+            return p
+        vals.append(v)
+    if not vals or sum(vals) == 100:
+        return p
+    total = sum(vals)
+    scaled = [max(1, round(v * 100 / total)) for v in vals]
+    # 最大余数法补到正好 100（否则 99/101 会被 validate 抓）
+    while sum(scaled) != 100:
+        diff = 100 - sum(scaled)
+        order = sorted(range(len(scaled)),
+                       key=lambda i: vals[i] * 100 / total - scaled[i],
+                       reverse=diff < 0)
+        moved = False
+        for idx in order:
+            if diff > 0:
+                scaled[idx] += 1
+                moved = True
+                break
+            if scaled[idx] > 1:
+                scaled[idx] -= 1
+                moved = True
+                break
+        if not moved:
+            break
+    out, last = [], 0
+    for m, v in zip(ms, scaled):
+        out.append(p[last:m.start()])
+        out.append(str(v) if m.group("num").isdigit()
+                   else ("one hundred" if v == 100 else num2words(v)))
+        last = m.end()
+    out.append(p[last:])
+    return "".join(out)
+
+
+def strip_all_garments(text: str, log: list[str]) -> str:
+    """LORA 模式下的收尾：把正文里剩下的服装词清干净（姿态 / 解剖词一个不动）。"""
+    out, n_own, n_drop, n_guard, n_pct = [], 0, 0, 0, 0
+    for p in paras(text):
+        if p.strip() == NO_OUTFIT_SEG:
+            out.append(p)
+            continue
+        q, c = neutralize_owner_garments(p)          # 先处理所有格 / 单数提及
+        n_own += c
+        if is_guard(p):
+            keep = []
+            for i, it in enumerate(x.strip() for x in q.split(",") if x.strip()):
+                if i and _GARMENT_OR_HEAD_RE.search(it):
+                    n_guard += 1
+                    continue
+                keep.append(it)
+            q = ", ".join(keep)
+        else:
+            q, c2 = _drop_clauses_rx(q, _LORA_GARMENT_RE)
+            n_drop += c2
+            if "percent of the image" in q.lower():
+                before = q
+                q = _renormalize_palette(q)
+                n_pct += q != before
+        out.append(q if len(q.split()) >= 6 else NO_OUTFIT_SEG)
+    body = join(out)
+    if n_own or n_drop or n_guard or n_pct:
+        log.append(f"LORA 服装: 所有格中性化 {n_own} / 摘枚举 {n_drop} / "
+                   f"护盾去服装项 {n_guard} / 色盘归一 {n_pct}")
+    # 短提示词只有一百来词，摘几句会掉到 validate 下限（100 词）以下 → 补一句
+    if len(body.split()) < 100:
+        body = body.rstrip() + "\n\n" + NO_OUTFIT_SEG
+    return body
+
+
 _G_ALT = "|".join(re.escape(n) for n in GARMENT_NOUNS)
 # 袖口 / 下摆 / 领子这类「部件」不适合作整名替换（把 "white cuff" 换成整套衣服很荒唐）
 _PART_NOUN_RE = re.compile(r"\b(?:cuffs?|hem|hems|collars?|sleeves?|bodice|seams?|waistband|"
@@ -1022,6 +1221,10 @@ def canonical_phrases(text: str) -> list[str]:
     best = " ".join(picked)
     out = []
     for m in re.finditer(rf"\b(?:[a-z][a-z\-]+\s+){{0,2}}(?:{_G_ALT})(?:e?s)?\b", best, re.I):
+        # "dark navy top hat" 里的 top 不是上衣 —— 全文替换会把 "dark navy top" 换成整套
+        # 单品、留下半截 "… evening gown hat"（镜潮歌剧实测语法崩坏 + 帽子仍在）
+        if _HEADWEAR_RE.match(best[m.end():m.end() + 12].lstrip(" ")):
+            continue
         words = [w for w in m.group(0).strip(" ,.;").split()
                  if w.lower() not in ("and", "of", "with", "the", "her", "his", "a", "an",
                                       "canonical", "original", "signature", "recognizable")]
@@ -1165,11 +1368,15 @@ def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = T
                      log: list[str] | None = None,
                      already_placed: bool = False,
                      bold: bool = True, mode: str = "full",
-                     raw: str | None = None) -> tuple[str, int]:
+                     raw: str | None = None,
+                     skip_tag_stream: bool = False) -> tuple[str, int]:
     """把母题正文里**所有**在描述别的衣服的地方改写成所选单品。
 
     `already_placed` = 调用方已经在别处写过单品清单（scene 分支的服装段），
     这时正文里其余的旧服装句直接删掉/摘掉，不再重复列一遍。
+    `skip_tag_stream` = 调用方已经用 replace_tag_stream_outfit 整组换过 tag 流段落，
+    这些段落现在是**新衣服**，不能再当旧衣服改写 —— 否则会被 swap_garments 当成
+    「别人的服装」摘掉，最后只剩一个配饰 tag 挂在姿势段末尾（v1.20.10 修的 bug）。
     `bold=False`（长篇场景分支）：不做「整句替换」，也不摘不带 "her" 的子句 ——
     巨构母题里 scarf / cloak / cape 常常是画面主体，误伤会把构图描述整段换掉。
     返回 (新正文, 改动处数)。0 = 母题根本没写服装，由调用方插入指令句。
@@ -1184,6 +1391,11 @@ def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = T
     placed = already_placed
     out_ps = []
     for p in paras(text):
+        # tag 流段落已由 replace_tag_stream_outfit 整组写成新单品，跳过改写
+        if skip_tag_stream and _is_tag_stream(p):
+            out_ps.append(p)
+            continue
+
         # 自己刚插进去的服装段（海报/场景版型段）不能再被改写，否则会被拆成碎句
         if (is_guard(p) or _SCENE_CUE.search(p)
                 or any(c in p for c in _OWN_TPL_CUE)):
@@ -1246,8 +1458,17 @@ def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = T
                     total += kg
                     keep.append(s2)
                 continue
-            if (bold and n_gar and n_gar / max(1, n_cl) >= 0.5
-                    and not _PROP_CUE.search(s)):
+            ratio = n_gar / max(1, n_cl)
+            # 「Preserve her recognizable A, B, C, and D.」是**角色特征列举句**，外貌和服装
+            # 混写在一起，不是材质指派、也不是构图序列。镜潮歌剧就栽在这：这段以
+            # "Give Furina an expression…" 开头 → _STRUCT_PARA 命中 → struct=True →
+            # need_is=True → 只摘带 is/are 的子句 → 这句 6 个服装子句一个都没摘，
+            # 深蓝外套下摆 / 白褶皱 / 金边 / 过膝靴整套留在成品里，换了衣服也画回原套装。
+            _identity_list = bool(_KEEP_LIST_RE.match(s.strip())) and s.count(",") >= 3
+            # ⚠ 不要给 scene 分支加「ratio 很高就整句替换」的旁路：单子句里出现一个服装词
+            # 就 100%，实测把「机位低于她的上衣高度」「裙摆开叉、双腿裸露」这类构图句整句删掉。
+            if ((bold and ratio >= 0.5) or (_identity_list and n_gar >= 3)) \
+                    and n_gar and not _PROP_CUE.search(s):
                 # ②③ 整句都在讲服装 → 换成本次所选单品（全文已有服装清单就整句删掉）
                 changed = True
                 total += 1
@@ -1256,7 +1477,8 @@ def rewrite_clothing(text: str, tags: list[str], short: str = "", only: bool = T
                     placed = True
             elif n_gar and (tag_stream or n_cl >= 3):
                 # ④ tag 流 / 长串里夹着的服装子句 → 只摘掉那几个子句
-                cut, k = _excise_clauses(s, require_her=not tag_stream, need_is=struct)
+                cut, k = _excise_clauses(s, require_her=not tag_stream,
+                                         need_is=struct and not _identity_list)
                 if k and len(cut.split()) >= 4:
                     cut = cut.rstrip()
                     if cut and cut[-1] not in ".!?":
@@ -1357,11 +1579,24 @@ def replace_identity(text: str, ch: dict, tag: str, log: list[str],
 def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
                   char_key: str = "", motif_text: str = "",
                   outfit_tags: list[str] | None = None,
-                  graphics_phys: bool = False, lock_palette: bool = False) -> str:
+                  graphics_phys: bool = False, lock_palette: bool = False,
+                  no_outfit: bool = False, hair_lock: bool = False) -> str:
+    if no_outfit:
+        # LORA 触发词模式：单品 / 版型 / 官方预设一个都不写，服装交给 LORA
+        outfit_tags, costume = [], "keep"
+
     # 单品 tags 先分流：姿势类（crossed legs 等）不进服装句，姿势仍由母题决定
     # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
     submitted = bool(outfit_tags)
     outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
+
+    # v1.19.6 单品优先：只要单品**最终有效**（过完部位/姿势筛选还剩东西），
+    # 「保持母题原样」就不再吞掉它 —— 用户选单品就是明确要换装。
+    # ⚠ 必须在 prepare_outfit 之后判断：若单品被部位规则全筛掉，这里不能改语义，
+    #   否则会静默退回「随机套版型」，比原来的「忽略单品」更难排查。
+    if costume == "keep" and outfit_tags:
+        log.append("服装: 已选单品 → 覆盖「保持母题原样」，按单品换装")
+        costume = "auto"
 
     # 1) featuring 从句
     new, n = re.subn(r"featuring .{2,80}? as the only (?:physical )?character",
@@ -1382,8 +1617,11 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
     hair_i, costume_i, palette_i, graphics_i = locate_sections(ps)
 
     if hair_i >= 0:
-        ps[hair_i] = HAIR_TPL.format(name=ch["short"], hair=ch["hair_desc"], accent=ch["accent"])
-    log.append(f"角色: 发型段 {'已换' if hair_i >= 0 else '未命中(跳过)'}")
+        # 双马尾角色用两束版（那是她本人结构），其余一律单束版 —— 否则换谁都画成两股马尾
+        hair_tpl = HAIR_TPL if has_twin_tail(ch) else HAIR_TPL_SINGLE
+        ps[hair_i] = hair_tpl.format(name=ch["short"], hair=ch["hair_desc"], accent=ch["accent"])
+    log.append(f"角色: 发型段 {'已换' if hair_i >= 0 else '未命中(跳过)'}"
+               + ("（双马尾版）" if hair_i >= 0 and has_twin_tail(ch) else ""))
 
     # 指定具名单品 + 版型 auto → 整段只写单品，不套幻想版型（见 OUTFIT_ONLY_TPL 注释）
     garment_only = bool(outfit_tags) and costume == "auto" and costume_i >= 0
@@ -1436,6 +1674,11 @@ def set_character(text: str, ch: dict, log: list[str], costume: str = "auto",
                else "角色: 图形段 未命中(跳过)")
 
     text = join(ps)
+
+    # 2.35) 锁定发色：贴在色盘段后面，保证不被后续段落处理顶掉
+    if hair_lock:
+        text = apply_hair_lock(text, ch, log, "角色")
+        ps = paras(text)
 
     # 2.4) 发型段没定位到的母题（单段 / 措辞不在 HAIR_STRONG 表里）→ 短发角色兜底。
     #      ⚠ 只在 hair_i < 0 时跑：定位成功时 ps[hair_i] 已经换成 HAIR_TPL，
@@ -1674,13 +1917,208 @@ def strip_motif_body(text: str, ch: dict, log: list[str], tag: str = "短提示"
     return join(ps)
 
 
+# ---------------------------------------------------------------------------
+# 母题首段写死的「原型人物外观」
+# ---------------------------------------------------------------------------
+# 有一批短提示母题是从**参考图**转写的，首段把画面原型直接写死：
+#   "solo teenage girl with short apricot hair, freckles and a sky-blue windbreaker,
+#    wearing her date's slightly oversized navy baseball cap, low wide-angle POV …"
+# 身份句换成目标角色之后，这段仍然在说「杏色短发 + 雀斑 + 天蓝风衣 + 海军蓝棒球帽」——
+# 模型两边都听，结果就是换了角色帽子和外套还挂在身上（海边栏杆实测）。
+# 修饰词位不能吃掉功能词：否则 "girl with short apricot hair" 里的 with 会被一起换掉，
+# 变成 "solo teenage girl long purple hair"（实测第一版就是这样）。
+# 每个词位都带 \b：不加的话正则会从 "with" 中间的回溯位置 "ith " 起步，断言就看不到了。
+LOOK_HAIR_RE = re.compile(
+    r"\b(?:(?:a|an|the)\s+)?"
+    r"(?:(?!\b(?:with|and|of|her|his|its)\b)\b[a-z\-]+\s+){0,3}hair\b", re.I)
+# 写死的瞳色（"honey-brown eyes"）同样是原型的，身份句里有角色自己的
+LOOK_EYE_RE = re.compile(r"(?:(?!\b(?:with|and|of|her|his)\b)\b[a-z\-]+\s+){1,2}eyes?\b", re.I)
+# 发型上的配饰（"large blue ribbon"），原型角色的标志，换人后要摘
+LOOK_ACC_RE = re.compile(r"\b(?:ribbons?|bows?|hairbands?|headbands?|hairpins?|clips?)\b", re.I)
+LOOK_FACE_RE = re.compile(r"\b(?:freckles?|beauty marks?|moles?)\b", re.I)
+LOOK_WEAR_RE = re.compile(r"^(?:wearing|dressed in|clad in)\b", re.I)
+# 构图/机位段不能当外观段删掉（"low wide-angle POV from the bench beside a railing"）
+LOOK_SPATIAL_RE = re.compile(
+    r"\b(?:pov|angle|camera|lens|from the|beside|behind|under|next to|edge of|top of|"
+    r"middle of|bottom of|left of|right of|in front of)\b", re.I)
+
+
+def neutralize_motif_look(text: str, ch: dict, log: list[str], tag: str = "短提示") -> str:
+    """首段里写死的原型外观/服饰 → 发型换成角色自己的，服装与配饰整段摘掉。"""
+    ps = paras(text)
+    if not ps:
+        return text
+    head = ps[0]
+    # ⚠ 只认 **tag 流母题**：短（<500 字）且带 tag 流特征 —— 比例开头，或
+    #   "canonical character design" 这类写法（唱片店：`Dynamic cinematic anime illustration,
+    #   Hatsune Miku, canonical character design, short icy-blue bob hair, …`）。
+    #   放宽成「含 girl/woman with」会把长文母题的首段拆烂 ——
+    #   k2s_abandoned_garden_2 / k2s_window_light_4 就是这么被摘掉 7~8 段的。
+    if len(head) > 500:
+        return text
+    tagflow = bool(re.match(r"^\s*\d+:\d+\b", head)) or "canonical character design" in head.lower()
+    if not tagflow:
+        return text
+    # tag 流里没有 "girl with" 这种句式，人物直接跟在角色名后面，所以两种入口都放行
+    if not (re.search(r"\b(?:girl|woman|figure|character)\s+with\b", head, re.I)
+            or "canonical character design" in head.lower()):
+        return text
+    segs = re.split(r",\s*", head)
+    out, hair_done, dropped, hat_gone = [], False, 0, False
+    for seg in segs:
+        low = seg.lower()
+        if LOOK_SPATIAL_RE.search(low):
+            out.append(seg)
+            continue
+        if LOOK_HAIR_RE.search(low):
+            if hair_done:
+                dropped += 1
+                continue
+            seg = LOOK_HAIR_RE.sub(ch.get("hair_desc") or "hair", seg, count=1)
+            hair_done = True
+            out.append(seg)
+            continue
+        if (GARMENT_RE.search(low) or LOOK_FACE_RE.search(low) or LOOK_EYE_RE.search(low)
+                or LOOK_ACC_RE.search(low)
+                or _HEADWEAR_RE.search(low) or LOOK_WEAR_RE.match(low)):
+            if _HEADWEAR_RE.search(low):
+                hat_gone = True
+            dropped += 1
+            continue
+        out.append(seg)
+    if not dropped and not hair_done:
+        return text
+    new_head = re.sub(r",\s*,", ",", ", ".join(x.strip() for x in out if x.strip()))
+    ps[0] = new_head
+    text = join(ps)
+    if hat_gone:
+        # 帽子被摘掉后，"掀起帽檐 / 帽檐下的眼睛"这些动作就没依托了 —— 模型会照着把帽子
+        # 画回来。把帽檐指代整体换成头发，动作仍然成立。
+        text = re.sub(r"\bbeneath (?:the|her|his) brim\b", "beneath her hair", text, flags=re.I)
+        text = re.sub(r"\b(?:the|her|his) (?:cap|hat)\b", "her hair", text, flags=re.I)
+        text = re.sub(r"\bthe brim\b", "her hair", text, flags=re.I)
+        log.append(f"{tag}: 帽子已摘 → 帽檐指代改为头发")
+    log.append(f"{tag}: 首段原型外观 → 摘掉 {dropped} 段"
+               + ("、发型换成角色设定" if hair_done else ""))
+    return text
+
+
+def _char_eye_desc(ch: dict) -> str:
+    """从身份句里取角色的瞳色短语（"purple eyes"）。"""
+    m = re.search(r"([a-z][\w\-]*(?:\s+[a-z][\w\-]*)?\s+eyes?)\b",
+                  (ch.get("identity") or "").lower())
+    return m.group(1).strip() if m else ""
+
+
+# 母题写死的「别人的发色/瞳色/发饰」——v1.20.3
+# 这批母题的正文写死了原型角色的外貌（silver hair / brown hair / white hair / red bow），
+# 而 neutralize_residual_traits 只认 Miku 的 aqua / twin tails，一律放过。
+# 修法不是逐个句式打补丁（散文列举、光影句、"Keep the woman's…"、首段 tag 流各一种），
+# 而是按词重定向：把发色短语整体换成角色的 hair_desc，瞳色换颜色词，发饰摘掉。
+_LEN_W = r"(?:very long|waist-length|shoulder-length|medium-length|medium|short|long|tiny)"
+_MOD_W = r"(?:dark|warm|cold|cool|light|pale|soft|deep|muted|ash|bright|straight|windblown|side-parted)"
+_COL_W = (r"(?:icy-blue|ice-blue|aqua|teal|cyan|blue|pink|red|white|silver|silvery|black|brown|"
+          r"blonde|blond|gold|golden|green|purple|violet|orange|grey|gray|apricot|honey|"
+          r"ash-black|copper-red|blue-white|black-and-red|red-and-black|red-black|silver-black|"
+          r"dark-brown|chestnut|scarlet-red|muted-long)")
+HAIR_COLOR_TAG = re.compile(
+    rf"\b(?:(?:{_LEN_W}|{_MOD_W})\s+)*(?:{_COL_W})(?:[\w\-]*)?\s+"
+    rf"(?:hair|bob|braid|bangs|ponytail|twintails?)\b", re.I)
+EYE_COLOR_TAG = re.compile(rf"\b(?:{_COL_W})\s+eyes?\b", re.I)
+# "bow" 同时是「蝴蝶结」和「弓」：k2x_bow_drawn 首段整段在讲拉弓，第一版把里面的 bow
+# 当发饰删了 6 次，首句的画幅 token 都被拆没了（测试 05 抓到）。所以带武器词的段落整段跳过。
+HAIR_ACC_TAG = re.compile(
+    r"\b(?:(?:her|his)\s+)?(?:(?:large|small|big|tiny|enormous|giant|oversized|crimson|"
+    r"scarlet|blue|red|white|black|pink|purple|yellow|left|right|neck|head)\s+){0,2}"
+    r"(?:ribbons?|bows?|hairbands?|hairpins?)\b", re.I)
+_BOW_WEAPON_CUE = re.compile(
+    r"\b(?:weapon|bow\s*drawn|drawn\s*bow|longbow|crossbow|arrows?|archery|quiver|bowstring|"
+    r"bow\s*limb|recurve)\b", re.I)
+
+
+def retarget_motif_appearance(text: str, ch: dict, log: list[str],
+                              tag: str = "角色") -> str:
+    """把母题写死的发色 / 瞳色 / 发型配饰换成角色自己的。
+
+    ⚠ 只替换**完整发色短语**（连修饰词一起），否则会留下 `long dark long purple hair`
+    这类重复；瞳色只换颜色词、保留 `vivid / large` 修饰；发饰整段摘掉并修逗号。
+    """
+    hd = (ch.get("hair_desc") or "").strip()
+    eye = _char_eye_desc(ch)
+    n_h = n_e = n_a = 0
+
+    def _hair(m):
+        nonlocal n_h
+        g = m.group(0)
+        # 已经是角色发色（含其主色词）就不动，避免二次替换
+        if hd and hd.split()[-2].lower() in g.lower():
+            return g
+        n_h += 1
+        return hd or g
+
+    if hd:
+        text = HAIR_COLOR_TAG.sub(_hair, text)
+    if eye:
+        # 异色瞳（"one deep blue eye and one pale ice-blue eye"）整组换成角色瞳色，
+        # 否则会变成 "one purple eyes and one purple eyes"
+        text = re.sub(r"\bone\s+(?:[\w\-]+\s+){0,2}eyes?\s+and\s+one\s+"
+                      r"(?:[\w\-]+\s+){0,2}eyes?\b", eye, text, flags=re.I)
+        def _eye(m):
+            nonlocal n_e
+            n_e += 1
+            return eye
+        text = EYE_COLOR_TAG.sub(_eye, text)
+
+    def _acc(m):
+        nonlocal n_a
+        n_a += 1
+        return ""
+
+    if n_h or n_e:
+        # 发饰只在**人物描述段**里摘（段内含 hair / head / eyes）：
+        # 否则会误删场景里的 "flowing tidal ribbons"（海面纹理，k2s_hy_086 实测）
+        ps = paras(text)
+        for i, p in enumerate(ps):
+            if not re.search(r"\bhair\b|\bhead\b|\beyes?\b|\bbraids?\b|\bponytails?\b|\bbangs?\b", p, re.I):
+                continue
+            if _BOW_WEAPON_CUE.search(p):
+                continue                     # 这段的 bow 是弓，不是蝴蝶结
+            p = HAIR_ACC_TAG.sub(_acc, p)
+            # 摘掉发饰后会留下孤立的位置词（"sits beside her left ."），一并清掉
+            p = re.sub(r"\b(?:her|his)\s+(?:left|right)\s+(?=[,.])", "", p, flags=re.I)
+            p = re.sub(r"\b(?:the)\s+(?:left|right)\s+(?=[,.])", "", p, flags=re.I)
+            p = re.sub(r"\b(?:a|an|the|her|his)\s+(?=[,.])", "", p, flags=re.I)
+            p = re.sub(r"\s+with\s*,", ",", p)            # "tied with <ribbon>" → "tied with ,"
+            p = re.sub(r"\s+,", ",", p)
+            p = re.sub(r"\s*,\s*(?=,|\.|$)", "", p)
+            p = re.sub(r",\s*,", ",", p)
+            p = re.sub(r"\band\s+(?=,|\.)", "", p)
+            p = re.sub(r"\bbeside\s+\.", "beside her.", p)
+            p = re.sub(r"\s{2,}", " ", p)
+            ps[i] = p
+        text = join(ps)
+    if n_h or n_e or n_a:
+        log.append(f"{tag}: 母题写死的外貌 → 发色 {n_h} 处 / 瞳色 {n_e} 处 / 发饰 {n_a} 处"
+                   f"（改为 {hd or '角色设定'}）")
+    return text
+
+
 def set_character_short(text: str, ch: dict, log: list[str], costume: str = "auto",
                         char_key: str = "", motif_text: str = "",
-                        outfit_tags: list[str] | None = None) -> str:
+                        outfit_tags: list[str] | None = None,
+                        no_outfit: bool = False, hair_lock: bool = False) -> str:
     """短提示词分支的轻量适配：不动构图，只换身份 + 追加一两句服装。"""
+    if no_outfit:
+        # LORA 触发词模式：单品 / 版型 / 官方预设一个都不写，服装交给 LORA
+        outfit_tags, costume = [], "keep"
+
     # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
     submitted = bool(outfit_tags)          # 用户是否真的选了服装（区别于"筛完为空"）
     outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
+    # v1.19.6 单品优先：单品有效就覆盖「保持母题原样」（理由同 set_character）
+    if costume == "keep" and outfit_tags:
+        log.append("短提示: 已选单品 → 覆盖「保持母题原样」，按单品换装")
+        costume = "auto"
     ps = paras(text)
 
     text, _id_ok = replace_identity(
@@ -1690,6 +2128,10 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
     if not _id_ok:
         ps.insert(1, ch["identity"])
         log.append("短提示: 身份锚点 原文无，改为插入")
+
+    # 1.4) 首段写死的原型外观（发色/雀斑/外套/棒球帽）→ 发型换成角色设定，其余摘掉
+    text = neutralize_motif_look(join(ps), ch, log, "短提示")
+    ps = paras(text)
 
     # 1.5) 短发角色：摘掉正文里残留的长发描述（见 drop_long_hair_sentences 的注释）。
     #      必须排在身份句替换之后 —— 身份句里是 "short brown hair"，先摘会误伤。
@@ -1710,7 +2152,8 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
         text, n_swap = rewrite_clothing(text, outfit_tags, short=ch["short"],
                                         only=(costume == "auto"), log=log,
                                         mode=zone_mode, raw=motif_text,
-                                        already_placed=bool(n_tag))
+                                        already_placed=bool(n_tag),
+                                        skip_tag_stream=bool(n_tag))
         ps = paras(text)
         n_swap += n_tag
         if n_swap:
@@ -1779,20 +2222,31 @@ def set_character_short(text: str, ch: dict, log: list[str], costume: str = "aut
         if cnt:
             text = join(out)
         log.append(f"短提示: 双马尾表述中性化 {cnt} 处")
+    if hair_lock:
+        text = apply_hair_lock(text, ch, log, "短提示")
     return text
 
 
 def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "auto",
                          char_key: str = "", motif_text: str = "",
-                         outfit_tags: list[str] | None = None) -> str:
+                         outfit_tags: list[str] | None = None,
+                         no_outfit: bool = False, hair_lock: bool = False) -> str:
     """平面海报分支的角色/服装适配。
 
     海报没有 3D 母题那 7 个锚点（只有 1/19 有 Dress 段），所以不能走 set_character：
     这里保留整张版式、大标题与印刷色盘，只做四件有边界的替换。
     """
+    if no_outfit:
+        # LORA 触发词模式：单品 / 版型 / 官方预设一个都不写，服装交给 LORA
+        outfit_tags, costume = [], "keep"
+
     # 服装：姿势过滤 → 部位判定 → 只取母题需要的部位（官方服装 / 服装库同一套逻辑）
     submitted = bool(outfit_tags)
     outfit_tags, zone_mode = prepare_outfit(outfit_tags, motif_text, log)
+    # v1.19.6 单品优先：单品有效就覆盖「保持母题原样」（理由同 set_character）
+    if costume == "keep" and outfit_tags:
+        log.append("海报: 已选单品 → 覆盖「保持母题原样」，按单品换装")
+        costume = "auto"
     ps = paras(text)
 
     # 1) 身份锚点：16/19 有 Preserve 句；没有的就在首段后补一段
@@ -1903,6 +2357,8 @@ def set_character_poster(text: str, ch: dict, log: list[str], costume: str = "au
         if cnt:
             text = join(out)
         log.append(f"海报: 双马尾表述中性化 {cnt} 处")
+    if hair_lock:
+        text = apply_hair_lock(text, ch, log, "海报")
     return text
 
 
@@ -2058,6 +2514,54 @@ def neutralize_residual_traits(text: str, ch: dict, log: list[str]) -> str:
     msg = (f"残留特征: 双马尾 {n['twin']} / 发饰 {n['orn']} / 角色色 {n['col']} / "
            f"护盾旧否定 {n['guard']} / virtual-singer {n['vs']} / 旧角色名 {n['name']}")
     log.append(msg)
+    return join(out)
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# 母题自带的角色装饰（例：甘雨背上的六片水晶翼）
+# ---------------------------------------------------------------------------
+# 少数母题当初是照着某个角色写的，正文里直接写进了她的专属装饰（水晶翼）。那不是
+# 场景陈设 —— 换角色后模型照样把装饰画在别人背上（阿尔托莉雅版「榻榻米房」实测：
+# 428 词里三处 wing 全在，出图就有了水晶翼）。母题在 motifs_new/_meta.json 用
+# owner_char 登记「装饰所属角色」，装配时按选中角色分流：
+#   · 选中角色 == owner_char → 原样保留（那是她的特征）
+#   · 选中其他角色           → 连子句一起摘掉
+#   · 没选角色（keep / 空）  → 原样保留（用户要的就是母题原貌）
+# ⚠ 只摘「带 wing 的那个子句」，同段其它内容（发型 / 光线 / 构图）一个字不动。
+OWNER_PROP_RE = re.compile(
+    r"\b(?:ice[\s-]crystal|crystalline|ice|crystal)\s+wings?\b|\bwings?\b", re.I)
+
+
+def strip_owner_props(text: str, log: list[str], owner_char: str = "",
+                      char_key: str = "", tag: str = "") -> str:
+    if not owner_char:
+        return text                          # 母题没登记装饰 → 什么都不做
+    if not char_key or char_key == owner_char:
+        if char_key:
+            log.append(f"{tag}母题装饰: 选中角色即 {owner_char}，水晶翼保留")
+        return text
+    out, n = [], 0
+    for p in paras(text):
+        if not OWNER_PROP_RE.search(p):
+            out.append(p)
+            continue
+        keep = []
+        for seg in re.split(r",\s*", p):
+            if OWNER_PROP_RE.search(seg):
+                n += 1                       # "ribbon and ice wings" 整枚子句丢掉
+                continue
+            keep.append(seg)
+        q = ", ".join(s for s in keep if s.strip())
+        q = re.sub(r",\s*,", ",", q)
+        q = re.sub(r"\s{2,}", " ", q).strip()
+        # 短提示词的段尾本来就用逗号收口（下文紧接另一段），别被摘成句号
+        if p.rstrip().endswith(",") and q and not q.endswith((",", ".", ";")):
+            q += ","
+        if q.strip():
+            out.append(q)
+    if n:
+        log.append(f"{tag}母题装饰: 水晶翼 {n} 处已摘（属于 {owner_char}，非 {char_key}）")
     return join(out)
 
 
@@ -2324,6 +2828,163 @@ NO_TEXT_LEAD = ("The image contains no readable lettering of any kind: every sur
                 "clean and unmarked, showing only light, shadow and material grain.")
 NO_TEXT_SEG = ("Keep that area as clean unmarked negative space with soft light, faint grain "
                "and gentle shadow only.")
+# 被摘掉的是一整段长段（>45 词）时，用长一点的留白句补齐篇幅，否则长文会掉到 1000 词以下
+NO_TEXT_SEG_LONG = ("Let that whole area stay bare and unmarked: one flat lit surface, soft "
+                    "tonal steps, faint material grain and a single clean shadow edge, with "
+                    "no mark, number or sign anywhere on it.")
+# 极少数母题（如把排版当主体的 k2x_indus_mega_field）摘完掉到 1000 词以下 → 补一段
+NO_TEXT_FILL = ("Hold the whole frame in matte material and even light: worn concrete, brushed "
+                "steel, soft grain, faint dust along the seams, one clean bright edge on every "
+                "volume and a narrow step of shadow beneath it, with the air kept pale and "
+                "still from edge to edge and the values reading as one disciplined run of "
+                "greys from the floor to the top of the frame, so the eye stays on the "
+                "structure and never on any surface incident.")
+
+# ---------------------------------------------------------------------------
+# 「画面不显示文字」的第二层：不只是引号里那个词，而是**所有**催模型写字的分句
+# ---------------------------------------------------------------------------
+# 踩过的坑：玄关母题写着 `Let a second, much smaller exact readable line “UNIT 9” sit on
+# a small enamel plate…` —— 引号内容被删了，句子还剩 `readable line … on a small enamel
+# plate`，模型照样画出一排小字；电梯的 `stencilled word` 同理。
+# 所以按**句子**判定「这句在指挥写字」，而不是只删引号。
+_TEXT_EXACT = re.compile(r"\b(exact|readable|legible|spelled|spelt|letter-perfect)\b", re.I)
+_TEXT_NOUN = re.compile(
+    r"\b(lettering|letters?|words?|lines?|text|titles?|subtitles?|captions?|labels?|"
+    r"signage|sign|wordmark|typeface|typography|letterforms?|glyphs?|script|"
+    r"numerals?|digits?|strings?|enamel plate|plate|stencil)\b", re.I)
+_TEXT_VERB = re.compile(
+    r"\b(reads?|readable|legible|spell(?:s|ed|ing)?|print(?:s|ed|ing)?|stencil(?:led|s|ing)?|"
+    r"engrav(?:ed|es|ing)?|emboss(?:ed|es)?|inscri(?:bed|ption)|typeset|lettered|"
+    r"sits?|sit|carries?|carry|painted?|set)\b", re.I)
+_TEXT_TYPO = re.compile(
+    r"\b(lettering|letterforms?|wordmark|typograph\w*|typeface|typeset|"
+    r"engrav\w*|emboss\w*|inscri\w*|stencil\w*|glyphs?|serif|sans-serif)\b", re.I)
+_SENT_SPLIT = re.compile(r"(?<=[.!?])\s+")
+
+
+def _is_text_instruction(s: str) -> bool:
+    """这一句是不是「把某个词画进画面」的指令（不是「画面读起来像…」那种比喻）。
+
+    ⚠ 不能只认 print —— `screen print` / `risograph print` / `printed graphic
+    language` 是画风描述，删了会把风格段整段废掉。所以要求「文字名词 + 精确/可读」
+    同时出现，或者干脆出现排版专用词（typography / lettering / wordmark / stencil）。
+    """
+    s = s.strip().rstrip(".")
+    # 「with no lettering」「no readable text anywhere」是我们要的结论句，不是指令
+    if re.search(r"\b(?:no|without|avoid|never|free of|free from)\b[^.;]{0,48}"
+                 r"\b(lettering|readable text|text anywhere|text|words?|typography|"
+                 r"logo|letters)\b", s, re.I):
+        return False
+    quoted = bool(re.search(r"[“\"][^”\"\n]{1,60}[”\"]", s))
+    # 引号里只要真有字（字母 / 数字 / 假名 / 汉字），就是画内文字：
+    # 海报母题会写 `the left vertical stem of the "H" continues downward` —— 一个引号
+    # 字母都没有 "readable"，但模型照样把 H 画出来。
+    # 英文母题里出现假名 / 汉字，只可能是画内标题（`Render あ and ら in warm white`、
+    # `the final し cross onto the circle`）—— 逐字写进正文，整句必须摘。
+    if re.search(r"[\u3040-\u30ff\u4e00-\u9fff]", s):
+        return True
+    q = re.search(r"[“\"]([^”\"\n]{1,60})[”\"]", s)
+    if q and re.search(r"[A-Za-z0-9\u3040-\u30ff\u4e00-\u9fff]", q.group(1)):
+        return True
+    # 字形/排版部位 + 排版动词（title / letter / stem / stroke / glyph）
+    if (re.search(r"\b(titles?|words?|letters?|letterforms?|glyphs?|stems?|"
+                  r"strokes?|counters?)\b", s, re.I)
+            and re.search(r"\b(render|print|place|set|carry|hang|paint|switch|route|extend|"
+                          r"continue|cross|build|decide|break|stack|align|typeset|engrave|"
+                          r"emboss|stencil|inscribe)\b", s, re.I)
+            and not re.search(r"\b(reads?|reading|like)\b", s, re.I)):
+        return True
+    exact = bool(_TEXT_EXACT.search(s))
+    noun = bool(_TEXT_NOUN.search(s))
+    verb = bool(_TEXT_VERB.search(s))
+    if quoted and (noun or exact or verb):
+        return True
+    if exact and noun:
+        return True
+    if _TEXT_TYPO.search(s) and (noun or quoted or exact):
+        return True
+    if noun and verb and exact:
+        return True
+    return False
+
+
+# 首句画幅 token / 身份句绝不能当写字指令删掉：`Create a 2:3 … plate titled “X”` 里
+# 带着引号，会被引号规则误判 → 整句没了 → validate 报「首句画幅token缺失」。
+_PROTECT_SENT = re.compile(r"^(?:Create\b|Preserve\b|Square\b|Portrait\b|Horizontal\b|"
+                           r"Vertical\b)", re.I)
+
+
+_CJK_RE = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff]+")
+
+
+def _clean_protected(s: str) -> str:
+    """受保护的句子（首句 / 身份句）保留，但把句内的画内标题摘干净。
+
+    首句常写成 `Create a wide 16:9 … titled あらし …`，整句删掉会丢画幅 token，
+    所以只摘引号与中日文字符，句子骨架保留。
+    """
+    s = re.sub(r"[“\"][^”\"\n]{1,60}[”\"]", " ", s)
+    s = _CJK_RE.sub(" ", s)
+    s = re.sub(r"\btitled\s*[,.;]", "with no lettering,", s, flags=re.I)
+    s = re.sub(r"\btitled\b", "with no lettering", s, flags=re.I)
+    return re.sub(r"\s{2,}", " ", s).strip()
+
+
+def scrub_lettering(text: str, log: list[str]) -> str:
+    """逐句摘掉写字指令，整段被摘空就换成留白句（保住段数，validate 有下限）。"""
+    out, dropped = [], 0
+    for p in paras(text):
+        if is_guard(p):
+            out.append(p)
+            continue
+        sents = _SENT_SPLIT.split(p)
+        keep = []
+        for s_ in sents:
+            if _PROTECT_SENT.match(s_.strip()):
+                keep.append(_clean_protected(s_))       # 保留首句，只摘句内标题
+            elif not _is_text_instruction(s_):
+                keep.append(s_)
+        n = len(sents) - len(keep)
+        if not n:
+            out.append(p)
+            continue
+        dropped += n
+        q = re.sub(r"[ \t]{2,}", " ", " ".join(keep)).strip()
+        # 还剩「…and numbers belonging to the specimen system」这种：数字也会被画出来，
+        # 改成刻度记号，保住测量感又不留字。
+        q = re.sub(r"\band numbers?\b", "and graduated ticks", q, flags=re.I)
+        q = re.sub(r"\b(numbers|digits|numerals)\b", "ticks", q, flags=re.I)
+        q = _tidy_punct(q) if q else q
+        filler = NO_TEXT_SEG_LONG if len(p.split()) >= 45 else NO_TEXT_SEG
+        out.append(q if len(q.split()) >= 8 else filler)
+    if dropped:
+        log.append(f"画面文字: 摘掉写字分句 {dropped} 处（含小字 / 编号 / 铭牌）")
+    body = join(out)
+    # 短提示词只有一百来词，摘两句就掉到 validate 下限（100 词）以下 → 补一句留白
+    if dropped and len(body.split()) < 110:
+        out.append(NO_TEXT_SEG)
+        body = join(out)
+    return body
+
+
+def _scrub_guard_lettering(p: str) -> str:
+    """护盾里的「除上文那个词以外不许有字」在无文字模式下自相矛盾，改写掉。
+
+    ⚠ 不能只认 `no readable text beyond the`：实测还有
+    `no readable floor numbers beyond the one display` 这种变体。
+    ⚠ 也绝不能一看到 `beyond the` 就改 —— `no gardener beyond the gate` 是场景否定。
+    """
+    p = re.sub(r"no readable [^,]{0,70}?\b(?:beyond|except|other than)\b[^,]*",
+               "no readable text anywhere in the image", p, flags=re.I)
+    # 「只有那个词可以看得见」= 反向许可，无文字模式下必须拔掉
+    p = re.sub(r"(?:[.;]\s*)?Only the exact[^.]*?(?:readable|legible)[^.]*\.?", ". ", p,
+               flags=re.I)
+    p = re.sub(r"(?:[.;]\s*)?Only the [^.]{0,40}?hiragana[^.]*\.?", ". ", p, flags=re.I)
+    p = re.sub(r"\.\s*\.", ".", p)
+    p = re.sub(r"\s{2,}", " ", p).strip()
+    p = re.sub(r",?\s*no lettering touching or cropped by any frame edge", "", p, flags=re.I)
+    p = re.sub(r"[ \t]{2,}", " ", p)
+    return p
 
 
 def remove_display_text(text: str, orig_candidates: list[str] | None,
@@ -2350,13 +3011,37 @@ def remove_display_text(text: str, orig_candidates: list[str] | None,
         # ① 带引号的写法
         text = re.sub(r'[“"\']\s*' + esc + r'\s*[”"\']', " ", text)
         # ② 裸写（海报常见：Use the exact Japanese title あらし / …final "R" in VESPER）
+        # ⚠ 不能无脑全删：母题 `Construct the megastructure from…` 里那个普通名词
+        #    和画内标题同名，整篇删完会变成 `Construct the from…`（实测）。
+        #    只在「附近真在讲字」时才删（title / text / lettering / readable 之类）。
         if re.search(r"[A-Za-z]", p):
-            text = re.sub(r"(?<![A-Za-z0-9])" + esc + r"(?![A-Za-z0-9])",
-                          " ", text, flags=re.I)
+            pat = re.compile(r"(?<![A-Za-z0-9])" + esc + r"(?![A-Za-z0-9])", re.I)
+
+            def _bare(m):
+                occ = m.group(0)
+                # 全大写的基本就是画内标题本体 → 删；小写的往往只是正文里提到这个词
+                if occ.isupper() and len(occ) > 1:
+                    return " "
+                # 否则看**同一句**里有没有写字线索（跨句会误伤下一句的 title 描述）
+                cs = max(text.rfind(". ", 0, m.start()), text.rfind("\n", 0, m.start()))
+                ce = text.find(". ", m.end())
+                win = text[cs + 1: ce if ce > 0 else m.end() + 90]
+                return " " if re.search(
+                    r"\b(title|text|word|lettering|readable|legible|caption|label|"
+                    r"font|typeface|typography|stencil)\b", win, re.I) else m.group(0)
+
+            text = pat.sub(_bare, text)
         else:
             text = text.replace(p, " ")
     text = re.sub(r"[ \t]{2,}", " ", text)
     text = re.sub(r"\s+([,.;:])", r"\1", text)
+    # 短提示里 "PLATE 39" 这类被拆掉一半会剩 `“ 39,”` —— 光秃秃的引号同样催字
+    text = re.sub(r"[“\"]\s*[\d\s,.;:'’-]{0,8}\s*[”\"]", " ", text)
+    text = text.replace("“", "").replace("”", "")
+
+    # ①.5 逐句摘掉「写字」指令 —— 只删引号内容时，剩下的
+    #      `smaller exact readable line … on a small enamel plate` 照样催出小字。
+    text = scrub_lettering(text, log)
 
     TITLE_SEG = re.compile(
         r"\b(title|titled|lettering|readable text|typography|caption|label|wordmark|display text)\b",
@@ -2366,11 +3051,23 @@ def remove_display_text(text: str, orig_candidates: list[str] | None,
         re.I)
     ps = paras(text)
     for i, p in enumerate(ps):
-        if (len(p.split()) <= 70 and TITLE_SEG.search(p) and not KEEP.search(p)
+        if is_guard(p):
+            ps[i] = _scrub_guard_lettering(p)
+        elif (len(p.split()) <= 70 and TITLE_SEG.search(p) and not KEEP.search(p)
                 and "carries no lettering" not in p):
+            ps[i] = NO_TEXT_SEG
+    # 逐句摘完之后可能又空出一段（整段都是写字指令）→ 补留白句，保段数
+    for i, p in enumerate(ps):
+        if p is not None and len(p.split()) < 6 and not is_guard(p):
             ps[i] = NO_TEXT_SEG
     ps[0] = re.sub(r"\btitled\s*,", "with no lettering,", ps[0], flags=re.I)
     ps[0] = re.sub(r"\btitled\s+(?=[a-z])", "with no lettering ", ps[0], flags=re.I)
+    ps[0] = re.sub(r"\btitled\s+titled\b", "with no lettering", ps[0], flags=re.I)
+    # 删掉 "titled “X” by concept only" 之后会剩半句尾巴，收拾干净
+    ps[0] = re.sub(r"\bwith no lettering\b[\s,]*\bby concept only\b",
+                   "with no lettering", ps[0], flags=re.I)
+    ps[0] = re.sub(r"(\bwith no lettering[^,.]*),\s*Feature\b", r"\1, featuring", ps[0])
+    ps[0] = re.sub(r"(\bwith no lettering[^,.]*),\s*Render\b", r"\1, rendering", ps[0])
     if not any("no readable lettering of any kind" in p for p in ps):
         ps.insert(1, NO_TEXT_LEAD)
     log.append(f"画面文字: 已清除 {len(phrases)} 种原文，改为无文字模式")
@@ -2403,7 +3100,8 @@ def assemble(seed_id: str, char_key: str | None = None, aspect: str | None = Non
              costume: str = "auto", char_obj: dict | None = None,
              outfit_tags: list[str] | None = None,
              display_text: str = "", no_text: bool = False,
-             display_mode: str = "all") -> tuple[str, list[str]]:
+             display_mode: str = "all", no_outfit: bool = False,
+             hair_lock: bool = False) -> tuple[str, list[str]]:
     seeds, chars = load()
     if seed_id not in seeds:
         raise AssembleError(f"未知种子: {seed_id}")
@@ -2411,6 +3109,11 @@ def assemble(seed_id: str, char_key: str | None = None, aspect: str | None = Non
     branch = seed.get("branch") or "scene"
     raw_mode = branch in ("poster", "short")
     text, log = seed["raw"], []
+    # 母题自带的角色装饰（水晶翼一类）在**角色替换之前**摘掉，只针对「选中角色不是登记角色」。
+    # ⚠ 不能放到装配之后：像琪露诺这种本人就有冰翼的角色，身份句 / 护盾里写着 "ice wings"，
+    #    装配后统一摘会把角色自己的翼一起删掉（实测 6 处全没了，人变没翼的冰精）。
+    base_text = strip_owner_props(text, log, seed.get("owner_char") or "", char_key or "")
+    text = base_text
     if aspect and aspect != "keep":
         if raw_mode:
             # 海报/短提示词首句写的是 horizontal 16:9 / vertical 4:5 / Square 1:1
@@ -2422,26 +3125,38 @@ def assemble(seed_id: str, char_key: str | None = None, aspect: str | None = Non
         ch = char_obj or chars.get(char_key)
         if ch is None:
             raise AssembleError(f"未知角色: {char_key}")
-        if outfit_tags:
-            # 选了单品 → 身份句 / 护盾里写死的原作服装要让位，否则模型永远画回原套装
-            # （furina：identity 有 "ceremonial outfit"、guard 有 "no missing top hat"）
+        if outfit_tags or no_outfit:
+            # 选了单品 / LORA 服装模式 → 身份句 / 护盾里写死的原作服装要让位，
+            # 否则模型永远画回原套装（furina：identity 有 "ceremonial outfit"、
+            # guard 有 "no missing top hat"）
             ch = costume_free_char(ch, log)
         if branch == "poster":
-            text = set_character_poster(text, ch, log, costume, char_key, seed["raw"],
-                                        outfit_tags)
+            text = set_character_poster(text, ch, log, costume, char_key, base_text,
+                                        outfit_tags, no_outfit=no_outfit, hair_lock=hair_lock)
         elif branch == "short":
-            text = set_character_short(text, ch, log, costume, char_key, seed["raw"],
-                                       outfit_tags)
+            text = set_character_short(text, ch, log, costume, char_key, base_text,
+                                       outfit_tags, no_outfit=no_outfit, hair_lock=hair_lock)
         else:
-            text = set_character(text, ch, log, costume, char_key, seed["raw"], outfit_tags,
+            text = set_character(text, ch, log, costume, char_key, base_text, outfit_tags,
                                  graphics_phys=(seed.get("source") == "authored"),
-                                 lock_palette=bool(seed.get("lock_palette")))
+                                 lock_palette=bool(seed.get("lock_palette")),
+                                 no_outfit=no_outfit, hair_lock=hair_lock)
         # 三个分支共用：把母题里写死的原角色特征（双马尾 / 发饰 / 青绿眼 / Miku 名）
         # 中性化。放在分支之后、画内文字处理之前 —— 不能改用户填的标题。
         text = neutralize_residual_traits(text, ch, log)
+        # 母题写死的别人的发色/瞳色/发饰 → 换成角色自己的（Miku 本人跳过）
+        if not _is_miku_like(ch):
+            text = retarget_motif_appearance(text, ch, log, "角色")
+        # LORA 服装触发词模式：服装全交给 LORA，正文里一个服装词都不留
+        if no_outfit:
+            text = strip_all_garments(text, log)
     if no_text:
         # 优先级最高：勾了「画面不显示英文」就不再管填了什么文字
         text = remove_display_text(text, find_display_text(seed["raw"]), log)
+        # 摘字摘太多会跌到 1000 词（validate 下限）→ 补一段无字材质句，篇幅回来
+        if (seed.get("branch") or "scene") == "scene" and len(text.split()) < 1000:
+            text = text.rstrip() + "\n\n" + NO_TEXT_FILL
+            log.append("画面文字: 篇幅不足 1000 词，已补一段无字材质句")
     elif display_text:
         # 从「母题原文」里找画内文字（不是装配后的文本，因为角色/服装替换
         # 可能已经动过引号内容，那样会漏掉原句的标题）。
